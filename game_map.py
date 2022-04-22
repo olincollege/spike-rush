@@ -13,6 +13,12 @@ class moveable_test():
     circle_x_y = (100,50)
     border_width = 0
 
+    #are you currently moving in a direction
+    xstate = 0
+    ystate = 0
+
+
+
     def __init__(self,x_init,y_init,radius):
         self.xpos = x_init
         self.ypos = y_init
@@ -26,6 +32,8 @@ class moveable_test():
     
     def draw_circ(self,game_map):
         pygame.draw.circle(game_map.window, self.color, (self.xpos,self.ypos), self.radius, self.border_width)
+
+
 
 class moveable_controller():
     """
@@ -44,12 +52,37 @@ class moveable_controller():
         #should only be checked if a key is pressed
         if event.key == pygame.K_UP or event.key == ord("w"):
             self.red_circ.update_pos(0,-self.move_incr)
+            #basically stores that this key is being pressed
+            self.red_circ.ystate = 1
         if event.key == pygame.K_LEFT or event.key == ord("a"):
             self.red_circ.update_pos(-self.move_incr,0)
+            self.red_circ.xstate = 1
         if event.key == pygame.K_DOWN or event.key == ord("s"):
             self.red_circ.update_pos(0,self.move_incr)
-        if event.key == pygame.K_DOWN or event.key == ord("d"):
+            self.red_circ.ystate = -1
+        if event.key == pygame.K_RIGHT or event.key == ord("d"):
             self.red_circ.update_pos(self.move_incr,0)
+            self.red_circ.xstate = -1
+
+    #if a key is unpressed stop motion
+    def stop_move(self,event):
+        
+        if event.key == pygame.K_UP or event.key == ord("w"):
+            #says that the keys are not still being pressed
+            self.red_circ.ystate = 0
+        if event.key == pygame.K_LEFT or event.key == ord("a"):
+            self.red_circ.xstate = 0
+        if event.key == pygame.K_DOWN or event.key == ord("s"):
+            self.red_circ.ystate = 0
+        if event.key == pygame.K_RIGHT or event.key == ord("d"):
+            self.red_circ.xstate = 0
+    def still_moving(self):
+        
+        #if a key is still being pressed, unpress
+        if self.red_circ.xstate != 0:
+            self.red_circ.update_pos( self.red_circ.xstate *-self.move_incr,0)
+        if self.red_circ.ystate != 0:
+            self.red_circ.update_pos(0,self.red_circ.ystate *-self.move_incr)
 
 
 
@@ -112,7 +145,10 @@ def map_test():
             if event.type == pygame.KEYDOWN:
                 #theres an if statement in this method, wont move indiscriminantly
                 red_circ_controller.move(event)
+            if event.type == pygame.KEYUP:
+                red_circ_controller.stop_move(event)
 
+        red_circ_controller.still_moving()
         #make screen white
         game_map.fill_screen((255,255,255))
         #draw the red circle
