@@ -4,7 +4,7 @@ The map for the game
 
 from bitarray import test
 import pygame
-
+#import players_guns_bullets
 
 class moveable_test():
 
@@ -112,11 +112,11 @@ class spike_map():
         self.window.fill(rgb_tuple)
 
     def update_visual(self):
-        pygame.display.update()
+        pygame.display.flip()
 
 #example of a simple game
 def map_test():
-
+    pygame.init()
     #initialize our map
     game_map = spike_map()
 
@@ -130,7 +130,10 @@ def map_test():
 
     #make screen white
     game_map.fill_screen((255,255,255))
-
+    
+    #rectangle test
+    example_rectangle = pygame.Rect(600,200,60,60)
+    
     run = True
     
     while run:
@@ -152,10 +155,13 @@ def map_test():
         #make screen white
         game_map.fill_screen((255,255,255))
         #draw the red circle
-        
         red_circ.draw_circ(game_map)
+        #draw rectangle
+        pygame.draw.rect(game_map.window,(100,100,0),example_rectangle)
         #update window
         game_map.update_visual()
     pygame.quit()
 
-map_test()
+
+
+
