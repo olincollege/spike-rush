@@ -27,6 +27,7 @@ def guns_test():
     
     run = True
     
+    print("made it to run loop")
     while run:
         #ensure won't go above 60 FPS
         clock.tick(60)
@@ -41,7 +42,8 @@ def guns_test():
                 red_circ_controller.move(event)
             if event.type == pygame.KEYUP:
                 red_circ_controller.stop_move(event)
-            player_test_controller.check_shoot(event)
+            #print("made it to check shoot")
+            red_circ_controller.check_shoot(event)
 
 
         red_circ_controller.still_moving()
@@ -50,9 +52,12 @@ def guns_test():
         #draw the red circle
         red_circ.draw_circ(game_map)
         #draw rectangle
+        #print("made it to draw example rectangle")
         pygame.draw.rect(game_map.window,(100,100,0),example_rectangle)
-        update_bullets(bullet_dictionary)
-        draw_bullets(bullet_dictionary)
+        
+        update_bullets_for_guns_test(example_rectangle)
+        draw_bullets(game_map)
+        #print("made it to draw bullets")
         #update window
         game_map.update_visual()
     pygame.quit()

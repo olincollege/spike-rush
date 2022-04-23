@@ -100,14 +100,14 @@ class player_test_controller():
 
 #global bc GLBOAL fsduckjscajkajsdajk; 
 
-#... would not recomend unglobaling
+#... would not recomend unglobaling. wait, not how global vars work, fixing
 
 #initialize an empty dictionary that will store all bullets
-global bullet_dictionary 
 bullet_dictionary = {}
 #initialize a counter for bullets
-global bullet_counter 
 bullet_counter = 0 
+#bullets to delete, fixes deleting during iteration issue
+bullet_delete_dictionary = {}
 
 #GUN
 class gun():
@@ -126,18 +126,24 @@ class gun():
         x_increment = (mouse_x -player_x)/norm_value
         y_increment = (mouse_y -player_y)/norm_value
 
-        bullet_start_x = self.player_x + math.floor(15*x_increment)
-        bullet_start_y = self.player_y + math.floor(15*y_increment)
+        bullet_start_x = player_x + math.floor(15*x_increment)
+        bullet_start_y = player_y + math.floor(15*y_increment)
         #create a new bullet and add it to the dictionary of bullets
+        global bullet_counter
         bullet_counter += 1
         new_bullet = bullet(bullet_start_x,bullet_start_y,x_increment,y_increment,self.damage)
-        bullet_dictionary[new_bullet.name].append(new_bullet)
+        
+        #print(new_bullet)
+        #print(new_bullet.name)
+        update_dict = {new_bullet.name:new_bullet}
+        #print(update_dict)
+        bullet_dictionary.update(update_dict)
 
 
 class bullet():
 
-    speed_per_tick = 3
-    bullet_width = 2
+    speed_per_tick = 7
+    bullet_width = 3
 
     def __init__(self, pos_x, pos_y,incr_x,incr_y,damage):
         
@@ -151,10 +157,12 @@ class bullet():
         #make a visualizable and moveable rectangle for the bullet
 
         #rectangle is gonna be invisible until it isn't
-        self.bullet_rectangle = pygame.rect(self.pos_x - self.bullet_width/2, \
+        self.bullet_rectangle = pygame.Rect(self.pos_x - self.bullet_width/2, \
             self.pos_y + self.bullet_width/2,self.bullet_width,\
             self.bullet_width)
 
+        #print("made it to bullet creation")
+        global bullet_counter
         self.name = f"bullet_{bullet_counter}"
 
     #kind of update positions (but not really())
@@ -180,7 +188,11 @@ class bullet():
     
     def delete_bullet(self):
         #delete a bullet from the list of bullets, might stop it from existing... probably
-        del bullet_dictionary[self.name]
+        global bullet_dictionary
+        global bullet_delete_dictionary
+
+        bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
+        print("made it to bullet deletion")
     
     #check if 2 rectangles are hitting each other. basic, doesn't need changing probably
     #we can do space partitioning outside of this class structure
@@ -188,10 +200,11 @@ class bullet():
         #wall rectangle is a RECTANGLE OBJECT WOW *sparkles
 
         if pygame.Rect.colliderect(self.bullet_rectangle,wall_rectangle) == True:
+            print("collision detected")
             return True
         else:
             return False
-    def bullet_main(self, delete_check_list=None):
+    def bullet_main(self, delete_check_list=[]):
         #the main things a bullet does each frame. crazy
         #delete_check_list is a list of walls to check collision with for every bullet
         #delete_check list should be generated elsewhere, probably in the main loop 
@@ -202,7 +215,7 @@ class bullet():
             if self.check_basic_collision(collide_possible):
                 #check to make sure that deleting a key value pair from a dictionary
                 #you're iterating through doesn't mess everything up
-                self.delete_bullet
+                self.delete_bullet()
                 #if theres a player, damage them, again this should be done through
                 #a controller, but we're testing rn so whatever.
                 if type(collide_possible) is player_test:
@@ -219,15 +232,27 @@ class bullet():
 
 #the following functions should be used for updating bullet states
 
-def update_bullets(dictionary_bullets):
-    for bullet in dictionary_bullets.values():
+def update_bullets():
+    global bullet_dictionary
+    for bullet in bullet_dictionary.values():
         bullet.bullet_main()
 
+def update_bullets_for_guns_test(rectangle_object):
+    global bullet_dictionary
+    global bullet_delete_dictionary
+    for bullet in bullet_dictionary.values():
+        bullet.bullet_main([rectangle_object])
+    for bullet_name in bullet_delete_dictionary.keys():
+        
+        del bullet_dictionary[bullet_name]
+    bullet_delete_dictionary.clear()
+    
 
 #vizualize all bullets from the dictionary
-def draw_bullets(dictionary_bullets):
-    for bullet in dictionary_bullets.values():
-        bullet.draw_bullet()
+def draw_bullets(game_map):
+    global bullet_dictionary
+    for bullet in bullet_dictionary.values():
+        bullet.draw_bullet(game_map)
 
 
 
