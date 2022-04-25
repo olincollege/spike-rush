@@ -10,7 +10,7 @@ def guns_test():
     #initialize our map
     game_map = spike_map()
 
-    the_gun = gun(50,50)
+    the_gun = gun()
     red_circ = player_test(100,50,12,the_gun)
     red_circ_controller = player_test_controller(red_circ)
 
@@ -25,6 +25,11 @@ def guns_test():
     #rectangle test
     example_rectangle = pygame.Rect(600,200,60,60)
     
+    top_rect = pygame.Rect(0,0,1500,3)
+    bottom_rect = pygame.Rect(0,497,1500,3)
+    left_rect = pygame.Rect(0,0,3,500)
+    right_rect = pygame.Rect(1497,0,3,500)
+    collision_checks = [example_rectangle,bottom_rect,left_rect,top_rect,right_rect]
     run = True
     
     print("made it to run loop")
@@ -33,6 +38,7 @@ def guns_test():
         clock.tick(60)
 
         #quit the game if needed
+        red_circ_controller.check_still_shooting()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -53,9 +59,12 @@ def guns_test():
         red_circ.draw_circ(game_map)
         #draw rectangle
         #print("made it to draw example rectangle")
-        pygame.draw.rect(game_map.window,(100,100,0),example_rectangle)
         
-        update_bullets_for_guns_test(example_rectangle)
+        
+        for rectangle in collision_checks:
+            pygame.draw.rect(game_map.window,(0,150,0),rectangle)
+
+        update_bullets_for_guns_test(collision_checks)
         draw_bullets(game_map)
         #print("made it to draw bullets")
         #update window

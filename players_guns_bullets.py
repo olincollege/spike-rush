@@ -16,7 +16,7 @@ class player_test():
 
     frames_since_last_shot = 0
     is_shooting = False
-    gun = "classic"
+    gun_name = "classic"
 
     def __init__(self,x_init,y_init,radius,gun):
         self.xpos = x_init
@@ -72,22 +72,31 @@ class player_test_controller():
 
     def check_shoot(self,event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_presses = pygame.mouse.get_pressed()
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            if mouse_presses[0] and self.player.frames_since_last_shot >= \
+            if event.button ==1 and self.player.frames_since_last_shot >= \
                 self.player.gun.frames_before_shot:
                 self.player.gun.shoot(self.player.xpos,self.player.ypos,mouse_x,mouse_y)
                 #if this is true, activate automatic fire
                 if self.player.gun.automatic:
                     self.player.is_shooting = True
+                    print("auto shoot on")
                 self.player.frames_since_last_shot = 0
+                self.player.gun.consecutive_bullets = 1
         
         #stop automatic fire
         if event.type == pygame.MOUSEBUTTONUP:
-            self.player.is_shooting = False
+
+            mouse_presses = pygame.mouse.get_pressed()
+            if not mouse_presses[0]:
+                self.player.is_shooting = False
+                print("auto shoot stop")
         
         #for automatic fire
+        self.player.frames_since_last_shot += 1
+    def check_still_shooting(self):
+        #print(self.player.is_shooting)
+        #print(self.player.frames_since_last_shot - self.player.gun.frames_before_shot)
         if self.player.is_shooting and self.player.frames_since_last_shot >= \
             self.player.gun.frames_before_shot:
             mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -97,10 +106,9 @@ class player_test_controller():
             #update consecutive bullet count, for calculating spread,
             #only do for automatic fire
             self.player.gun.consecutive_bullets += 1
-
-
-        self.player.frames_since_last_shot += 1
-        
+            print("auto shot done")
+        elif not self.player.is_shooting:
+            self.player.gun.consecutive_bullets = 0
 
 
     #if a key is unpressed stop motion
@@ -139,10 +147,10 @@ bullet_delete_dictionary = {}
 class gun():
     #gun should have name and defined damage value
     damage = 2
-    max_spread = 3
+    max_spread = .6
     min_spread = 0
     shots_for_full_spread = 7
-    frames_before_shot = 2
+    frames_before_shot = 15
     automatic = True
 
     #the consecutive number of bullets automatically fire(for calculating spread)
@@ -152,9 +160,8 @@ class gun():
     #upon further consideration, it doesn't make much sense to keep track of these things
     #if we're not updating the gun's position as we go, we should probably implement that tho
 
-    def __init__(self,x_pos,y_pos):
-        self.player_x =x_pos
-        self.player_y = y_pos
+    def __init__(self):
+        self.automatic = True
     
     def shoot(self,player_x,player_y,mouse_x,mouse_y):
         #defining bullet heading
@@ -165,6 +172,7 @@ class gun():
         #doing spread
         perp_vector = [-y_increment,x_increment]
         
+        print(f"consec bullets: {self.consecutive_bullets}")
         #account for 0 division
         if self.shots_for_full_spread != 0:
             this_bullet_max_spread = self.max_spread*self.consecutive_bullets/self.shots_for_full_spread
@@ -172,11 +180,11 @@ class gun():
             this_bullet_max_spread = self.max_spread
         spread_factor = randint(self.min_spread,math.ceil(this_bullet_max_spread))
 
-        actual_spread_x = perp_vector[0] * spread_factor
-        actual_spread_y = perp_vector[0] * spread_factor
+        actual_spread_x = perp_vector[0] * spread_factor * (-1)**(randint(0,1))
+        actual_spread_y = perp_vector[1] * spread_factor * (-1)**(randint(0,1))
 
-        x_increment += actual_spread_x
-        y_increment += actual_spread_y
+        x_increment += actual_spread_x/10
+        y_increment += actual_spread_y/10
 
         bullet_start_x = player_x + math.floor(15*x_increment)
         bullet_start_y = player_y + math.floor(15*y_increment)
@@ -194,8 +202,9 @@ class gun():
 
 class bullet():
 
-    speed_per_tick = 7
-    bullet_width = 3
+    speed_per_tick = 15
+    #number needs to be even
+    bullet_width = 4
 
     def __init__(self, pos_x, pos_y,incr_x,incr_y,damage):
         
@@ -208,6 +217,9 @@ class bullet():
         self.damage = damage
         #make a visualizable and moveable rectangle for the bullet
 
+        self.delta_x = math.floor(self.incr_x * self.speed_per_tick)
+        self.delta_y = math.floor(self.incr_y * self.speed_per_tick)
+
         #rectangle is gonna be invisible until it isn't
         self.bullet_rectangle = pygame.Rect(self.pos_x - self.bullet_width/2, \
             self.pos_y + self.bullet_width/2,self.bullet_width,\
@@ -217,22 +229,14 @@ class bullet():
         global bullet_counter
         self.name = f"bullet_{bullet_counter}"
 
-    #kind of update positions (but not really())
-    def bullet_move(self):
-        #to be done in 1/60 of a second
-        #floor because why the hell would you move by half a pixel
-        delta_x = math.floor(self.incr_x * self.speed_per_tick)
-        delta_y = math.floor(self.incr_y * self.speed_per_tick)
-        #set the things. RECTANGLE
-        self.update_position(delta_x,delta_y)
     
     #update positions
-    def update_position(self,delta_x,delta_y):
+    def update_position(self):
 
-        self.pos_x += delta_x
-        self.pos_y += delta_y
+        self.pos_x += self.delta_x
+        self.pos_y += self.delta_y
         #move the rectangle
-        self.bullet_rectangle = pygame.Rect.move(self.bullet_rectangle,delta_x,delta_y)
+        self.bullet_rectangle = pygame.Rect.move(self.bullet_rectangle,self.delta_x,self.delta_y)
     
     def draw_bullet(self,game_map):
         #surface,color,rectangle
@@ -244,7 +248,7 @@ class bullet():
         global bullet_delete_dictionary
 
         bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
-        print("made it to bullet deletion")
+        #print("made it to bullet deletion")
     
     #check if 2 rectangles are hitting each other. basic, doesn't need changing probably
     #we can do space partitioning outside of this class structure
@@ -252,7 +256,7 @@ class bullet():
         #wall rectangle is a RECTANGLE OBJECT WOW *sparkles
 
         if pygame.Rect.colliderect(self.bullet_rectangle,wall_rectangle) == True:
-            print("collision detected")
+            #print("collision detected")
             return True
         else:
             return False
@@ -262,7 +266,7 @@ class bullet():
         #delete_check list should be generated elsewhere, probably in the main loop 
         #with another function.
 
-        self.bullet_move()
+        self.update_position()
         for collide_possible in delete_check_list:
             if self.check_basic_collision(collide_possible):
                 #check to make sure that deleting a key value pair from a dictionary
@@ -289,11 +293,11 @@ def update_bullets():
     for bullet in bullet_dictionary.values():
         bullet.bullet_main()
 
-def update_bullets_for_guns_test(rectangle_object):
+def update_bullets_for_guns_test(rectangle_object_list):
     global bullet_dictionary
     global bullet_delete_dictionary
     for bullet in bullet_dictionary.values():
-        bullet.bullet_main([rectangle_object])
+        bullet.bullet_main(rectangle_object_list)
     #actually delete the bullet
     for bullet_name in bullet_delete_dictionary.keys():
         
