@@ -1,7 +1,5 @@
 import math
 import pygame
-from pyparsing import match_previous_expr
-
 #don't wworryy about this
 class player_test():
 
@@ -102,6 +100,7 @@ class player_test_controller():
 
 #... would not recomend unglobaling. wait, not how global vars work, fixing
 
+#fixed, these 3 things should always be referred to as global
 #initialize an empty dictionary that will store all bullets
 bullet_dictionary = {}
 #initialize a counter for bullets
@@ -242,6 +241,7 @@ def update_bullets_for_guns_test(rectangle_object):
     global bullet_delete_dictionary
     for bullet in bullet_dictionary.values():
         bullet.bullet_main([rectangle_object])
+    #actually delete the bullet
     for bullet_name in bullet_delete_dictionary.keys():
         
         del bullet_dictionary[bullet_name]
