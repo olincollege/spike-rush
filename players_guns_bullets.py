@@ -106,7 +106,7 @@ class player_test_controller():
             #update consecutive bullet count, for calculating spread,
             #only do for automatic fire
             self.player.gun.consecutive_bullets += 1
-            print("auto shot done")
+            #print("auto shot")
         elif not self.player.is_shooting:
             self.player.gun.consecutive_bullets = 0
 
@@ -147,7 +147,8 @@ bullet_delete_dictionary = {}
 class gun():
     #gun should have name and defined damage value
     damage = 2
-    max_spread = .6
+
+    max_spread = 4
     min_spread = 0
     shots_for_full_spread = 7
     frames_before_shot = 15
@@ -164,6 +165,8 @@ class gun():
         self.automatic = True
     
     def shoot(self,player_x,player_y,mouse_x,mouse_y):
+        
+        
         #defining bullet heading
         norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
         x_increment = (mouse_x -player_x)/norm_value
@@ -183,8 +186,8 @@ class gun():
         actual_spread_x = perp_vector[0] * spread_factor * (-1)**(randint(0,1))
         actual_spread_y = perp_vector[1] * spread_factor * (-1)**(randint(0,1))
 
-        x_increment += actual_spread_x/10
-        y_increment += actual_spread_y/10
+        x_increment += actual_spread_x/100
+        y_increment += actual_spread_y/100
 
         bullet_start_x = player_x + math.floor(15*x_increment)
         bullet_start_y = player_y + math.floor(15*y_increment)
@@ -217,8 +220,8 @@ class bullet():
         self.damage = damage
         #make a visualizable and moveable rectangle for the bullet
 
-        self.delta_x = math.floor(self.incr_x * self.speed_per_tick)
-        self.delta_y = math.floor(self.incr_y * self.speed_per_tick)
+        self.delta_x = self.incr_x * self.speed_per_tick
+        self.delta_y = self.incr_y * self.speed_per_tick
 
         #rectangle is gonna be invisible until it isn't
         self.bullet_rectangle = pygame.Rect(self.pos_x - self.bullet_width/2, \
@@ -236,7 +239,9 @@ class bullet():
         self.pos_x += self.delta_x
         self.pos_y += self.delta_y
         #move the rectangle
-        self.bullet_rectangle = pygame.Rect.move(self.bullet_rectangle,self.delta_x,self.delta_y)
+        self.bullet_rectangle = pygame.Rect(math.floor(self.pos_x - self.bullet_width/2), \
+            math.floor(self.pos_y + self.bullet_width/2),self.bullet_width,\
+            self.bullet_width)
     
     def draw_bullet(self,game_map):
         #surface,color,rectangle
