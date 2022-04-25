@@ -1,4 +1,5 @@
 import math
+from random import randint, randrange
 import pygame
 #don't wworryy about this
 class player_test():
@@ -13,6 +14,8 @@ class player_test():
     xstate = 0
     ystate = 0
 
+    frames_since_last_shot = 0
+    is_shooting = False
     gun = "classic"
 
     def __init__(self,x_init,y_init,radius,gun):
@@ -72,8 +75,32 @@ class player_test_controller():
             mouse_presses = pygame.mouse.get_pressed()
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            if mouse_presses[0]:
+            if mouse_presses[0] and self.player.frames_since_last_shot >= \
+                self.player.gun.frames_before_shot:
                 self.player.gun.shoot(self.player.xpos,self.player.ypos,mouse_x,mouse_y)
+                #if this is true, activate automatic fire
+                if self.player.gun.automatic:
+                    self.player.is_shooting = True
+                self.player.frames_since_last_shot = 0
+        
+        #stop automatic fire
+        if event.type == pygame.MOUSEBUTTONUP:
+            self.player.is_shooting = False
+        
+        #for automatic fire
+        if self.player.is_shooting and self.player.frames_since_last_shot >= \
+            self.player.gun.frames_before_shot:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.player.gun.shoot(self.player.xpos,self.player.ypos,mouse_x,mouse_y)
+            self.player.frames_since_last_shot = 0
+
+            #update consecutive bullet count, for calculating spread,
+            #only do for automatic fire
+            self.player.gun.consecutive_bullets += 1
+
+
+        self.player.frames_since_last_shot += 1
+        
 
 
     #if a key is unpressed stop motion
@@ -112,6 +139,16 @@ bullet_delete_dictionary = {}
 class gun():
     #gun should have name and defined damage value
     damage = 2
+    max_spread = 3
+    min_spread = 0
+    shots_for_full_spread = 7
+    frames_before_shot = 2
+    automatic = True
+
+    #the consecutive number of bullets automatically fire(for calculating spread)
+    consecutive_bullets = 0
+
+
     #upon further consideration, it doesn't make much sense to keep track of these things
     #if we're not updating the gun's position as we go, we should probably implement that tho
 
@@ -124,6 +161,22 @@ class gun():
         norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
         x_increment = (mouse_x -player_x)/norm_value
         y_increment = (mouse_y -player_y)/norm_value
+
+        #doing spread
+        perp_vector = [-y_increment,x_increment]
+        
+        #account for 0 division
+        if self.shots_for_full_spread != 0:
+            this_bullet_max_spread = self.max_spread*self.consecutive_bullets/self.shots_for_full_spread
+        else:
+            this_bullet_max_spread = self.max_spread
+        spread_factor = randint(self.min_spread,math.ceil(this_bullet_max_spread))
+
+        actual_spread_x = perp_vector[0] * spread_factor
+        actual_spread_y = perp_vector[0] * spread_factor
+
+        x_increment += actual_spread_x
+        y_increment += actual_spread_y
 
         bullet_start_x = player_x + math.floor(15*x_increment)
         bullet_start_y = player_y + math.floor(15*y_increment)
