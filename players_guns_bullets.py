@@ -15,8 +15,12 @@ class player_test():
     ystate = 0
 
     frames_since_last_shot = 0
+    frames_since_reload = 0
+
     is_shooting = False
+    is_reloading = False
     gun_name = "classic"
+
 
     def __init__(self,x_init,y_init,radius,gun):
         self.xpos = x_init
@@ -71,11 +75,27 @@ class player_test_controller():
             self.player.xstate = -1
 
     def check_shoot(self,event):
+
+        #if reloading, don't fire
+
+        if self.player.frames_since_reload < self.player.gun.frames_for_reload \
+            and self.player.is_reloading:
+            pass
+        elif self.player.is_reloading:
+            self.player.is_reloading = False
+
+
+
         if event.type == pygame.MOUSEBUTTONDOWN:
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
+            #left mouse button check, ammo check, frames before next shot check
             if event.button ==1 and self.player.frames_since_last_shot >= \
-                self.player.gun.frames_before_shot:
+                self.player.gun.frames_before_shot and self.player.gun.current_clip != 0:
+                #if no bullets, pass
+                
+
+                
                 self.player.gun.shoot(self.player.xpos,self.player.ypos,mouse_x,mouse_y)
                 #if this is true, activate automatic fire
                 if self.player.gun.automatic:
@@ -83,6 +103,9 @@ class player_test_controller():
                     print("auto shoot on")
                 self.player.frames_since_last_shot = 0
                 self.player.gun.consecutive_bullets = 1
+                
+                #for automatic fire
+                self.player.frames_since_last_shot += 1
         
         #stop automatic fire
         if event.type == pygame.MOUSEBUTTONUP:
@@ -92,13 +115,17 @@ class player_test_controller():
                 self.player.is_shooting = False
                 print("auto shoot stop")
         
-        #for automatic fire
-        self.player.frames_since_last_shot += 1
+
+    
     def check_still_shooting(self):
+        #if no bullets, pass
+
         #print(self.player.is_shooting)
         #print(self.player.frames_since_last_shot - self.player.gun.frames_before_shot)
+        
+        #check if automatic firing, check frame till next shot, check ammo
         if self.player.is_shooting and self.player.frames_since_last_shot >= \
-            self.player.gun.frames_before_shot:
+            self.player.gun.frames_before_shot and self.player.gun.current_clip != 0:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.player.gun.shoot(self.player.xpos,self.player.ypos,mouse_x,mouse_y)
             self.player.frames_since_last_shot = 0
@@ -130,6 +157,17 @@ class player_test_controller():
             self.player.update_pos(self.player.xstate *-self.move_incr,0)
         if self.player.ystate != 0:
             self.player.update_pos(0,self.player.ystate *-self.move_incr)
+    
+    def check_reload(self,event):
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == ord("r"):
+                #this could be any non 0 positive integer, will do the same thing
+                self.player.gun.update_clip(1)
+                self.player.is_reloading = True
+                self.player.frames_since_reload = 0
+
+
 
 #global bc GLBOAL fsduckjscajkajsdajk; 
 
@@ -148,7 +186,7 @@ class gun():
     #gun should have name and defined damage value
     damage = 2
 
-    max_spread = 4
+    max_spread = 40
     min_spread = 0
     shots_for_full_spread = 7
     frames_before_shot = 15
@@ -157,12 +195,36 @@ class gun():
     #the consecutive number of bullets automatically fire(for calculating spread)
     consecutive_bullets = 0
 
+    clip_size = 20
+    frames_for_reload = 120 # 2 seconds
+
+    current_clip = 20
+
 
     #upon further consideration, it doesn't make much sense to keep track of these things
     #if we're not updating the gun's position as we go, we should probably implement that tho
 
     def __init__(self):
         self.automatic = True
+
+    def update_clip(self,clip_update):
+        #function handles reloading and decreasing clip from shooting
+
+
+        #a negative integer means a shot has been fired, decrease clip
+        if clip_update <= 0:
+
+            self.current_clip += clip_update
+
+            #if clip is negative
+            if self.current_clip < 0:
+                self.current_clip = 0
+        #otherwise reload 
+        else:
+            self.current_clip = self.clip_size
+        
+
+
     
     def shoot(self,player_x,player_y,mouse_x,mouse_y):
         
@@ -186,8 +248,10 @@ class gun():
         actual_spread_x = perp_vector[0] * spread_factor * (-1)**(randint(0,1))
         actual_spread_y = perp_vector[1] * spread_factor * (-1)**(randint(0,1))
 
-        x_increment += actual_spread_x/100
-        y_increment += actual_spread_y/100
+        #if you increase this by a factor of 10, increase the max spread by a factor of 10 too
+        #basically will just allow you more spread angles :)
+        x_increment += actual_spread_x/1000
+        y_increment += actual_spread_y/1000
 
         bullet_start_x = player_x + math.floor(15*x_increment)
         bullet_start_y = player_y + math.floor(15*y_increment)
@@ -202,6 +266,8 @@ class gun():
         #print(update_dict)
         bullet_dictionary.update(update_dict)
 
+        #decrease clip size by 1
+        self.update_clip(-1)
 
 class bullet():
 

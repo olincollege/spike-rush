@@ -34,11 +34,21 @@ def guns_test():
     
     print("made it to run loop")
     while run:
+
+        print(red_circ_controller.player.gun.current_clip)
+
         #ensure won't go above 60 FPS
         clock.tick(60)
 
         #quit the game if needed
         red_circ_controller.check_still_shooting()
+
+
+        
+        red_circ_controller.player.frames_since_last_shot += 1
+        #blank for now but could be useful
+        #if pygame.event.get() is None:
+    
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -50,7 +60,11 @@ def guns_test():
                 red_circ_controller.stop_move(event)
             #print("made it to check shoot")
             red_circ_controller.check_shoot(event)
+            red_circ_controller.check_reload(event)
 
+        #this should probably be in a function
+        if red_circ_controller.player.is_reloading:
+            red_circ_controller.player.frames_since_reload += 1
 
         red_circ_controller.still_moving()
         #make screen white
