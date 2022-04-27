@@ -26,9 +26,46 @@ class character_model:
         """
         Spawn the character in the world.
         """
-        self.spawn = [100, 100]
-        self.position = [100, 100]  # set to spawn initially
-        self.movement_check = 0  # initially not moving
+        self._spawn = [100, 100]
+        self._position = [100, 100]  # set to spawn initially
+        self._movement_check = 0  # initially not moving
+
+# trying to use sprite module to represent a character
+
+
+class character_view(pygame.sprite.Sprite):
+    """
+    Displays the character on the map. Redraw the sprite when it moves.
+
+    Attributes:
+        _radius: A float representing the radius of the character.
+        _color: A list representing the RGB values of the character.
+    """
+
+    def __init__(self):
+        self._radius = 2.5
+        self._color = [255, 0, 0]  # red color
+
+    def draw(self, surface, position):
+        """
+        Draws the current location of the character on the map.
+
+        Arguments:
+            surface: The map for the character to be drawn on
+            position: a list representing the current coordinates of the
+            character.
+        """
+        # character is currently a circle
+        pygame.draw.circle(surface, self._color, position, self._radius)
+
+
+class character_controller:
+    """
+    Control the test character.
+    """
+    # create a controller to move character
+    # character should move smoothly with WASD
+    # have camera follow character?
 
     def move(self):
         """
@@ -36,33 +73,9 @@ class character_model:
         """
         pass
 
-
-class character_view:
-    """
-    Displays the character on the map. Redraw the sprite when it moves.
-
-    Attributes:
-        radius: A float representing the radius of the character.
-        color: A list representing the RGB values of the character.
-
-    """
-    pass
-
-
-class character_controller:
-    """
-    Control the test character.
-
-    Attributes:
-
-    """
-    pass
-    # create a controller to move character
-    # character should move smoothly with WASD
-    # have camera follow character?
-
-
 # test code down here
+
+
 def movement_test():
     """
     Tests movement code with a test character.
