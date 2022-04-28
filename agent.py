@@ -3,10 +3,12 @@ Docstring >:)
 """
 
 import pygame
+import os
 from regex import E
 from players_guns_bullets import *
 from game_map import *
 from abc import ABC, abstractmethod
+from spike import *
 
 class Agent:
     """
@@ -18,6 +20,8 @@ class Agent:
         self._gun = gun(x_init, y_init)
         self._speed = 10
         self._color = (192, 192, 192)   # Default circle is gray
+        self._spike = True # If spike is true, it has not yet been planted
+        self._sprite = None
 
         #self._character_token = []
         #self._abilities = []
@@ -41,7 +45,7 @@ class Agent:
         """
         return self._location
 
-    def move(self, x_position, y_position):
+    def set_location(self, x_position, y_position):
         """
         Go brr
         """
@@ -65,6 +69,16 @@ class Agent:
         # Pass until reload gun method is defined
         pass
 
+    def plant_spike(self):
+        # 4 seconds to plant
+        if self._spike: # add that it must be in a plant zone
+            # create new spike object @ current location
+            pass
+            
+    def defuse_spike(self, spike):
+        # 3.5 seconds to half; 7 seconds to defuse fully
+        spike.defuse()
+
     def pickup_orb(self):
         # Only implementing if time
         pass
@@ -78,9 +92,14 @@ class Brimstone(Agent):
     def __init__(self):
         self._name = "Brimstone"
         self._color = (185, 147, 104)
+        self._sprite = "" 
 
         # Generate character token
         # Gray circle
+
+    @property
+    def sprite(self):
+        return self._sprite
 
     def use_ultimate(self):
         # Region of the map that does ~39 dps, lasts 15s, 
@@ -95,10 +114,15 @@ class Phoenix(Agent):
 
     def __init__(self):
         self._name = "Phoenix"
+        self._sprite = ""
 
         # Generate character token
         # orange circle
     
+    @property
+    def sprite(self):
+        return self._sprite
+
     def use_ultimate(self):
         """
         Uses Phoenix's ultimate when the "X" key is pressed.
@@ -120,9 +144,14 @@ class Reyna(Agent):
 
     def __init__(self):
         self._name = "Reyna"
+        self._sprite = ""
 
         # Generate character token
         # Purple circle
+
+    @property
+    def sprite(self):
+        return self._sprite
 
     def use_ultimate(self):
         """
@@ -133,3 +162,33 @@ class Reyna(Agent):
         """
         pass
     
+class AgentView:
+    """
+    Displays an agent on the map.
+    """
+    def __init__(self, agent):
+        self._agent = agent
+        self._sprite = self._agent._sprite
+
+    def draw_agent(self, surface, position):
+        surface.blit(self._sprite, position)
+    
+
+class AgentController: 
+    """
+    Controls an agent on the map.
+    """
+
+    def __init__(self, agent):
+        self._agent = agent
+
+    def move(self):
+        pass
+
+    def reload(self):
+        # R key press
+        pass
+
+    def plant(self):
+        # Hold down 4
+        pass
