@@ -4,13 +4,14 @@ Run the game
 import pygame
 from players_guns_bullets import *
 from game_map import *
+import random
 
 def guns_test():
     pygame.init()
     #initialize our map
     game_map = spike_map()
 
-    the_gun = gun()
+    the_gun = random.choice(gun_list)
     red_circ = player_test(100,50,12,the_gun)
     red_circ_controller = player_test_controller(red_circ)
 
@@ -35,7 +36,7 @@ def guns_test():
     print("made it to run loop")
     while run:
 
-        print(red_circ_controller.player.gun.current_clip)
+        #print(red_circ_controller.player.gun.current_clip)
 
         #ensure won't go above 60 FPS
         clock.tick(60)
