@@ -80,7 +80,7 @@ class player_test_controller():
 
         if self.player.frames_since_reload < self.player.gun.frames_for_reload \
             and self.player.is_reloading:
-            pass
+            return
         elif self.player.is_reloading:
             self.player.is_reloading = False
 
@@ -100,7 +100,7 @@ class player_test_controller():
                 #if this is true, activate automatic fire
                 if self.player.gun.automatic:
                     self.player.is_shooting = True
-                    print("auto shoot on")
+                    #print("auto shoot on")
                 self.player.frames_since_last_shot = 0
                 self.player.gun.consecutive_bullets = 1
                 
@@ -113,7 +113,7 @@ class player_test_controller():
             mouse_presses = pygame.mouse.get_pressed()
             if not mouse_presses[0]:
                 self.player.is_shooting = False
-                print("auto shoot stop")
+                #print("auto shoot stop")
         
 
     
@@ -122,6 +122,13 @@ class player_test_controller():
 
         #print(self.player.is_shooting)
         #print(self.player.frames_since_last_shot - self.player.gun.frames_before_shot)
+        
+        if self.player.frames_since_reload < self.player.gun.frames_for_reload \
+            and self.player.is_reloading:
+            return
+        elif self.player.is_reloading:
+            self.player.is_reloading = False
+        
         
         #check if automatic firing, check frame till next shot, check ammo
         if self.player.is_shooting and self.player.frames_since_last_shot >= \
@@ -184,13 +191,12 @@ bullet_delete_dictionary = {}
 #GUN
 class gun():
     #gun should have name and defined damage value
-    damage = 2
+    damage = 20
 
     max_spread = 40
     min_spread = 0
     shots_for_full_spread = 7
     frames_before_shot = 15
-    automatic = True
 
     #the consecutive number of bullets automatically fire(for calculating spread)
     consecutive_bullets = 0
@@ -237,13 +243,17 @@ class gun():
         #doing spread
         perp_vector = [-y_increment,x_increment]
         
-        print(f"consec bullets: {self.consecutive_bullets}")
+        #print(f"consec bullets: {self.consecutive_bullets}")
         #account for 0 division
         if self.shots_for_full_spread != 0:
             this_bullet_max_spread = self.max_spread*self.consecutive_bullets/self.shots_for_full_spread
         else:
             this_bullet_max_spread = self.max_spread
-        spread_factor = randint(self.min_spread,math.ceil(this_bullet_max_spread))
+        print(self.min_spread)
+        print(math.ceil(this_bullet_max_spread))
+        spread_factor = self.min_spread
+        if self.min_spread < math.ceil(this_bullet_max_spread):
+            spread_factor = randint(self.min_spread,math.ceil(this_bullet_max_spread))
 
         actual_spread_x = perp_vector[0] * spread_factor * (-1)**(randint(0,1))
         actual_spread_y = perp_vector[1] * spread_factor * (-1)**(randint(0,1))
@@ -271,7 +281,7 @@ class gun():
 
 class bullet():
 
-    speed_per_tick = 15
+    speed_per_tick = 20
     #number needs to be even
     bullet_width = 4
 
@@ -383,6 +393,109 @@ def draw_bullets(game_map):
         bullet.draw_bullet(game_map)
 
 
+#defining general gun classes
+
+class classic(gun):
+    """
+    a gun that emulates the classic
+    """
+    damage = 22
+    max_spread = 50
+    min_spread = 0
+    shots_for_full_spread = 7
+    frames_before_shot = 10
+    
+    consecutive_bullets = 0
+    clip_size = 12
+    current_clip = 12
+    frames_for_reload = 105
+
+
+    def __init__(self):
+        self.automatic = False
+
+class spectre(gun):
+    """
+    a gun that emulates the classic
+    """
+    damage = 22
+    max_spread = 70
+    min_spread = 0
+    shots_for_full_spread = 9
+    frames_before_shot = 5
+    
+    consecutive_bullets = 0
+    clip_size = 30
+    current_clip = 30
+    frames_for_reload = 135
+
+
+    def __init__(self):
+        self.automatic = True
+
+class guardian(gun):
+    """
+    a gun that emulates the classic
+    """
+    damage = 65
+    max_spread = 40
+    min_spread = 0
+    shots_for_full_spread = 9
+    frames_before_shot = 10
+    
+    consecutive_bullets = 0
+    clip_size = 12
+    current_clip = 12
+    frames_for_reload = 135
+
+
+    def __init__(self):
+        self.automatic = False
+
+class vandal(gun):
+    """
+    a gun that emulates the classic
+    """
+    damage = 40
+    max_spread = 120
+    min_spread = 10
+    shots_for_full_spread = 8
+    frames_before_shot = 6
+    
+    consecutive_bullets = 0
+    clip_size = 25
+    current_clip = 25
+    frames_for_reload = 150
+
+    def __init__(self):
+        self.automatic = True
+
+#this one is special. ill get to it later
+class operator(gun):
+    """
+    a gun that emulates the operator
+    
+    have to put in alt fire before this + other stuff
+    
+    """
+    damage = 150
+    max_spread = 40
+    min_spread = 0
+    shots_for_full_spread = 9
+    frames_before_shot = 80
+    
+    consecutive_bullets = 0
+    clip_size = 5
+    current_clip = 5
+    frames_for_reload = 222
+
+
+    def __init__(self):
+        self.automatic = False
+    
+    pass
+
+gun_list =[classic(),spectre(),guardian(),vandal()]
 
 
 
