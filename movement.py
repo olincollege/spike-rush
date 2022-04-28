@@ -52,7 +52,7 @@ class character_view(pygame.sprite.Sprite):
         # currently only using one image, scaling size down
         self._sprite = \
             pygame.transform.scale(pygame.image.load(os.path.join(
-                'sprites', 'test_sprite.png')).convert_alpha(), (75, 75))
+                'sprites', 'test_sprite.png')).convert_alpha(), (50, 50))
 
     def draw_sprite(self, surface, position):
         """
@@ -72,7 +72,6 @@ class character_controller:
 
     Attributes:
         character = Attributes from the character_model class.
-        keys = A list containing possible key press options
     """
     # create a controller to move character
     # character should move smoothly with WASD
@@ -80,77 +79,26 @@ class character_controller:
 
     def __init__(self, character):
         self.character = character  # from character_model
-        # two elements to track arrow and WASD inputs
-        self._key_status = [0, 0, 0, 0]  # up, down, left, right respectively
 
-    def key_track(self, event):
+    def move(self, speed, keys):
         """
-        Tracks which movement keys are pressed on each frame. Takes in an event
-        and tracks whether the event is raising or lowering a key.
-
-        Arguments:
-            event: An event representing a player input.
-        """
-
-        if event.type == pygame.KEYDOWN:
-            # left key
-            if event.key == pygame.K_LEFT or event.key == ord('a'):
-                self._key_status[2] = 1
-                print('left is pressed')
-            # right key
-            if event.key == pygame.K_RIGHT or event.key == ord('d'):
-                self._key_status[3] = 1
-                print('right is pressed')
-            # up key
-            if event.key == pygame.K_UP or event.key == ord('w'):
-                self._key_status[0] = 1
-                print('up is pressed')
-            # down key
-            if event.key == pygame.K_DOWN or event.key == ord('s'):
-                self._key_status[1] = 1
-                print('down is pressed')
-
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == ord('a'):
-                self._key_status[2] = 0
-                print('left is not pressed')
-            if event.key == pygame.K_RIGHT or event.key == ord('d'):
-                self._key_status[3] = 0
-                print('right is not pressed')
-            if event.key == pygame.K_UP or event.key == ord('w'):
-                self._key_status[0] = 0
-                print('up is not pressed')
-            if event.key == pygame.K_DOWN or event.key == ord('s'):
-                self._key_status[1] = 0
-                print('down is not pressed')
-
-    def move(self, speed):
-        """
-        Moves the character through the map. Takes a keypress and returns the
-        corresponding direction.
+        Moves the character through the map. Detects pressed keys and moves
+        the character correspondingly.
 
         Attributes:
             speed: An integer representing the number of pixels a character
             moves per frame.
+            keys: A list containing which keys are currently pressed.
         """
         # searches for arrow keys and WASD
-        if self._key_status[0] == 1:  # up
+        if keys[pygame.K_UP] or keys[pygame.K_w]:  # up
             self.character.position[1] -= speed
-        if self._key_status[1] == 1:  # down
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:  # down
             self.character.position[1] += speed
-        if self._key_status[2] == 1:  # left
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # left
             self.character.position[0] -= speed
-        if self._key_status[3] == 1:  # right
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # right
             self.character.position[0] += speed
-
-    def stop_move(self, event):
-        """
-        Stops a character's movement, given a key release.
-
-        Attributes:
-            event: An event representing a player input.
-        """
-        pass
 
 
 # test code down here
@@ -163,7 +111,7 @@ def movement_test():
     pygame.init()  # initialize pygame
     map = spike_map()  # initialize map
     clock = pygame.time.Clock()  # to keep track of time in-game
-    character_speed = 20
+    character_speed = 10
 
     # create instances of classes
     character = character_model()  # include parentheses when creating instance
@@ -173,25 +121,24 @@ def movement_test():
     # main loop
     run = True
     while run:
+
         # sense inputs (get events)
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 run = False
-            controller.key_track(event)
-            # if event.type == pygame.KEYDOWN:  # check for a keypress
-            # check which key it is
 
-            # currently assuming all keypresses are movement related
-            controller.move(character_speed)
-            # if event.type == pygame.KEYUP:
-            #    controller.stop_move(event)
-            # update states
-            # create entities
-            # detect interactions
+        # update states
+        # create entities
+        # detect interactions
+
+        # movement
+        # check which keys are currently pressed
+        keys = pygame.key.get_pressed()
+        controller.move(character_speed, keys)
 
         # update stuff
         map.fill_screen((120, 120, 120))  # make screen grey
-        view.draw_sprite(map.window, character.position)
+        view.draw_sprite(map.window, character.position)  # draw character
         pygame.display.flip()  # update entire display
         clock.tick(60)  # advance time, run game at 60 FPS
 
