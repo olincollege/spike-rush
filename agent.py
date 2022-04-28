@@ -20,7 +20,7 @@ class Agent:
         self._gun = gun(x_init, y_init)
         self._speed = 10
         self._color = (192, 192, 192)   # Default circle is gray
-        self._spike = 1 # If spike is 1, it has not yet been planted
+        self._spike = True # If spike is true, it has not yet been planted
         self._sprite = None
 
         #self._character_token = []
@@ -71,11 +71,10 @@ class Agent:
 
     def plant_spike(self):
         # 4 seconds to plant
-        if self._spike == 1: # add that it must be in a plant zone
+        if self._spike: # add that it must be in a plant zone
             # create new spike object @ current location
             pass
             
-
     def defuse_spike(self, spike):
         # 3.5 seconds to half; 7 seconds to defuse fully
         spike.defuse()
@@ -184,4 +183,12 @@ class AgentController:
         self._agent = agent
 
     def move(self):
+        pass
+
+    def reload(self):
+        # R key press
+        pass
+
+    def plant(self):
+        # Hold down 4
         pass

@@ -9,20 +9,20 @@ class Spike:
     """
     def __init__(self, x_loc, y_loc):
         self._location = [x_loc, y_loc]
-        self._status = 0    # 0 means planted, 1 means defused
+        self._status = False    # False means planted, True means defused
         self._timer = 45    # 45 seconds until spike go boom
     
     def countdown(self):
-        if self._status == 0:
+        if self._status == False:
             # Start subtracting from timer at each second
             # If timer hits 0, go boom
             pass
     
     def blowup(self):
-        if self._status == 0 and self._timer == 0:
+        if self._status == False and self._timer == 0:
             pass
 
     def defuse(self):
-        self._status = 1
+        self._status = True
 
 

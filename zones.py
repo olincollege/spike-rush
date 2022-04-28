@@ -11,12 +11,15 @@ class Zone:
     """
 
     def __init__(self, x_0, y_0, x_dim, y_dim):
-        self._top_left = [x_0, y_0]
+        self._color = (180, 180, 180) # random test color
+        self._top = x_0
+        self._left = y_0
         self._width = x_dim
         self._height = y_dim
 
-    def initialize_zone(self):
-        pass
+    def initialize_zone(self, surface):
+        pygame.draw.rect(surface, self._color,
+            pygame.Rect(self._top, self._left, self._width, self._height))
 
     def in_zone(self, agent):
         if agent.location[0] < self._width:
@@ -36,4 +39,11 @@ class DamageZone(Zone):
     """
     Zone where players take damage
     """
-    
+
+    def damage_agents(self, agents):
+        """
+        agents = list of all agents currently in the game
+        """
+        for agent in agents:
+            # temporary health loss only 10 dmg
+            agent.update_health(agent.health-10)
