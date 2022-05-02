@@ -8,6 +8,7 @@ import os
 # import test map
 # test map dimensions: 1500 x 500 pixels
 from test_map import test_map
+from spike_map import split_model, split_view
 
 
 # Starting with creating a test character to test movement
@@ -27,8 +28,8 @@ class character_model:
         """
         Spawn the character in the world.
         """
-        self._spawn = [100, 100]
-        self.position = [100, 100]  # set to spawn initially
+        self._spawn = [500, 500]
+        self.position = self._spawn  # set to spawn initially
         self._movement_check = 0  # initially not moving
         self._frame = 0  # count frames
 
@@ -109,7 +110,8 @@ def movement_test():
     Tests movement code with a test character.
     """
     pygame.init()  # initialize pygame
-    map = test_map()  # initialize map
+    map_model = split_model()
+    map_view = split_view(map_model)  # initialize map
     clock = pygame.time.Clock()  # to keep track of time in-game
     character_speed = 10
 
@@ -137,8 +139,9 @@ def movement_test():
         controller.move(character_speed, keys)
 
         # update stuff
-        map.fill_screen((120, 120, 120))  # make screen grey
-        view.draw_sprite(map.window, character.position)  # draw character
+        map_view.display_map([120, 120, 120])  # make screen grey
+        # draw character
+        view.draw_sprite(map_view._window, character.position)
         pygame.display.flip()  # update entire display
         clock.tick(60)  # advance time, run game at 60 FPS
 

@@ -17,7 +17,6 @@ class split_model:
 
     def __init__(self):
         self._map_dimensions = [1920, 1080]
-    pass
 
 
 class split_view:
@@ -25,6 +24,19 @@ class split_view:
     Displays the Split map on the pygame window.
 
     Attributes:
-
+        model = Attributes from the split_model class.
+        _window = The game window the map is drawn to.
     """
-    pass
+
+    def __init__(self, model):
+        self.model = model  # from split_model
+        self._window = pygame.display.set_mode(model._map_dimensions)
+
+    def display_map(self, color):
+        """
+        Redraws the map.
+
+        Attributes:
+            color: A list containing the integer RGB values of the map.
+        """
+        self._window.fill(color)
