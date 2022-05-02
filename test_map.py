@@ -1,5 +1,5 @@
 """
-The map for the game
+Creating a test map for game elements
 """
 
 from bitarray import test
