@@ -7,7 +7,7 @@ import os
 
 # import test map
 # test map dimensions: 1500 x 500 pixels
-from game_map import spike_map
+from test_map import test_map
 
 
 # Starting with creating a test character to test movement
@@ -109,7 +109,7 @@ def movement_test():
     Tests movement code with a test character.
     """
     pygame.init()  # initialize pygame
-    map = spike_map()  # initialize map
+    map = test_map()  # initialize map
     clock = pygame.time.Clock()  # to keep track of time in-game
     character_speed = 10
 
