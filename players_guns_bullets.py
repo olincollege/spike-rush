@@ -1,6 +1,8 @@
 import math
 from random import randint, randrange
 import pygame
+from run_game import frame_rate
+
 #don't wworryy about this
 class player_test():
 
@@ -19,7 +21,6 @@ class player_test():
 
     is_shooting = False
     is_reloading = False
-    gun_name = "classic"
 
 
     def __init__(self,x_init,y_init,radius,gun):
@@ -85,7 +86,6 @@ class player_test_controller():
             self.player.is_reloading = False
 
 
-
         if event.type == pygame.MOUSEBUTTONDOWN:
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -100,7 +100,7 @@ class player_test_controller():
                 #if this is true, activate automatic fire
                 if self.player.gun.automatic:
                     self.player.is_shooting = True
-                    #print("auto shoot on")
+
                 self.player.frames_since_last_shot = 0
                 self.player.gun.consecutive_bullets = 1
                 
@@ -113,21 +113,19 @@ class player_test_controller():
             mouse_presses = pygame.mouse.get_pressed()
             if not mouse_presses[0]:
                 self.player.is_shooting = False
-                #print("auto shoot stop")
         
 
     
     def check_still_shooting(self):
         #if no bullets, pass
 
-        #print(self.player.is_shooting)
-        #print(self.player.frames_since_last_shot - self.player.gun.frames_before_shot)
-        
         if self.player.frames_since_reload < self.player.gun.frames_for_reload \
             and self.player.is_reloading:
             return
         elif self.player.is_reloading:
             self.player.is_reloading = False
+            print("reloaded")
+            print(self.player.gun.current_clip)
         
         
         #check if automatic firing, check frame till next shot, check ammo
@@ -140,7 +138,6 @@ class player_test_controller():
             #update consecutive bullet count, for calculating spread,
             #only do for automatic fire
             self.player.gun.consecutive_bullets += 1
-            #print("auto shot")
         elif not self.player.is_shooting:
             self.player.gun.consecutive_bullets = 0
 
@@ -173,6 +170,7 @@ class player_test_controller():
                 self.player.gun.update_clip(1)
                 self.player.is_reloading = True
                 self.player.frames_since_reload = 0
+                print("start reload")
 
 
 
@@ -193,16 +191,16 @@ class gun():
     #gun should have name and defined damage value
     damage = 20
 
-    max_spread = 40
+    max_spread = math.ceil(frame_rate * 40/60)
     min_spread = 0
     shots_for_full_spread = 7
-    frames_before_shot = 15
+    frames_before_shot = math.ceil(frame_rate*15/60)
 
     #the consecutive number of bullets automatically fire(for calculating spread)
     consecutive_bullets = 0
 
     clip_size = 20
-    frames_for_reload = 120 # 2 seconds
+    frames_for_reload = math.ceil(frame_rate*120/60) # 2 seconds
 
     current_clip = 20
 
@@ -243,14 +241,11 @@ class gun():
         #doing spread
         perp_vector = [-y_increment,x_increment]
         
-        #print(f"consec bullets: {self.consecutive_bullets}")
         #account for 0 division
         if self.shots_for_full_spread != 0:
             this_bullet_max_spread = self.max_spread*self.consecutive_bullets/self.shots_for_full_spread
         else:
             this_bullet_max_spread = self.max_spread
-        print(self.min_spread)
-        print(math.ceil(this_bullet_max_spread))
         spread_factor = self.min_spread
         if self.min_spread < math.ceil(this_bullet_max_spread):
             spread_factor = randint(self.min_spread,math.ceil(this_bullet_max_spread))
@@ -269,11 +264,9 @@ class gun():
         global bullet_counter
         bullet_counter += 1
         new_bullet = bullet(bullet_start_x,bullet_start_y,x_increment,y_increment,self.damage)
-        
-        #print(new_bullet)
-        #print(new_bullet.name)
+
         update_dict = {new_bullet.name:new_bullet}
-        #print(update_dict)
+
         bullet_dictionary.update(update_dict)
 
         #decrease clip size by 1
@@ -281,9 +274,9 @@ class gun():
 
 class bullet():
 
-    speed_per_tick = 20
+    speed_per_tick = math.ceil(frame_rate *20/60)
     #number needs to be even
-    bullet_width = 4
+    bullet_width = 6
 
     def __init__(self, pos_x, pos_y,incr_x,incr_y,damage):
         
@@ -304,7 +297,6 @@ class bullet():
             self.pos_y + self.bullet_width/2,self.bullet_width,\
             self.bullet_width)
 
-        #print("made it to bullet creation")
         global bullet_counter
         self.name = f"bullet_{bullet_counter}"
 
@@ -329,7 +321,6 @@ class bullet():
         global bullet_delete_dictionary
 
         bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
-        #print("made it to bullet deletion")
     
     #check if 2 rectangles are hitting each other. basic, doesn't need changing probably
     #we can do space partitioning outside of this class structure
@@ -337,7 +328,6 @@ class bullet():
         #wall rectangle is a RECTANGLE OBJECT WOW *sparkles
 
         if pygame.Rect.colliderect(self.bullet_rectangle,wall_rectangle) == True:
-            #print("collision detected")
             return True
         else:
             return False
@@ -400,15 +390,15 @@ class classic(gun):
     a gun that emulates the classic
     """
     damage = 22
-    max_spread = 50
+    max_spread = math.ceil(frame_rate * 50/60)
     min_spread = 0
     shots_for_full_spread = 7
-    frames_before_shot = 10
+    frames_before_shot = math.ceil(frame_rate*10/60)
     
     consecutive_bullets = 0
     clip_size = 12
     current_clip = 12
-    frames_for_reload = 105
+    frames_for_reload = math.ceil(frame_rate*105/60)
 
 
     def __init__(self):
@@ -419,15 +409,15 @@ class spectre(gun):
     a gun that emulates the classic
     """
     damage = 22
-    max_spread = 70
+    max_spread = math.ceil(frame_rate*70/60)
     min_spread = 0
     shots_for_full_spread = 9
-    frames_before_shot = 5
+    frames_before_shot = math.ceil(frame_rate*5/60)
     
     consecutive_bullets = 0
     clip_size = 30
     current_clip = 30
-    frames_for_reload = 135
+    frames_for_reload = math.ceil(frame_rate*135/60)
 
 
     def __init__(self):
@@ -438,16 +428,15 @@ class guardian(gun):
     a gun that emulates the classic
     """
     damage = 65
-    max_spread = 40
+    max_spread = math.ceil(frame_rate*40/60)
     min_spread = 0
     shots_for_full_spread = 9
-    frames_before_shot = 10
+    frames_before_shot = math.ceil(frame_rate*10/60)
     
     consecutive_bullets = 0
     clip_size = 12
     current_clip = 12
-    frames_for_reload = 135
-
+    frames_for_reload = math.ceil(frame_rate*135/60)
 
     def __init__(self):
         self.automatic = False
@@ -457,15 +446,15 @@ class vandal(gun):
     a gun that emulates the classic
     """
     damage = 40
-    max_spread = 120
-    min_spread = 10
+    max_spread = math.ceil(frame_rate*120/60)
+    min_spread = math.ceil(frame_rate*10/60)
     shots_for_full_spread = 8
-    frames_before_shot = 6
+    frames_before_shot = math.ceil(frame_rate*6/60)
     
     consecutive_bullets = 0
     clip_size = 25
     current_clip = 25
-    frames_for_reload = 150
+    frames_for_reload = math.ceil(frame_rate*150/60)
 
     def __init__(self):
         self.automatic = True
@@ -479,15 +468,15 @@ class operator(gun):
     
     """
     damage = 150
-    max_spread = 40
+    max_spread = math.ceil(frame_rate*40/60)
     min_spread = 0
     shots_for_full_spread = 9
-    frames_before_shot = 80
+    frames_before_shot = math.ceil(frame_rate*80/60)
     
     consecutive_bullets = 0
     clip_size = 5
     current_clip = 5
-    frames_for_reload = 222
+    frames_for_reload = math.ceil(frame_rate*222/60)
 
 
     def __init__(self):

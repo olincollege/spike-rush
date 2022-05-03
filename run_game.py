@@ -6,8 +6,11 @@ from players_guns_bullets import *
 from test_map import *
 import random
 
+frame_rate = 60
 
 def guns_test():
+
+    
     pygame.init()
     # initialize our map
     game_map = test_map()
@@ -34,12 +37,12 @@ def guns_test():
     run = True
 
     print("made it to run loop")
+
     while run:
 
-        # print(red_circ_controller.player.gun.current_clip)
 
         # ensure won't go above 60 FPS
-        clock.tick(60)
+        clock.tick(frame_rate)
 
         # quit the game if needed
         red_circ_controller.check_still_shooting()
@@ -57,7 +60,7 @@ def guns_test():
                 red_circ_controller.move(event)
             if event.type == pygame.KEYUP:
                 red_circ_controller.stop_move(event)
-            #print("made it to check shoot")
+           
             red_circ_controller.check_shoot(event)
             red_circ_controller.check_reload(event)
 
@@ -71,14 +74,12 @@ def guns_test():
         # draw the red circle
         red_circ.draw_circ(game_map)
         # draw rectangle
-        #print("made it to draw example rectangle")
 
         for rectangle in collision_checks:
             pygame.draw.rect(game_map.window, (0, 150, 0), rectangle)
 
         update_bullets_for_guns_test(collision_checks)
         draw_bullets(game_map)
-        #print("made it to draw bullets")
         # update window
         game_map.update_visual()
     pygame.quit()
