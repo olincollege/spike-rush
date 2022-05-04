@@ -7,7 +7,6 @@ import os
 
 # import test map
 # test map dimensions: 1500 x 500 pixels
-from test_map import test_map
 from spike_map import split_model, split_view
 
 
@@ -28,7 +27,7 @@ class character_model:
         """
         Spawn the character in the world.
         """
-        self._spawn = [500, 500]
+        self._spawn = [100, 100]
         self.position = self._spawn  # set to spawn initially
         self._movement_check = 0  # initially not moving
         self._frame = 0  # count frames
@@ -49,11 +48,12 @@ class character_view(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)  # initiate pygame sprite
         # image for sprite representation
-        self._sprites = [os.path.join('sprites', 'test_sprite.png')]
+        self._sprites = [os.path.join('images', 'sprites', 'test_sprite.png')]
         # currently only using one image, scaling size down
         self._sprite = \
             pygame.transform.scale(pygame.image.load(os.path.join(
-                'sprites', 'test_sprite.png')).convert_alpha(), (50, 50))
+                'images', 'sprites', 'test_sprite.png')).convert_alpha(),
+                (50, 50))
 
     def draw_sprite(self, surface, position):
         """
@@ -139,10 +139,10 @@ def movement_test():
         controller.move(character_speed, keys)
 
         # update stuff
-        map_view.display_map([120, 120, 120])  # make screen grey
+        map_view.draw_map()
         # draw character
         view.draw_sprite(map_view._window, character.position)
         pygame.display.flip()  # update entire display
-        clock.tick(60)  # advance time, run game at 60 FPS
-
+        clock.tick(30)  # reduce framerate to 30
+    # print(map_view._window.get_rect()) #check dimensions
     pygame.quit()  # after main loop has finished
