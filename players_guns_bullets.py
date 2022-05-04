@@ -6,7 +6,7 @@ from run_game import frame_rate
 #don't wworryy about this
 class player_test():
 
-    health = 10
+    health = 100
     #red circle
     color = (255,0,255) #purple
     circle_x_y = (100,50)
@@ -23,6 +23,8 @@ class player_test():
     is_reloading = False
 
 
+
+
     def __init__(self,x_init,y_init,radius,gun):
         self.xpos = x_init
         self.ypos = y_init
@@ -30,11 +32,21 @@ class player_test():
         #instance of the gun class
         self.gun = gun
 
+        self.rect = pygame.Rect(math.floor(self.xpos - self.radius), \
+            math.floor(self.ypos + self.radius),self.radius,\
+            self.radius)
+
+
     #draw an updated circle
     def update_pos(self,delta_x,delta_y):
 
         self.xpos += delta_x
         self.ypos += delta_y
+
+        
+        self.rect = pygame.Rect(math.floor(self.xpos - self.radius), \
+            math.floor(self.ypos + self.radius),self.radius,\
+            self.radius)
     
     #this method is entirely insufficient and only being used for testing atm
     #should probably be robustly defined in controller class
