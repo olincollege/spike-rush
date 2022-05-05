@@ -86,7 +86,7 @@ class character_controller:
         Moves the character through the map. Detects pressed keys and moves
         the character correspondingly.
 
-        Attributes:
+        Arguments:
             speed: An integer representing the number of pixels a character
             moves per frame.
             keys: A list containing which keys are currently pressed.
@@ -101,6 +101,16 @@ class character_controller:
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # right
             self.character.position[0] += speed
 
+    def wall_collide(self):
+        """
+        If a character has collided with a wall, prevent character from moving
+        through the wall.
+
+        Attributes:
+
+        """
+        # check which keys are being pressed
+        pass
 
 # test code down here
 
@@ -137,9 +147,11 @@ def movement_test():
         # check which keys are currently pressed
         keys = pygame.key.get_pressed()
         controller.move(character_speed, keys)
+        # check for a wall collision
 
         # update stuff
         map_view.draw_map()
+        map_view.draw_walls()
         # draw character
         view.draw_sprite(map_view._window, character.position)
         pygame.display.flip()  # update entire display
