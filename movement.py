@@ -45,7 +45,11 @@ class character_view(pygame.sprite.Sprite):
         _sprite: An image representing the character
     """
 
-    def __init__(self):
+    def __init__(self, character):
+        # get attributes from character_model
+        self.character = character
+
+        # initiate sprite stuff
         pygame.sprite.Sprite.__init__(self)  # initiate pygame sprite
         # image for sprite representation
         self._sprites = [os.path.join('images', 'sprites', 'test_sprite.png')]
@@ -54,8 +58,11 @@ class character_view(pygame.sprite.Sprite):
             pygame.transform.scale(pygame.image.load(os.path.join(
                 'images', 'sprites', 'test_sprite.png')).convert_alpha(),
                 (50, 50))
+        self.rect = self._sprite.get_rect()
+        self.rect.x = self.character.position[0]
+        self.rect.y = self.character.position[1]
 
-    def draw_sprite(self, surface, position):
+    def draw_sprite(self, surface):
         """
         Draws the current location of the character on the map.
 
@@ -64,7 +71,11 @@ class character_view(pygame.sprite.Sprite):
             position: a list representing the current coordinates of the
             character.
         """
-        surface.blit(self._sprite, position)
+        self.rect.x = self.character.position[0]
+        self.rect.y = self.character.position[1]
+
+        # draw sprite on to surface
+        surface.blit(self._sprite, (self.rect.x, self.rect.y))
 
 
 class character_controller:
@@ -73,44 +84,76 @@ class character_controller:
 
     Attributes:
         character = Attributes from the character_model class.
+        view = Attributes from the character_view class.
     """
     # create a controller to move character
     # character should move smoothly with WASD
     # have camera follow character?
 
-    def __init__(self, character):
+    def __init__(self, character, view):
         self.character = character  # from character_model
+        self.view = view  # from character_view
 
-    def move(self, speed, keys):
+    def move(self, speed, keys, walls):
         """
         Moves the character through the map. Detects pressed keys and moves
-        the character correspondingly.
+        the character correspondingly. Also detects collisions with walls and
+        prevents character movement
 
         Arguments:
             speed: An integer representing the number of pixels a character
             moves per frame.
             keys: A list containing which keys are currently pressed.
+            walls: A sprite group of all walls on the map.
         """
+        xchange = 0
+        ychange = 0
+
         # searches for arrow keys and WASD
-        if keys[pygame.K_UP] or keys[pygame.K_w]:  # up
-            self.character.position[1] -= speed
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:  # down
-            self.character.position[1] += speed
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # left
+            xchange = -speed
             self.character.position[0] -= speed
+            self.view.rect.x = self.character.position[0]
+
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # right
             self.character.position[0] += speed
+            xchange = speed
+            self.view.rect.x = self.character.position[0]
 
-    def wall_collide(self):
-        """
-        If a character has collided with a wall, prevent character from moving
-        through the wall.
+        # did we hit something?
+        collision_list = \
+            pygame.sprite.spritecollide(self.view, walls, False)
+        for wall in collision_list:
+            # reset position
+            if xchange > 0:
+                self.view.rect.right = wall.rect.left
+                self.character.position[0] = self.view.rect.left
+            elif xchange < 0:
+                self.view.rect.left = wall.rect.right
+                self.character.position[0] = self.view.rect.left
 
-        Attributes:
+        if keys[pygame.K_UP] or keys[pygame.K_w]:  # up
+            self.character.position[1] -= speed
+            ychange = -speed
+            self.view.rect.y = self.character.position[1]
 
-        """
-        # check which keys are being pressed
-        pass
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:  # down
+            self.character.position[1] += speed
+            ychange = speed
+            self.view.rect.y = self.character.position[1]
+
+        # did we hit something?
+        collision_list = \
+            pygame.sprite.spritecollide(self.view, walls, False)
+        for wall in collision_list:
+            # reset position
+            if ychange > 0:
+                self.view.rect.bottom = wall.rect.top
+                self.character.position[1] = self.view.rect.top
+            elif ychange < 0:
+                self.view.rect.top = wall.rect.bottom
+                self.character.position[1] = self.view.rect.top
+
 
 # test code down here
 
@@ -127,8 +170,8 @@ def movement_test():
 
     # create instances of classes
     character = character_model()  # include parentheses when creating instance
-    view = character_view()
-    controller = character_controller(character)
+    view = character_view(character)
+    controller = character_controller(character, view)
 
     # main loop
     run = True
@@ -146,15 +189,18 @@ def movement_test():
         # movement
         # check which keys are currently pressed
         keys = pygame.key.get_pressed()
-        controller.move(character_speed, keys)
-        # check for a wall collision
+        # if no collisions are detected, move character
+        controller.move(character_speed, keys, map_model._wall_list)
 
         # update stuff
         map_view.draw_map()
         map_view.draw_walls()
+
         # draw character
-        view.draw_sprite(map_view._window, character.position)
+        view.draw_sprite(map_view._window)
+
         pygame.display.flip()  # update entire display
         clock.tick(30)  # reduce framerate to 30
-    # print(map_view._window.get_rect()) #check dimensions
+
+    # print(map_view._window.get_rect()) #check window dimensions
     pygame.quit()  # after main loop has finished

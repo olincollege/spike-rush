@@ -14,7 +14,7 @@ class wall(pygame.sprite.Sprite):
 
     Attributes:
         _wall: A surface representing the wall.
-        _rect: Represents the spawn coordinates for the wall.
+        rect: Represents the spawn coordinates for the wall.
     """
 
     def __init__(self, pos, width, height):
@@ -24,9 +24,9 @@ class wall(pygame.sprite.Sprite):
         self._wall.fill((255, 0, 0))
 
         # set wall spawn coordinates to xpos and ypos
-        self._rect = self._wall.get_rect()
-        self._rect.x = pos[0]
-        self._rect.y = pos[1]
+        self.rect = self._wall.get_rect()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
 
 # creating split map
 
@@ -42,7 +42,9 @@ class split_model(wall):
     """
 
     def __init__(self):
-        # to account for standard Windows 125% display scaling
+        # to account for standard Windows 125% display scaling, divide
+        # dimensions by 1.25
+
         # actual dimensions come out to 1536 x 864
         self._map_dimensions = (1920/1.25, 1080/1.25)
         # create empty wall group
@@ -93,4 +95,4 @@ class split_view:
         """
         # draw the walls
         for wall in self.model._wall_list:
-            self._window.blit(wall._wall, (wall._rect.x, wall._rect.y))
+            self._window.blit(wall._wall, (wall.rect.x, wall.rect.y))
