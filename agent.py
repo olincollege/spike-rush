@@ -29,7 +29,7 @@ class Agent:
         """
         self._location = [x_init, y_init]
         self._current_health = 100
-        # self._gun = gun(x_init, y_init)
+        self._gun = classic()
         self._color = (192, 192, 192)   # Default circle is gray
         self._spike = True # If spike is true, it has not yet been planted
         # self._sprite = None
@@ -86,6 +86,30 @@ class Agent:
         """
         # Not abstract bc all of them move the same
         self._location = [x_position, y_position]
+
+    def set_x_coord(self, x_position):
+        """
+        Updates the agent's x coordinate on the map to a new position.
+
+        Args:
+            x_position: An integer representing the x coordinate of the agent's
+                new position.
+        Returns:
+            None.
+        """
+        self._location[0] = x_position
+
+    def set_y_coord(self, y_position):
+        """
+        Updates the agent's y coordinate on the map to a new position.
+
+        Args:
+            y_position: An integer representing the y coordinate of the agent's
+                new position.
+        Returns:
+            None.
+        """
+        self._location[1] = y_position
 
     def update_health(self, new_health):
         """
@@ -236,6 +260,11 @@ class AgentView():
 
         # draw sprite on to surface
         surface.blit(self._sprite, (self.rect.x, self.rect.y))
+
+    def draw_bullets(game_map):
+      global bullet_dictionary
+      for bullet in bullet_dictionary.values():
+        bullet.draw_bullet(game_map)
     
 
 class AgentController: 
@@ -274,12 +303,12 @@ class AgentController:
         # searches for arrow keys and WASD
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # left
             xchange = -speed
-            self.agent.set_location(current_pos[0]-speed, current_pos[1])
+            self.agent.set_x_coord(current_pos[0]-speed)
             self._view.rect.x = self.agent.location[0]
 
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # right
             xchange = speed
-            self.agent.set_location(current_pos[0]+speed, current_pos[1])
+            self.agent.set_x_coord(current_pos[0]+speed)
             self._view.rect.x = self.agent.location[0]
 
         # did we hit something?
@@ -296,12 +325,12 @@ class AgentController:
 
         if keys[pygame.K_UP] or keys[pygame.K_w]:  # up
             ychange = -speed
-            self.agent.set_location(current_pos[0], current_pos[1]-speed)
+            self.agent.set_y_coord(current_pos[1]-speed)
             self._view.rect.y = self.agent.location[1]
 
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:  # down
             ychange = speed
-            self.agent.set_location(current_pos[0], current_pos[1]+speed)
+            self.agent.set_y_coord(current_pos[1]+speed)
             self._view.rect.y = self.agent.location[1]
 
         # did we hit something?
@@ -316,11 +345,83 @@ class AgentController:
                 self._view.rect.top = wall.rect.bottom
                 self.agent.location[1] = self._view.rect.top
 
-    def reload(self, event):
-        # R key press
-        # replace w players/guns/bullets code
-        if event.key == ord('r'):
-            self._agent.reload()
+    def check_shoot(self, event):
+        """
+        aaa
+        """
+        #if reloading, don't fire
+        if self.agent.frames_since_reload < self.agent.gun.frames_for_reload \
+            and self.agent.is_reloading:
+            return
+        elif self.agent.is_reloading:
+            self.agent.is_reloading = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            #left mouse button check, ammo check, frames before next shot check
+            if event.button == 1 and self.agent.frames_since_last_shot >= \
+                self.agent.gun.frames_before_shot and self.agent.gun.current_clip != 0:
+                #if no bullets, pass                
+                self.agent.gun.shoot(self.agent.location[0], \
+                    self.agent.location[1], mouse_x, mouse_y)
+
+                #if this is true, activate automatic fire
+                if self.agent.gun.automatic:
+                    self.agent.is_shooting = True
+
+                self.agent.frames_since_last_shot = 0
+                self.agent.gun.consecutive_bullets = 1
+                
+                #for automatic fire
+                self.agent.frames_since_last_shot += 1
+        
+        #stop automatic fire
+        if event.type == pygame.MOUSEBUTTONUP:
+
+            mouse_presses = pygame.mouse.get_pressed()
+            if not mouse_presses[0]:
+                self.agent.is_shooting = False
+        
+
+    
+    def check_still_shooting(self):
+        """
+        aaa
+        """
+        # If no bullets, pass
+        if self.agent.frames_since_reload < self.agent.gun.frames_for_reload \
+            and self.agent.is_reloading:
+            return
+        elif self.agent.is_reloading:
+            self.agent.is_reloading = False
+            # print("reloaded")
+            # print(self.agent.gun.current_clip)
+        
+        
+        #check if automatic firing, check frame till next shot, check ammo
+        if self.agent.is_shooting and self.agent.frames_since_last_shot >= \
+            self.agent.gun.frames_before_shot and self.agent.gun.current_clip \
+                 != 0:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.agent.gun.shoot(self.agent.location[0], \
+                self.agent.location[1], mouse_x ,mouse_y)
+            self.agent.frames_since_last_shot = 0
+
+            #update consecutive bullet count, for calculating spread,
+            #only do for automatic fire
+            self.agent.gun.consecutive_bullets += 1
+        elif not self.agent.is_shooting:
+            self.agent.gun.consecutive_bullets = 0
+
+    def check_reload(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == ord("r"):
+                #this could be any non 0 positive integer, will do the same thing
+                self.agent.gun.update_clip(1)
+                self.agent.is_reloading = True
+                self.agent.frames_since_reload = 0
+                # print("start reload")
 
     def spike_interaction(self, event):
         # Hold down 4 to plant & to defuse
@@ -336,9 +437,7 @@ class AgentController:
         # Not implementing rn
         pass
 
-
-
-def agent_integ_test():
+def agent_test():
     """
     Tests movement code with a test character.
     """
@@ -387,4 +486,3 @@ def agent_integ_test():
 
     # print(map_view._window.get_rect()) #check window dimensions
     pygame.quit()  # after main loop has finished
-
