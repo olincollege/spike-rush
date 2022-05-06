@@ -88,6 +88,39 @@ class player_test_controller():
             self.player.xstate = -1
 
     def check_shoot(self,event):
+        """
+        Check if a player has begun or stopped shooting a weapon, shooting the 
+        weapon accordingly.
+
+
+        Several factors are checked before allowing a gun to fire: if a player
+        is reloading, has no bullets in their clip, or has fired too recently
+        then the gun will not fire at all. This method is designed to be run
+        once for every pygame event in a given frame, but the actual content of
+        the method can only be run once per frame.
+        
+        Several values are also updated in this function that require
+        tracking continuity in game state (rather than being calculated in each
+        discrete timestep):
+            self.player.is_shooting: A boolean representing whether or not
+                a player's automatic weapon is firing.
+            self.player.is_reloading: A boolean representing whether or not
+                a player is currently reloading a weapon.
+            self.player.frames_since_last_shot: a positive integer representing
+                the number of frames a bullet has been last shot
+            self.player.gun.consecutive_bullets: a positive integer
+                representing how many bullets have been fired at the shortest
+                time between shots. Used for calculating bullet spread for
+                automatic weapons.
+            self.player.gun.current_clip: a positive integer representing
+                the number of bullets in a gun's clip.
+            
+        
+        Args:
+            event: a pygame event type object representing some player input
+            such as a keypress or mouse click.
+
+        """
 
         #if reloading, don't fire
 
@@ -129,6 +162,16 @@ class player_test_controller():
 
     
     def check_still_shooting(self):
+        """
+        Check if an automatic weapon is still being fired, and keep firing it
+        accordingly.
+
+        This method performs a similar function to the check_shoot() method,
+        but is meant instead to enable continuous fire of automatic weapons and
+        should only be run once per frame.
+        
+        """
+        
         #if no bullets, pass
 
         if self.player.frames_since_reload < self.player.gun.frames_for_reload \
@@ -175,7 +218,15 @@ class player_test_controller():
             self.player.update_pos(0,self.player.ystate *-self.move_incr)
     
     def check_reload(self,event):
+        """
+        Check if a player has initiated a reload, and start reloading the gun
+        accordingly.
 
+        Args:
+            event: a pygame event type object representing some player input
+                such as a keypress or mouse click.
+        
+        """
         if event.type == pygame.KEYDOWN:
             if event.key == ord("r"):
                 #this could be any non 0 positive integer, will do the same thing
@@ -200,6 +251,39 @@ bullet_delete_dictionary = {}
 
 #GUN
 class gun():
+    """
+    A general instance of a shootable gun.
+    
+    Attributes:
+        damage: an integer representing the amount of health that a bullet
+            shot from this gun takes away from the player.
+        max_spread: the maximum amount of pixels per thousand, perpindicular
+            to the shooting direction vector that a bullet shot from this gun
+            can travel per pixel. A dimensionless float.
+        min_spread: the minimum amount of pixels per thousand, perpindicular
+            to the shooting direction vector that a bullet shot from this gun
+            can travel per pixel. A dimensionless float.
+        shots_for_full_spread: the number of consecutive bullets that need to
+            be fired by an automatic weapon for a bullet to achieve the gun's
+            max spread threshold. An integer.
+        frames_before_shot: an integer representing the number of frames that
+            a player must wait after shooting the gun before shooting the gun
+            again.
+        consecutive_bullets: an integer representing the number of bullets that
+            have been fired consecutively by a gun. Updated in the main game
+            loop.
+        clip_size: an integer representing maximum number of bullets that can
+            be fired from a weapon before needing to reload.
+        frames_for_reload: an integer representing the number of frames that
+            a player must wait after reloading the gun before being able to
+            perform other actions.
+        current_clip: an integer representing the number of bullets that a gun
+            can fire before requiring a reload. Updated in the main game loop.
+        automatic: a boolean representing whether or not a weapon is an 
+            automatic weapon or not.
+
+        
+    """
     #gun should have name and defined damage value
     damage = 20
 
@@ -221,11 +305,21 @@ class gun():
     #if we're not updating the gun's position as we go, we should probably implement that tho
 
     def __init__(self):
+        """
+        Initialize an instance of the gun class.
+        """
         self.automatic = True
 
     def update_clip(self,clip_update):
-        #function handles reloading and decreasing clip from shooting
+        """
+        Update the number of bullets in a gun's clip.
 
+        Args:
+            clip_update: an integer either representing how many bullets to
+                subtract from a clip or an indication to reload.
+        """
+
+        #function handles reloading and decreasing clip from shooting
 
         #a negative integer means a shot has been fired, decrease clip
         if clip_update <= 0:
@@ -243,7 +337,9 @@ class gun():
 
     
     def shoot(self,player_x,player_y,mouse_x,mouse_y):
-        
+        """
+        Shoot the gun
+        """
         
         #defining bullet heading
         norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
@@ -285,12 +381,60 @@ class gun():
         self.update_clip(-1)
 
 class bullet():
+    """
+    Define a bullet created by a gun, moving through space.
+
+    Attributes:
+        speed_per_tick: An integer representing the number of pixels that a
+            bullet can travel per frame.
+        bullet_width: An even, positive integer representing the width and
+            height of a bullet.
+        pos_x: a float representing the current x location of a bullet in
+            pixels
+        pos_y: a float representing the current y location of a bullet in
+            pixels
+        incr_x: a float representing the heading of a bullet in the x
+            direction
+        incr_y: a float representing the heading of a bullet in the y
+            direction.
+        damage: the amount of a health that a bullet takes from a player or
+            enemy on hit. An integer.
+        delta_x: a float representing the amount of distance that a bullet
+            travels every frame in the x direction in pixels.
+        delta_y: a float representing the amount of distance that a bullet
+            travels every frame in the y direction in pixels.
+        bullet_rectangle: a pygame rectangle object representing the location
+            and size of a bullet on any given frame. Used for visualization and
+            object collision detection.
+        name: a string representing the name of a specific bullet. Useful for
+            referencing a specific bullet in the global bullet dictionary.
+        
+    """
 
     speed_per_tick = math.ceil(frame_rate *20/60)
     #number needs to be even
     bullet_width = 6
 
     def __init__(self, pos_x, pos_y,incr_x,incr_y,damage):
+        """
+        Initialize an instance of the bullet class.
+
+        Args:
+            peed_per_tick: An integer representing the number of pixels that a
+                bullet can travel per frame.
+            bullet_width: An even, positive integer representing the width and
+                height of a bullet.
+            pos_x: a float representing the current x location of a bullet in
+                pixels
+            pos_y: a float representing the current y location of a bullet in
+                pixels
+            incr_x: a float representing the heading of a bullet in the x
+                direction
+            incr_y: a float representing the heading of a bullet in the y
+                direction.
+            damage: the amount of a health that a bullet takes from a player or
+                enemy on hit. An integer.
+        """
         
         #things necessary for calculating heading
         self.pos_x = pos_x
@@ -315,6 +459,10 @@ class bullet():
     
     #update positions
     def update_position(self):
+        """
+        Update the position of a bullet for the next frame based on its movement
+        attributes. 
+        """
 
         self.pos_x += self.delta_x
         self.pos_y += self.delta_y
@@ -324,10 +472,19 @@ class bullet():
             self.bullet_width)
     
     def draw_bullet(self,game_map):
+        """
+        Draw a bullet onto a pygame window.
+
+        Args:
+            game_map: a pygame window
+        """
         #surface,color,rectangle
         pygame.draw.rect(game_map.window,(0,0,0),self.bullet_rectangle)
     
     def delete_bullet(self):
+        """
+        Add this bullet to a dictionary of bullets to later be deleted.
+        """
         #delete a bullet from the list of bullets, might stop it from existing... probably
         global bullet_dictionary
         global bullet_delete_dictionary
@@ -337,6 +494,16 @@ class bullet():
     #check if 2 rectangles are hitting each other. basic, doesn't need changing probably
     #we can do space partitioning outside of this class structure
     def check_basic_collision(self,wall_rectangle):
+        """
+        Check collision between this bullet and another rectangle.
+
+        Args:
+            wall_rectangle: a rectangle type pygame object representing some
+                possible wall or obstacle for the bullet.
+        Returns:
+            a boolean representing whether or not the bullet and rectangle
+                actually collide.
+        """
         #wall rectangle is a RECTANGLE OBJECT WOW *sparkles
 
         if pygame.Rect.colliderect(self.bullet_rectangle,wall_rectangle) == True:
@@ -344,6 +511,16 @@ class bullet():
         else:
             return False
     def bullet_main(self, delete_check_list=[]):
+        """
+        Update a bullets position and check for any possible collisions in
+        the new position.
+
+        Args:
+            delete_check_list: a list of rectangle objects to check against
+                a bullet for collision
+
+
+        """
         #the main things a bullet does each frame. crazy
         #delete_check_list is a list of walls to check collision with for every bullet
         #delete_check list should be generated elsewhere, probably in the main loop 
