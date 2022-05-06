@@ -5,8 +5,6 @@ Creates a controller to provide movement for agents
 import pygame
 import os
 
-# import test map
-# test map dimensions: 1500 x 500 pixels
 from spike_map import split_model, split_view
 
 
@@ -27,7 +25,7 @@ class character_model:
         """
         Spawn the character in the world.
         """
-        self._spawn = [100, 100]
+        self._spawn = [205-25, 99-25]  # spawn in defender zone
         self.position = self._spawn  # set to spawn initially
         self._movement_check = 0  # initially not moving
         self._frame = 0  # count frames
@@ -193,8 +191,11 @@ def movement_test():
         controller.move(character_speed, keys, map_model._wall_list)
 
         # update stuff
+        # draw backdrop
         map_view.draw_map()
-        map_view.draw_walls()
+
+        # walls will still have collision even if not drawn
+        # map_view.draw_walls()
 
         # draw character
         view.draw_sprite(map_view._window)

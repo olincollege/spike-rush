@@ -47,11 +47,44 @@ class split_model(wall):
 
         # actual dimensions come out to 1536 x 864
         self._map_dimensions = (1920/1.25, 1080/1.25)
+
         # create empty wall group
         self._wall_list = pygame.sprite.Group()
-        # add test walls
-        self._wall_list.add(wall((300, 400), 200, 200))
-        self._wall_list.add(wall((1000, 500), 400, 300))
+
+        # add Split map walls (position (x, y), width, height)
+
+        # top left
+        self._wall_list.add(wall((63, 21), 1450, 3))
+        self._wall_list.add(wall((64, 21), 3, 358))
+
+        # top
+        self._wall_list.add(wall((346, 21), 123, 162))
+        self._wall_list.add(wall((759, 21), 120, 96))
+        self._wall_list.add(wall((1160, 21), 196, 104))
+
+        # right
+        self._wall_list.add(wall((1515, 21), 3, 765))
+
+        # bottom
+        self._wall_list.add(wall((400, 788), 1130, 3))
+        self._wall_list.add(wall((1110, 709), 77, 85))
+        self._wall_list.add(wall((708, 737), 269, 55))
+        self._wall_list.add(wall((21, 737), 587, 55))
+
+        # left
+        self._wall_list.add(wall((21, 470), 3, 267))
+        self._wall_list.add(wall((21, 379), 260, 91))
+
+        # inner walls
+        self._wall_list.add(wall((151, 566), 68, 74))
+        self._wall_list.add(wall((810, 579), 95, 74))
+        self._wall_list.add(wall((890, 365), 218, 100))
+        self._wall_list.add(wall((1274, 230), 82, 295))
+
+        # the t shaped one
+        self._wall_list.add(wall((442, 365), 256, 76))
+        self._wall_list.add(wall((530, 441), 168, 24))
+        self._wall_list.add(wall((530, 441), 78, 112))
 
 
 class split_view:
@@ -66,6 +99,7 @@ class split_view:
 
     def __init__(self, model):
         self.model = model  # from split_model
+
         # set 1920x1080 full screen window
         self._window = pygame.display.set_mode(self.model._map_dimensions,
                                                pygame.FULLSCREEN)
@@ -73,7 +107,7 @@ class split_view:
             pygame.transform.scale(pygame.image.load
                                    (os.path.join('images',
                                                  'map',
-                                                 'split_layout.png')).convert(),
+                                                 'split_color.png')).convert(),
                                    self.model._map_dimensions)
 
     def draw_map(self):
