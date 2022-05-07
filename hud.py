@@ -18,7 +18,7 @@ class display_model:
 
     def __init__(self):
         self._font = pygame.font.SysFont(
-            'bahnschrift', 30)  # looks like Valorant HUD font
+            'bahnschrift', 50)  # looks like Valorant HUD font
         self.timer = 100  # start at 100 seconds
 
     def get_game_updates():
@@ -52,19 +52,28 @@ class display_view:
         text_surface = self.model._font.render(text, 1, color)
         surface.blit(text_surface, position)
 
-    def draw_player_updates(self, player, surface):
+    def draw_player_updates(self, player_1, player_2, surface):
         """
         pull health/ammo updates from a specified player and draw it to the HUD.
 
         Arguments:
-            player: An Agent to pull updates from.
+            player_1: An Agent to pull updates from.
+            player_2: An Agent to pull updates from.
             surface: The surface to blit the text on to.
         """
-        # pull & draw health update
-        health = player.health
-        self.draw_text(str(health), (255, 255, 255), surface, (192, 815))
+        # pull & draw player 1 health update
+        health_1 = player_1.health
+        self.draw_text(str(health_1), (255, 255, 255), surface, (230, 800))
+        # pull & draw player 1 ammo update
+        # pull ammo here
+        self.draw_text("0", (255, 255, 255), surface, (400, 800))
 
-        # pull & draw ammo update
+        # pull & draw player 2 health update
+        health_2 = player_2.health
+        self.draw_text(str(health_2), (255, 255, 255), surface, (1238, 800))
+        # pull & draw player 2 ammo update
+        # pull ammo here
+        self.draw_text("0", (255, 255, 255), surface, (1412, 800))
 
     def draw_game_timer(self, surface):
         """
@@ -74,4 +83,4 @@ class display_view:
             surface: The surface to blit the text on to.
         """
         self.draw_text(str(self.model.timer),
-                       (255, 255, 255), surface, (800, 815))
+                       (255, 255, 255), surface, (800, 800))

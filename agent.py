@@ -551,7 +551,8 @@ def agent_test():
         # map_view.draw_walls()
 
         # draw HUD updates
-        hud_view.draw_player_updates(character_model_1, map_view._window)
+        hud_view.draw_player_updates(
+            character_model_1, character_model_2, map_view._window)
         hud_view.draw_game_timer(map_view._window)
 
         # draw characters
