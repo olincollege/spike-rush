@@ -6,34 +6,72 @@ players.
 import pygame
 
 
-class hud_model:
+class display_model:
     """
     Tracks various attributes to be displayed in game.
 
     Attributes:
-        _health
-        _ammo
-        _game_timer
-        _spike_status
-        _spike_timer
+        _font: the pygame font to be used in the HUD
+        _timer: An integer representing the seconds remaining in the game
     """
     pass
 
     def __init__(self):
-        pass
+        self._font = pygame.font.SysFont(
+            'bahnschrift', 30)  # looks like Valorant HUD font
+        self.timer = 100  # start at 100 seconds
 
-    def get_health():
-        pass
-
-    def get_ammo():
+    def get_game_updates():
         pass
 
     def get_spike_status():
         pass
 
 
-class hud_view:
+class display_view:
     """
-    Displays hud elements on to the game.
+    Displays HUD elements on to the game.
+
+    Attributes:
+        model: Attributes from the hud_model class.
     """
-    pass
+
+    def __init__(self, model):
+        self.model = model  # from hud_model
+
+    def draw_text(self, text, color, surface, position):
+        """
+        Draws the specified text on the screen.
+
+        Arguments:
+            text: A string representing the text to be drawn on the screen.
+            color: A tuple representing the RGB values of the text color.
+            surface: The surface to blit the text on to.
+            position: A tuple representing the position of the text.
+        """
+        text_surface = self.model._font.render(text, 1, color)
+        surface.blit(text_surface, position)
+
+    def draw_player_updates(self, player, surface):
+        """
+        pull health/ammo updates from a specified player and draw it to the HUD.
+
+        Arguments:
+            player: An Agent to pull updates from.
+            surface: The surface to blit the text on to.
+        """
+        # pull & draw health update
+        health = player.health
+        self.draw_text(str(health), (255, 255, 255), surface, (192, 815))
+
+        # pull & draw ammo update
+
+    def draw_game_timer(self, surface):
+        """
+        Draws the current time of the game.
+
+        Arguments:
+            surface: The surface to blit the text on to.
+        """
+        self.draw_text(str(self.model.timer),
+                       (255, 255, 255), surface, (800, 815))

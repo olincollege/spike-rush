@@ -10,6 +10,8 @@ from test_map import *
 from abc import ABC, abstractmethod
 from spike import *
 from spike_map import *
+from hud import display_model, display_view
+
 
 class Agent:
     """
@@ -23,6 +25,7 @@ class Agent:
             the spike or not.
 
     """
+
     def __init__(self, x_init, y_init):
         """
         Creates an instance of an agent.
@@ -31,7 +34,7 @@ class Agent:
         self._health = 100
         self._gun = classic()
         self._color = (192, 192, 192)   # Default circle is gray
-        self._spike = True # If spike is true, it has not yet been planted
+        self._spike = True  # If spike is true, it has not yet been planted
         # self._sprite = None
 
         # Is agent currently moving in a direction
@@ -40,7 +43,7 @@ class Agent:
 
         self._frames_since_last_shot = 0
         self._frames_since_reload = 0
-        
+
         self._is_shooting = False
         self._is_reloading = False
 
@@ -54,7 +57,7 @@ class Agent:
         Returns: An integer representing the agent's current health.
         """
         return self._health
-    
+
     @property
     def location(self):
         """
@@ -136,7 +139,7 @@ class Agent:
     def use_gun(self, mouse_x, mouse_y):
       self._gun.shoot(self.location[0], self.location[1], mouse_x, mouse_y)
 
-    def reload_gun(self, ):
+    def reload_gun(self):
       # fix for private variable calls
       self._gun.update_clip(1)
       self._is_reloading = True
@@ -150,10 +153,10 @@ class Agent:
             None.
         """
         # 4 seconds to plant
-        if self._spike: # add that it must be in a plant zone
+        if self._spike:  # add that it must be in a plant zone
             # create new spike object @ current location
             pass
-            
+
     def defuse_spike(self, spike):
         """
         aaa
@@ -178,14 +181,14 @@ class Brimstone(Agent):
     """
     Brimmy w/o da stimmy
     """
-    
+
     def __init__(self):
         self._name = "Brimstone"
         self._color = (185, 147, 104)
-        self._sprite = "" 
+        self._sprite = ""
 
     def use_ultimate(self):
-        # Region of the map that does ~39 dps, lasts 15s, 
+        # Region of the map that does ~39 dps, lasts 15s,
         # takes 3s after fire to start damage
         pass
 
@@ -198,7 +201,7 @@ class Phoenix(Agent):
     def __init__(self):
         self._name = "Phoenix"
         self._sprite = ""
-   
+
     def use_ultimate(self):
         """
         Uses Phoenix's ultimate when the "X" key is pressed.
@@ -212,6 +215,7 @@ class Phoenix(Agent):
         # After 10s or when killed, returns to location w full health
 
         self.update_health(100)
+
 
 class Reyna(Agent):
     """
@@ -230,7 +234,8 @@ class Reyna(Agent):
         firing speed by 15% and increases her reload speed by 25%.
         """
         pass
-    
+
+
 class AgentView():
     """
     Displays an agent on the map.
@@ -255,7 +260,6 @@ class AgentView():
         self.rect.x = self._agent.location[0]
         self.rect.y = self._agent.location[1]
 
-
     @property
     def agent(self):
         return self._agent
@@ -276,7 +280,7 @@ class AgentView():
         pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
     
 
-class AgentController: 
+class AgentController:
     """
     Controls an agent on the map.
     """
@@ -409,8 +413,8 @@ class AgentController:
             self.agent.use_gun(mouse_x ,mouse_y)
             self.agent.frames_since_last_shot = 0
 
-            #update consecutive bullet count, for calculating spread,
-            #only do for automatic fire
+            # update consecutive bullet count, for calculating spread,
+            # only do for automatic fire
             self.agent.gun.consecutive_bullets += 1
         elif not self.agent._is_shooting:
             self.agent.gun.consecutive_bullets = 0
@@ -458,17 +462,18 @@ class AgentController:
 
     def spike_interaction(self, event):
         # Hold down 4 to plant & to defuse
-        if self._agent.spike and  event.key == ord('4'):
+        if self._agent.spike and event.key == ord('4'):
             # Add in thing to track time; 4 seconds for plant
             self._agent.plant_spike()
         elif not self._agent.spike and event.key == ord('4'):
             # Add in thing to track time; 7 seconds for defuse
             # 3.5s for half
             self._agent.defuse_spike()
-        
+
     def orb_interaction(self, event):
         # Not implementing rn
         pass
+
 
 def agent_test():
     """
@@ -480,10 +485,20 @@ def agent_test():
     clock = pygame.time.Clock()  # to keep track of time in-game
     character_speed = 10
 
+    track_second = pygame.USEREVENT  # using ID 24
+
+    # trigger event every second
+    pygame.time.set_timer(track_second, 1000)
+
     # create instances of classes
-    character = Agent(205-25, 99-25)  # include parentheses when creating instance
+    # include parentheses when creating instance
+    character = Agent(205-25, 99-25)
     view = AgentView(character)
     controller = AgentController(character, view)
+
+    # initialize HUD
+    hud_model = display_model()
+    hud_view = display_view(hud_model)
 
     # main loop
     run = True
@@ -493,6 +508,10 @@ def agent_test():
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 run = False
+            if event.type == track_second:
+                # if a second has passed, reduce the timer
+                if hud_model.timer != 0:
+                    hud_model.timer -= 1
 
         # update states
         # create entities
@@ -510,6 +529,10 @@ def agent_test():
 
         # walls will still have collision even if not drawn
         # map_view.draw_walls()
+
+        # draw HUD updates
+        hud_view.draw_player_updates(character, map_view._window)
+        hud_view.draw_game_timer(map_view._window)
 
         # draw character
         view.draw_agent(map_view._window)

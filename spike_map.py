@@ -103,6 +103,10 @@ class split_view:
         # set 1920x1080 full screen window
         self._window = pygame.display.set_mode(self.model._map_dimensions,
                                                pygame.FULLSCREEN)
+
+        # add window caption
+        pygame.display.set_caption("Spike Rush")
+
         self._backdrop = \
             pygame.transform.scale(pygame.image.load
                                    (os.path.join('images',
