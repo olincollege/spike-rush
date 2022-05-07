@@ -42,6 +42,8 @@ class gun():
         self.automatic = True
 
     def update_clip(self,clip_update):
+
+        print("clip update initiated")
         #function handles reloading and decreasing clip from shooting
         #a negative integer means a shot has been fired, decrease clip
         if clip_update <= 0:
@@ -53,6 +55,7 @@ class gun():
         #otherwise reload 
         else:
             self.current_clip = self.clip_size
+            print("clip full")
     
     def shoot(self, player_x, player_y, theta):    
         #defining bullet heading
@@ -85,8 +88,8 @@ class gun():
         x_increment += actual_spread_x/1000
         y_increment += actual_spread_y/1000
 
-        bullet_start_x = player_x + math.floor(15*x_increment)
-        bullet_start_y = player_y + math.floor(15*y_increment)
+        bullet_start_x = player_x + math.floor(30*x_increment) +25
+        bullet_start_y = player_y + math.floor(30*y_increment) + 25
       
         #create a new bullet and add it to the dictionary of bullets
         global bullet_counter

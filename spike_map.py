@@ -124,8 +124,7 @@ class split_view:
         self.model = model  # from split_model
 
         # set 1920x1080 full screen window
-        self._window = pygame.display.set_mode(self.model._map_dimensions,
-                                               pygame.FULLSCREEN)
+        self._window = pygame.display.set_mode(self.model._map_dimensions)
 
         # add window caption
         pygame.display.set_caption("Spike Rush")
