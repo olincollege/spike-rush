@@ -494,24 +494,30 @@ def agent_test():
     map_view = split_view(map_model)  # initialize map
     clock = pygame.time.Clock()  # to keep track of time in-game
     character_speed = 10
-
+  
     track_second = pygame.USEREVENT  # using ID 24
 
     # trigger event every second
     pygame.time.set_timer(track_second, 1000)
 
     # Player 1 instance
-    character_model_1 = Agent(205-25, 99-25)
+    character_model_1 = Agent(0, 0)
     character_view_1 = AgentView(character_model_1)
     character_controller_1 = AgentController(
         character_model_1, character_view_1)
 
     # Player 2 instance
-    character_model_2 = Agent(1436-25, 365-25)
+    character_model_2 = Agent(0, 0)
     character_view_2 = AgentView(character_model_2)
     character_controller_2 = AgentController(
         character_model_2, character_view_2)
 
+    # Player list
+    agent_list = [character_model_1, character_model_2]
+
+    map_model.attacker_spawn.set_spawns([character_model_1])
+    map_model.defender_spawn.set_spawns([character_model_2])
+    
     # initialize HUD
     hud_model = display_model()
     hud_view = display_view(hud_model)
@@ -549,7 +555,7 @@ def agent_test():
 
         # walls will still have collision even if not drawn
         # map_view.draw_walls()
-
+  
         # draw HUD updates
         hud_view.draw_player_updates(
             character_model_1, character_model_2, map_view._window)
@@ -564,61 +570,3 @@ def agent_test():
 
     # print(map_view._window.get_rect()) #check window dimensions
     pygame.quit()  # after main loop has finished
-
-    def agent_test2():
-        """
-        Tests movement code with a test character.
-        """
-        pygame.init()  # initialize pygame
-        map_model = split_model()
-        map_view = split_view(map_model)  # initialize map
-        clock = pygame.time.Clock()  # to keep track of time in-game
-        character_speed = 10
-
-        # create instances of classes
-        # include parentheses when creating instance
-        character = Agent(205-25, 99-25)
-        view1 = AgentView(character)
-        controller1 = AgentController(character, view1)
-
-        agent_list = [character]
-
-        # main loop
-        run = True
-        while run:
-
-            # sense inputs (get events)
-            for event in pygame.event.get():  # look for events
-                if event.type == pygame.QUIT:  # quit the game, stop the loop
-                    run = False
-
-            # update states
-            # create entities
-            # detect interactions
-
-            # movement
-            # check which keys are currently pressed
-            keys = pygame.key.get_pressed()
-            # if no collisions are detected, move character
-            controller1.move(character_speed, keys, map_model._wall_list)
-            controller1.check_shoot(keys)
-            controller1.check_reload(keys)
-
-            # update stuff
-            # draw backdrop
-            map_view.draw_map()
-
-            # walls will still have collision even if not drawn
-            # map_view.draw_walls()
-
-            # draw character
-            view1.draw_agent(map_view._window)
-
-            controller1.update_bullets_test(map_model._wall_list)
-            view1.draw_bullets(map_view._window)
-
-            pygame.display.flip()  # update entire display
-            clock.tick(30)  # reduce framerate to 30
-
-        # print(map_view._window.get_rect()) #check window dimensions
-        pygame.quit()  # after main loop has finished
