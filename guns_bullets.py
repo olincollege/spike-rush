@@ -43,7 +43,7 @@ class gun():
 
     def update_clip(self,clip_update):
 
-        print("clip update initiated")
+
         #function handles reloading and decreasing clip from shooting
         #a negative integer means a shot has been fired, decrease clip
         if clip_update <= 0:
@@ -55,7 +55,7 @@ class gun():
         #otherwise reload 
         else:
             self.current_clip = self.clip_size
-            print("clip full")
+
     
     def shoot(self, player_x, player_y, theta):    
         #defining bullet heading

@@ -422,49 +422,60 @@ class AgentController:
         #if reloading, don't fire
         if self.agent._frames_since_reload < self.agent.gun.frames_for_reload \
                 and self.agent._is_reloading:
+            self.agent._gun.consective_bullets = 0
             return
         elif self.agent._is_reloading:
             self.agent.set_is_reloading(False)
+            print("reloaded")
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         self.agent.set_frames_since_last_shot(self.agent._frames_since_last_shot +1)
+        #consecutive fire
+
 
         if (input_type == "WASD" and keys[pygame.K_x]) or (input_type == \
              "Arrow" and keys[pygame.K_m]):
+            
+            if self.agent._is_shooting and not self.agent._gun.automatic:
+                self.agent._gun.consecutive_bullets = 0
+                return
 
-            print("correct shoot key registered")
 
-            print(self.agent._frames_since_last_shot)
-            print(self.agent._gun.frames_before_shot)
             if self.agent._frames_since_last_shot < \
                 self.agent._gun.frames_before_shot:
-                print("too soon to shoot again")
                 return
             
             #if the weapon is semi auto, don't shoot it uatomatically
-            if self.agent._is_shooting and not self.agent._gun.automatic:
-                print("can't fire semi auto automatically")
-                return
-            print("got here")
+
+
             if self.agent._gun.current_clip > 0:
             # If no bullets, pass
                 self.agent.use_gun()
   
               # automatic fire activation
             #if self.agent.gun.automatic:
+                if self.agent._is_shooting:
+                    self.agent._gun.consecutive_bullets += 1
+                else:
+                    self.agent._gun.consecutive_bullets = 1
+                
+                print(self.agent._gun.consecutive_bullets)
                 self.agent.set_is_shooting(True)
             
                 self.agent.set_frames_since_last_shot(0)
-                self.agent._gun.conseuctive_bullets = 1
+                
 
                 # automatic fire activation
                 if self.agent.gun.automatic:
                     self.agent.set_is_shooting(True)
+            else:
+                self.agent._gun.consecutive_bullets = 0
+                self.agent.set_is_shooting(False)
 
             
         else:
-
             self.agent.set_is_shooting(False)
+            self.agent._gun.consecutive_bullets = 0
 
          # if keys[pygame.MOUSEBUTTONUP]:
            # mouse_presses = pygame.mouse.get_pressed()
