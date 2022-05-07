@@ -2,6 +2,7 @@
 Docstring >:)
 """
 
+from numpy import angle
 import pygame
 import os
 from regex import E
@@ -16,7 +17,7 @@ from hud import display_model, display_view
 
 class Agent:
     """
-    An agent in the spike rush game.    
+    An agent in the spike rush game.
 
     Attributes:
         location:
@@ -43,6 +44,9 @@ class Agent:
         self._is_shooting = False
         self._is_reloading = False
 
+        self._turn_speed = .15*frame_rate/30
+        self._angle = 0
+
         #self._abilities = []
 
     @property
@@ -62,6 +66,16 @@ class Agent:
         Returns: A list containing the x & y coordinates of the agent.
         """
         return self._location
+
+    @property
+    def angle(self):
+        """
+        Returns the agent's shoot angle
+
+        Returns:
+            a float representing the shooting angle of an agent in radians
+        """
+        return self._angle
 
     @property
     def spike(self):
@@ -136,6 +150,9 @@ class Agent:
 
     def set_is_reloading(self, bool):
       self._is_reloading = bool
+    
+    def set_angle(self,angle):
+        self._angle = angle
 
     @abstractmethod
     def use_ultimate(self):
@@ -144,8 +161,8 @@ class Agent:
         """
         pass
 
-    def use_gun(self, mouse_x, mouse_y):
-      self._gun.shoot(self.location[0], self.location[1], mouse_x, mouse_y)
+    def use_gun(self):
+      self._gun.shoot(self.location[0], self.location[1], self._angle)
 
     def reload_gun(self):
       # fix for private variable calls
@@ -326,11 +343,13 @@ class AgentController:
 
         # up, down, left, right
         if input_type == "WASD":
-            control_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
+            control_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, \
+                pygame.K_c,pygame.K_v,pygame.K_b]
 
         if input_type == "Arrow":
             control_list = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT,
-                            pygame.K_RIGHT]
+                            pygame.K_RIGHT,pygame.K_m,pygame.K_COMMA, \
+                                pygame.K_PERIOD]
 
         # searches for arrow keys and WASD
         if keys[control_list[2]]:  # left
@@ -342,6 +361,16 @@ class AgentController:
             xchange = speed
             self.agent.set_x_coord(current_pos[0]+speed)
             self._view.rect.x = self.agent.location[0]
+        
+        if keys[control_list[5]]: #turn counter clockwise
+            theta_change = self.agent._turn_speed
+            self.agent.set_angle(self.agent.angle -theta_change)
+        
+        if keys[control_list[6]]: #turn counter clockwise
+            theta_change = self.agent._turn_speed
+            self.agent.set_angle(self.agent.angle + theta_change)
+
+
 
         # did we hit something?
         collision_list = \
@@ -384,18 +413,18 @@ class AgentController:
         """
         #if reloading, don't fire
         if self.agent._frames_since_reload < self.agent.gun.frames_for_reload \
-      and self.agent._is_reloading:
-          return
+            and self.agent._is_reloading:
+            return
         elif self.agent._is_reloading:
             self.agent.set_is_reloading(False)
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        if keys[pygame.K_z]:
+        if keys[pygame.K_x] or keys[pygame.K_m]:
           # self.agent._frames_since_last_shot >= \
           #self.agent.gun.frames_before_shot and 
           if self.agent.gun.current_clip != 0:
             # If no bullets, pass
-            self.agent.use_gun(mouse_x, mouse_y)
+            self.agent.use_gun()
   
               # automatic fire activation
             if self.agent.gun.automatic:
@@ -542,10 +571,11 @@ def agent_test():
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 run = False
+                """
             if event.type == track_second:
                 # if a second has passed, reduce the timer
                 if hud_model.timer != 0:
-                    hud_model.timer -= 1
+                    hud_model.timer -= 1"""
 
         # update states
         # create entities
@@ -572,9 +602,10 @@ def agent_test():
         # map_view.draw_walls()
   
         # draw HUD updates
+        """
         hud_view.draw_player_updates(
             character_model_1, character_model_2, map_view._window)
-        hud_view.draw_game_timer(map_view._window)
+        hud_view.draw_game_timer(map_view._window)"""
 
         # draw characters
         character_view_1.draw_agent(map_view._window)

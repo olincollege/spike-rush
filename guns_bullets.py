@@ -54,11 +54,15 @@ class gun():
         else:
             self.current_clip = self.clip_size
     
-    def shoot(self, player_x, player_y, mouse_x, mouse_y):    
+    def shoot(self, player_x, player_y, theta):    
         #defining bullet heading
-        norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
-        x_increment = (mouse_x -player_x)/norm_value
-        y_increment = (mouse_y -player_y)/norm_value
+        #norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
+        #x_increment = (mouse_x -player_x)/norm_value
+        #y_increment = (mouse_y -player_y)/norm_value
+        
+        #theta in radians
+        x_increment = math.cos(theta)
+        y_increment = math.sin(theta)
 
         #doing spread
         perp_vector = [-y_increment,x_increment]
