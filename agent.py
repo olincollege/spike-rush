@@ -77,7 +77,7 @@ class Agent:
 
     @property
     def gun(self):
-      return self._gun
+        return self._gun
 
     def set_location(self, x_position, y_position):
         """
@@ -137,13 +137,13 @@ class Agent:
         pass
 
     def use_gun(self, mouse_x, mouse_y):
-      self._gun.shoot(self.location[0], self.location[1], mouse_x, mouse_y)
+        self._gun.shoot(self.location[0], self.location[1], mouse_x, mouse_y)
 
     def reload_gun(self):
-      # fix for private variable calls
-      self._gun.update_clip(1)
-      self._is_reloading = True
-      self._frames_since_reload = 0
+        # fix for private variable calls
+        self._gun.update_clip(1)
+        self._is_reloading = True
+        self._frames_since_reload = 0
 
     def plant_spike(self):
         """
@@ -272,13 +272,13 @@ class AgentView():
         surface.blit(self._sprite, (self.rect.x, self.rect.y))
 
     def draw_bullets(self, surface):
-      global bullet_dictionary
-      for bullet in bullet_dictionary.values():
-        bullet_rectangle = pygame.Rect(math.floor(bullet.pos_x - self.bullet_width/2, \
-                                      bullet.pos_y + self.bullet_width/2, \
-                                       self.bullet_width, self.bullet_width))
-        pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
-    
+        global bullet_dictionary
+        for bullet in bullet_dictionary.values():
+            bullet_rectangle = pygame.Rect(math.floor(bullet.pos_x - self.bullet_width/2,
+                                                      bullet.pos_y + self.bullet_width/2,
+                                           self.bullet_width, self.bullet_width))
+            pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
+
 
 class AgentController:
     """
@@ -297,7 +297,7 @@ class AgentController:
     def view(self):
         return self._view
 
-    def move(self, speed, keys, walls):
+    def move(self, speed, keys, input_type, walls):
         """
         Moves the character through the map. Detects pressed keys and moves
         the character correspondingly. Also detects collisions with walls and
@@ -307,19 +307,30 @@ class AgentController:
             speed: An integer representing the number of pixels a character
             moves per frame.
             keys: A list containing which keys are currently pressed.
+            input_type: A string representing which set of controls will be
+            used.
             walls: A sprite group of all walls on the map.
         """
         current_pos = self.agent.location
         xchange = 0
         ychange = 0
+        control_list = []
+
+        # up, down, left, right
+        if input_type == "WASD":
+            control_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d]
+
+        if input_type == "Arrow":
+            control_list = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT,
+                            pygame.K_RIGHT]
 
         # searches for arrow keys and WASD
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:  # left
+        if keys[control_list[2]]:  # left
             xchange = -speed
             self.agent.set_x_coord(current_pos[0]-speed)
             self._view.rect.x = self.agent.location[0]
 
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # right
+        if keys[control_list[3]]:  # right
             xchange = speed
             self.agent.set_x_coord(current_pos[0]+speed)
             self._view.rect.x = self.agent.location[0]
@@ -336,12 +347,12 @@ class AgentController:
                 self._view.rect.left = wall.rect.right
                 self.agent.location[0] = self._view.rect.left
 
-        if keys[pygame.K_UP] or keys[pygame.K_w]:  # up
+        if keys[control_list[0]]:  # up
             ychange = -speed
             self.agent.set_y_coord(current_pos[1]-speed)
             self._view.rect.y = self.agent.location[1]
 
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:  # down
+        if keys[control_list[1]]:  # down
             ychange = speed
             self.agent.set_y_coord(current_pos[1]+speed)
             self._view.rect.y = self.agent.location[1]
@@ -362,55 +373,55 @@ class AgentController:
         """
         aaa
         """
-        #if reloading, don't fire
+        # if reloading, don't fire
         if self.agent._frames_since_reload < self.agent.gun.frames_for_reload \
-      and self.agent._is_reloading:
-          return
+                and self.agent._is_reloading:
+            return
         elif self.agent._is_reloading:
             self.agent._is_reloading = False
 
         if keys[pygame.MOUSEBUTTONDOWN]:
-          mouse_x, mouse_y = pygame.mouse.get_pos()
-          if self.agent._frames_since_last_shot >= \
-          self.agent.gun.frames_before_shot and self.agent.gun.current_clip != 0:
-            # if no bullets, pass
-            
-            self.agent.use_gun(mouse_x, mouse_y)
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if self.agent._frames_since_last_shot >= \
+                    self.agent.gun.frames_before_shot and self.agent.gun.current_clip != 0:
+                # if no bullets, pass
 
-            # automatic fire activation
-            if self.agent.gun.automatic:
-                self.agent.is_shooting = True
+                self.agent.use_gun(mouse_x, mouse_y)
 
-            self.agent._frames_since_last_shot = 0
-            self.agent.gun.conseuctive_bullets = 1
+                # automatic fire activation
+                if self.agent.gun.automatic:
+                    self.agent.is_shooting = True
 
-            # for automatic fire
-            self.agent._frames_since_last_shot += 1
+                self.agent._frames_since_last_shot = 0
+                self.agent.gun.conseuctive_bullets = 1
+
+                # for automatic fire
+                self.agent._frames_since_last_shot += 1
 
         if keys[pygame.MOUSEBUTTONUP]:
-          mouse_presses = pygame.mouse.get_pressed()
-          if not mouse_presses[0]:
-            self.agent._is_shooting = False
-    
+            mouse_presses = pygame.mouse.get_pressed()
+            if not mouse_presses[0]:
+                self.agent._is_shooting = False
+
     def check_still_shooting(self):
         """
         aaa
         """
         # If no bullets, pass
         if self.agent._frames_since_reload < self.agent.gun._frames_for_reload \
-            and self.agent._is_reloading:
+                and self.agent._is_reloading:
             return
         elif self.agent._is_reloading:
             self.agent._is_reloading = False
             # print("reloaded")
             # print(self.agent.gun.current_clip)
-        
-        #check if automatic firing, check frame till next shot, check ammo
+
+        # check if automatic firing, check frame till next shot, check ammo
         if self.agent._is_shooting and self.agent._frames_since_last_shot >= \
-            self.agent.gun._frames_before_shot and self.agent.gun.current_clip \
-                 != 0:
+                self.agent.gun._frames_before_shot and self.agent.gun.current_clip \
+                != 0:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            self.agent.use_gun(mouse_x ,mouse_y)
+            self.agent.use_gun(mouse_x, mouse_y)
             self.agent.frames_since_last_shot = 0
 
             # update consecutive bullet count, for calculating spread,
@@ -421,44 +432,43 @@ class AgentController:
 
     def check_reload(self, keys):
         if keys[pygame.K_r]:
-          #this could be any non 0 positive integer, will do the same thing
-          self.agent.reload_gun()
-          # print("start reload")
+            # this could be any non 0 positive integer, will do the same thing
+            self.agent.reload_gun()
+            # print("start reload")
         if self.agent._is_reloading:
-          self.agent._frames_since_reload += 1
+            self.agent._frames_since_reload += 1
 
     def update_bullets(self, walls):
-      global bullet_dictionary
-      for bullet in bullet_dictionary.values():
-        self.bullet_main(walls)
+        global bullet_dictionary
+        for bullet in bullet_dictionary.values():
+            self.bullet_main(walls)
 
     def update_bullets_test(self, walls):
-      global bullet_dictionary
-      global bullet_delete_dictionary
-      for bullet in bullet_dictionary.values():
-        self.bullet_main(walls)
-      #actually delete the bullet
-      for bullet_name in bullet_delete_dictionary.keys():
-        del bullet_dictionary[bullet_name]
-      bullet_delete_dictionary.clear()
+        global bullet_dictionary
+        global bullet_delete_dictionary
+        for bullet in bullet_dictionary.values():
+            self.bullet_main(walls)
+        # actually delete the bullet
+        for bullet_name in bullet_delete_dictionary.keys():
+            del bullet_dictionary[bullet_name]
+        bullet_delete_dictionary.clear()
 
     def bullet_main(bullet, walls):
-        #the main things a bullet does each frame. crazy
-        #delete_check_list is a list of walls to check collision with for every bullet
-        #delete_check list should be generated elsewhere, probably in the main loop 
-        #with another function.
+        # the main things a bullet does each frame. crazy
+        # delete_check_list is a list of walls to check collision with for every bullet
+        # delete_check list should be generated elsewhere, probably in the main loop
+        # with another function.
         bullet.update_position()
         for collision in walls:
             if bullet.check_basic_collision(collision):
-                #check to make sure that deleting a key value pair from a dictionary
-                #you're iterating through doesn't mess everything up
+                # check to make sure that deleting a key value pair from a dictionary
+                # you're iterating through doesn't mess everything up
                 bullet.delete_bullet()
-            #if theres a player, damage them, again this should be done through
-              #a controller, but we're testing rn so whatever.
-              #if type(collide_possible) is player_test:
+            # if theres a player, damage them, again this should be done through
+              # a controller, but we're testing rn so whatever.
+              # if type(collide_possible) is player_test:
               #    collide_possible.update_health(self.damage)
-              #break
-
+              # break
 
     def spike_interaction(self, event):
         # Hold down 4 to plant & to defuse
@@ -490,11 +500,17 @@ def agent_test():
     # trigger event every second
     pygame.time.set_timer(track_second, 1000)
 
-    # create instances of classes
-    # include parentheses when creating instance
-    character = Agent(205-25, 99-25)
-    view = AgentView(character)
-    controller = AgentController(character, view)
+    # Player 1 instance
+    character_model_1 = Agent(205-25, 99-25)
+    character_view_1 = AgentView(character_model_1)
+    character_controller_1 = AgentController(
+        character_model_1, character_view_1)
+
+    # Player 2 instance
+    character_model_2 = Agent(1436-25, 365-25)
+    character_view_2 = AgentView(character_model_2)
+    character_controller_2 = AgentController(
+        character_model_2, character_view_2)
 
     # initialize HUD
     hud_model = display_model()
@@ -520,8 +536,12 @@ def agent_test():
         # movement
         # check which keys are currently pressed
         keys = pygame.key.get_pressed()
-        # if no collisions are detected, move character
-        controller.move(character_speed, keys, map_model._wall_list)
+        # if no collisions are detected, move characters
+        character_controller_1.move(
+            character_speed, keys, "WASD", map_model._wall_list)
+
+        character_controller_2.move(
+            character_speed, keys, "Arrow", map_model._wall_list)
 
         # update stuff
         # draw backdrop
@@ -531,11 +551,12 @@ def agent_test():
         # map_view.draw_walls()
 
         # draw HUD updates
-        hud_view.draw_player_updates(character, map_view._window)
+        hud_view.draw_player_updates(character_model_1, map_view._window)
         hud_view.draw_game_timer(map_view._window)
 
-        # draw character
-        view.draw_agent(map_view._window)
+        # draw characters
+        character_view_1.draw_agent(map_view._window)
+        character_view_2.draw_agent(map_view._window)
 
         pygame.display.flip()  # update entire display
         clock.tick(30)  # reduce framerate to 30
@@ -554,7 +575,8 @@ def agent_test():
         character_speed = 10
 
         # create instances of classes
-        character = Agent(205-25, 99-25)  # include parentheses when creating instance
+        # include parentheses when creating instance
+        character = Agent(205-25, 99-25)
         view1 = AgentView(character)
         controller1 = AgentController(character, view1)
 
@@ -580,7 +602,7 @@ def agent_test():
             controller1.move(character_speed, keys, map_model._wall_list)
             controller1.check_shoot(keys)
             controller1.check_reload(keys)
-        
+
             # update stuff
             # draw backdrop
             map_view.draw_map()
