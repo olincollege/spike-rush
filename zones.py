@@ -63,10 +63,10 @@ class DamageZone(Zone):
     def __init__(self, x_0, y_0, x_dim, y_dim):
         Zone.__init__(self, x_0, y_0, x_dim, y_dim, "damage")
         
-    def damage_agents(self, agents):
+    def damage_agents(self, agents, damage):
         """
         agents = list of all agents currently in the game
         """
         for agent in agents:
             # temporary health loss only 10 dmg
-            agent.update_health(agent.health-10)
+            agent.update_health(agent.health-damage)

@@ -54,7 +54,7 @@ class gun():
         else:
             self.current_clip = self.clip_size
     
-    def shoot(self, player_x, player_y, mouse_x, mouse_y):        
+    def shoot(self, player_x, player_y, mouse_x, mouse_y):    
         #defining bullet heading
         norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
         x_increment = (mouse_x -player_x)/norm_value
