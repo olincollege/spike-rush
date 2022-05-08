@@ -34,7 +34,7 @@ class Agent:
         """
         self._location = [x_init, y_init]
         self._health = 100
-        self._gun = vandal()
+        self._gun = guardian()
         self._color = (192, 192, 192)   # Default circle is gray
         self._spike = True  # If spike is true, it has not yet been planted
         self._spike_object = None
@@ -775,8 +775,8 @@ def agent_test():
                 character_speed, keys, "Arrow", map_model._wall_list)
 
 
-            character_controller_2.check_shoot(keys,"WASD")
-            character_controller_2.check_reload(keys,"WASD")
+            character_controller_2.check_shoot(keys,"Arrow")
+            character_controller_2.check_reload(keys,"Arrow")
 
             character_view_2.draw_agent(map_view._window)
             character_view_2.dot_sight(map_view._window)
