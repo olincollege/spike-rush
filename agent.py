@@ -296,6 +296,33 @@ class AgentView():
     @property
     def agent(self):
         return self._agent
+    
+    def dot_sight(self,surface):
+        
+        #make a view a red dot sight
+        dot_width = 6
+
+        angle = self.agent.angle
+
+        x_heading = math.cos(angle)
+        y_heading = math.sin(angle)
+
+        player_x = self.agent.location[0]
+        player_y = self.agent.location[1]
+
+        #x and y coordinates of the red dot sight
+        dot_x = player_x + math.floor(60*x_heading) + 25
+        dot_y = player_y + math.floor(60*y_heading) + 25
+
+        red_dot = pygame.Rect(math.floor(dot_x - dot_width/2),
+            math.floor(dot_y + dot_width/2), dot_width, dot_width)
+        
+        pygame.draw.rect(surface,(255,0,0),red_dot)
+        
+
+
+
+
 
     def draw_agent(self, surface):
         self.rect.x = self.agent.location[0]
@@ -312,6 +339,7 @@ class AgentView():
                                                bullet.pos_y + self.bullet_width/2),
                                            self.bullet_width, self.bullet_width)
             pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
+    
 
 
 class AgentController:
@@ -656,6 +684,9 @@ def agent_test():
         # draw characters
         character_view_1.draw_agent(map_view._window)
         character_view_2.draw_agent(map_view._window)
+
+        character_view_1.dot_sight(map_view._window)
+        character_view_2.dot_sight(map_view._window)
 
         character_controller_1.update_bullets_test(map_model._wall_list)
         character_view_1.draw_bullets(map_view._window)
