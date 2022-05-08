@@ -1,3 +1,6 @@
+
+# SPIKE RUSH: pygame_implementation
+
 ## intro blurb
 
 Spike Rush is a top down shooter where players compete by attacking and defending a spike site. A pygame implementation of the Valorant game mode.
