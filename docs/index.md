@@ -64,7 +64,7 @@ this will be a bio <br><br><br><br><br><br><br><br><br><br>
 
 this will be a bio <br><br><br><br><br><br><br><br><br><br><br><br>
 
-<img src="website_images/luke.jpg" width ="300" height = "300" style="float:right;margin:0px 40px">
+<img src="website_images/luke.png" width ="300" height = "300" style="float:right;margin:0px 40px">
 
 ### Luke Witten
 *Olin Class of 2025*  
