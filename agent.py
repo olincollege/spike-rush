@@ -505,7 +505,6 @@ class AgentController:
                                                            "Arrow" and keys[pygame.K_m]):
 
             if self.agent._is_shooting and not self.agent._gun.automatic:
-                self.agent._gun.consecutive_bullets = 0
                 return
 
             if self.agent._frames_since_last_shot < \
@@ -531,47 +530,26 @@ class AgentController:
                 self.agent.set_frames_since_last_shot(0)
 
                 # automatic fire activation
-                if self.agent.gun.automatic:
-                    self.agent.set_is_shooting(True)
             else:
                 self.agent._gun.consecutive_bullets = 0
                 self.agent.set_is_shooting(False)
 
         else:
+            
+
+            if self.agent._gun.automatic:
+                self.agent._gun.consecutive_bullets = 0
+                
+            elif not self.agent._gun.automatic and self.agent._frames_since_last_shot > \
+                    self.agent._gun.frames_before_shot + 8:
+                self.agent._gun.consecutive_bullets = 0
             self.agent.set_is_shooting(False)
-            self.agent._gun.consecutive_bullets = 0
 
          # if keys[pygame.MOUSEBUTTONUP]:
            # mouse_presses = pygame.mouse.get_pressed()
             # f not mouse_presses[0]:
             #self.agent._is_shooting = False
 
-    def check_still_shooting(self):
-        """
-        aaa
-        """
-        # If reloading, dont fire
-        if self.agent._frames_since_reload < self.agent.gun._frames_for_reload \
-                and self.agent._is_reloading:
-            return
-        # no longer reloading, stop reload status
-        elif self.agent._is_reloading:
-            self.agent.set_is_reloading(False)
-            # print("reloaded")
-            # (self.agent.gun.current_clip)
-
-        # check if automatic firing, check frame till next shot, check ammo
-        if self.agent._is_shooting and self.agent._frames_since_last_shot >= \
-                self.agent.gun._frames_before_shot and self.agent.gun.current_clip \
-                > 0:
-
-            self.agent.use_gun()
-            self.agent.set_frames_since_last_shot(0)
-
-            # update consecutive bullet count, for calculating spread,
-            # only do for automatic fire
-            self.agent.gun.consecutive_bullets += 1
-        elif not self.agent._is_shooting:
             self.agent.gun.consecutive_bullets = 0
 
     def check_reload(self, keys, input_type):
