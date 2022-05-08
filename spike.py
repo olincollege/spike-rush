@@ -11,18 +11,24 @@ class Spike:
         self._location = [x_loc, y_loc]
         self._status = False    # False means planted, True means defused
         self._timer = 45    # 45 seconds until spike go boom
-    
-    def countdown(self):
-        if self._status == False:
-            # Start subtracting from timer at each second
-            # If timer hits 0, go boom
-            pass
+
+        self.frames_to_explode = 125 #1100 # 45 seconds @ 30fps
+        self.frames_since_plant = 0
+
+    @property
+    def location(self):
+      return self._location
+
+    @property
+    def status(self):
+      return self._status
     
     def blowup(self):
-        if self._status == False and self._timer == 0:
-            pass
+        if self.frames_since_plant == self.frames_to_explode:
+          pass
 
     def defuse(self):
         self._status = True
+        self.frames_since_plant = 0
 
 

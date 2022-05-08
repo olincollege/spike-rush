@@ -30,8 +30,7 @@ class Zone:
         return self._type
 
     def in_zone(self, agent):
-        if agent.location[0] < self._width:
-            pass
+        return agent.location[0] > self._left
 
 class SpawnZone(Zone):
     """
@@ -42,10 +41,10 @@ class SpawnZone(Zone):
 
     def set_spawns(self, agents):
         for agent in agents:
-            spawn_x = randint(self._left, \
-                              self._left+self._width)
-            spawn_y = randint(self._top, \
-                              self._top+self._height)
+            spawn_x = randint(self._left+50, \
+                              self._left+self._width-50)
+            spawn_y = randint(self._top+50, \
+                              self._top+self._height-50)
             agent.set_location(spawn_x, spawn_y)
         
 
@@ -56,6 +55,13 @@ class PlantZone(Zone):
     def __init__(self, x_0, y_0, x_dim, y_dim):
         Zone.__init__(self, x_0, y_0, x_dim, y_dim, "plant")
 
+    def within_defuse_range(self, agent, spike):
+      return agent.location[0] < spike.location[0]+50 and \
+      agent.location[0] > spike.location[0]-50 and \
+      agent.location[1] < spike.location[1]+50 and \
+      agent.location[1] > spike.location[1]-50
+
+
 class DamageZone(Zone):
     """
     Zone where players take damage
@@ -63,10 +69,10 @@ class DamageZone(Zone):
     def __init__(self, x_0, y_0, x_dim, y_dim):
         Zone.__init__(self, x_0, y_0, x_dim, y_dim, "damage")
         
-    def damage_agents(self, agents, damage):
+    def damage_agents(self, agents):
         """
         agents = list of all agents currently in the game
         """
         for agent in agents:
             # temporary health loss only 10 dmg
-            agent.update_health(agent.health-damage)
+            agent.update_health(agent.health-10)

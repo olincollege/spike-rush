@@ -27,6 +27,9 @@ class display_model:
     def get_spike_status():
         pass
 
+    def set_timer(self, new_time):
+      self.timer = new_time
+
 
 class display_view:
     """
