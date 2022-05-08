@@ -40,6 +40,9 @@ class gun():
 
     def __init__(self):
         self.automatic = True
+        self.bullet_dict = {}
+        #self.bullet_count = 0
+        self.bullet_delete_dict = {}
 
     def update_clip(self,clip_update):
 
@@ -99,10 +102,12 @@ class gun():
 
         update_dict = {new_bullet.name:new_bullet}
 
-        bullet_dictionary.update(update_dict)
+        self.bullet_dict.update(update_dict)
 
         #decrease clip size by 1
         self.update_clip(-1)
+    def delete_bullet(self, bullet):
+      self.bullet_delete_dict.update({bullet.name:self.bullet_dict[bullet.name]})
 
 class bullet():
     speed_per_tick = math.ceil(frame_rate *20/60)
@@ -131,12 +136,12 @@ class bullet():
         self.pos_x += self.delta_x
         self.pos_y += self.delta_y
 
-    def delete_bullet(self):
+    #def delete_bullet(self):
         #delete a bullet from the list of bullets, might stop it from existing... probably
-        global bullet_dictionary
-        global bullet_delete_dictionary
+        #global bullet_dictionary
+        #global bullet_delete_dictionary
 
-        bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
+        #bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
 
     def set_sprite(self, sprite):
       self.bullet_sprite = sprite
@@ -161,6 +166,8 @@ class classic(gun):
 
     def __init__(self):
         self.automatic = False
+        self.bullet_dict = {}
+        self.bullet_delete_dict = {}
 
 class spectre(gun):
     """
@@ -180,6 +187,8 @@ class spectre(gun):
 
     def __init__(self):
         self.automatic = True
+        self.bullet_dict = {}
+        self.bullet_delete_dict = {}
 
 class guardian(gun):
     """
@@ -198,6 +207,8 @@ class guardian(gun):
 
     def __init__(self):
         self.automatic = False
+        self.bullet_dict = {}
+        self.bullet_delete_dict = {}
 
 class vandal(gun):
     """
@@ -216,6 +227,8 @@ class vandal(gun):
 
     def __init__(self):
         self.automatic = True
+        self.bullet_dict = {}
+        self.bullet_delete_dict = {}
 
 #this one is special. ill get to it later
 class operator(gun):
@@ -239,7 +252,9 @@ class operator(gun):
 
     def __init__(self):
         self.automatic = False
-    
+        self.bullet_dict = {}
+        self.bullet_delete_dict = {}
+      
     pass
 
 gun_list =[classic(),spectre(),guardian(),vandal()]

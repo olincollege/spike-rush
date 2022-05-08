@@ -307,8 +307,8 @@ class AgentView():
         surface.blit(self.agent_sprite.image, (self.agent_sprite.rect))
 
     def draw_bullets(self, surface):
-        global bullet_dictionary
-        for bullet in bullet_dictionary.values():
+        #global bullet_dictionary
+        for bullet in self._agent._gun.bullet_dict.values():
             bullet_sprite = pygame.sprite.Sprite()
             bullet_sprite.image = pygame.Surface((self.bullet_width, self.bullet_width))
             bullet_sprite.image.fill((0, 0, 0))
@@ -535,14 +535,14 @@ class AgentController:
     # bullet controlls
 
     def update_bullets_test(self, walls, players, other_agent):
-        global bullet_dictionary
-        global bullet_delete_dictionary
-        for bullet in bullet_dictionary.values():
+        #global bullet_dictionary
+        #global bullet_delete_dictionary
+        for bullet in self._agent._gun.bullet_dict.values():
             self.bullet_main(bullet, walls, players, other_agent)
         # actually delete the bullet
-        for bullet_name in bullet_delete_dictionary.keys():
-            del bullet_dictionary[bullet_name]
-        bullet_delete_dictionary.clear()
+        for bullet_name in self._agent._gun.bullet_delete_dict.keys():
+            del self._agent._gun.bullet_dict[bullet_name]
+        self._agent._gun.bullet_delete_dict.clear()
 
     def bullet_collision(self, bullet, walls, players, other_agent):
       if bullet.bullet_sprite is not None:
@@ -551,10 +551,10 @@ class AgentController:
         agent_collision_list = \
             pygame.sprite.spritecollide(bullet.bullet_sprite, players, False)
         for wall in wall_collision_list:
-            bullet.delete_bullet()
+            self._agent._gun.delete_bullet(bullet)
         for index, agent in enumerate(agent_collision_list):
             # the way this is implemented will not work in 2+v2+ games
-            bullet.delete_bullet()  
+            self._agent._gun.delete_bullet(bullet)  
             other_agent.update_health(other_agent.health - 10)
             
             if other_agent.health <= 0:
@@ -592,7 +592,6 @@ class AgentController:
     def orb_interaction(self, event):
         # Not implementing rn
         pass
-
 
 def agent_test():
     """
