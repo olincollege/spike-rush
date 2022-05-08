@@ -28,7 +28,7 @@ class display_model:
         pass
 
     def set_timer(self, new_time):
-      self.timer = new_time
+        self.timer = new_time
 
 
 class display_view:
@@ -66,7 +66,10 @@ class display_view:
         """
         # pull & draw player 1 health update
         health_1 = player_1.health
-        self.draw_text(str(health_1), (255, 255, 255), surface, (230, 800))
+        if player_1.health < 0:
+            self.draw_text("0", (255, 255, 255), surface, (230, 800))
+        else:
+            self.draw_text(str(health_1), (255, 255, 255), surface, (230, 800))
         # pull & draw player 1 ammo update
         # pull ammo here
         ammo_1 = player_1.gun.current_clip
@@ -74,7 +77,11 @@ class display_view:
 
         # pull & draw player 2 health update
         health_2 = player_2.health
-        self.draw_text(str(health_2), (255, 255, 255), surface, (1238, 800))
+        if player_2.health < 0:
+            self.draw_text("0", (255, 255, 255), surface, (1238, 800))
+        else:
+            self.draw_text(str(health_2), (255, 255, 255),
+                           surface, (1238, 800))
         # pull & draw player 2 ammo update
         # pull ammo here
         ammo_2 = player_2.gun.current_clip
