@@ -28,7 +28,7 @@ class Agent:
 
     """
 
-    def __init__(self, x_init, y_init):
+    def __init__(self, x_init, y_init, side):
         """
         Creates an instance of an agent.
         """
@@ -37,18 +37,22 @@ class Agent:
         self._gun = vandal()
         self._color = (192, 192, 192)   # Default circle is gray
         self._spike = True  # If spike is true, it has not yet been planted
-        # self._sprite = None
+        self._spike_object = None
+        self._side = side
 
         self._frames_since_last_shot = 0
         self._frames_since_reload = 0
 
+        self._frames_since_last_spike_interaction = 0
+
         self._is_shooting = False
         self._is_reloading = False
+        #self.is_defusing = False
 
         self._turn_speed = .15*frame_rate/30
         self._angle = 0
-
-        #player starts as alive
+        
+         #player starts as alive
         self._alive = True
 
         #self._abilities = []
@@ -90,12 +94,21 @@ class Agent:
         return self._spike
 
     @property
+    def spike_object(self):
+        return self._spike_object
+
+    @property
     def gun(self):
         return self._gun
-    
+
+    @property
+    def side(self):
+        return self._side
+
     @property
     def alive(self):
         return self._alive
+
 
     def set_location(self, x_position, y_position):
         """
@@ -161,7 +174,10 @@ class Agent:
 
     def set_angle(self, angle):
         self._angle = angle
-    
+
+    def set_frames_since_last_spike_interaction(self, new_frames):
+        self._frames_since_last_spike_interaction = new_frames
+
     def kill(self):
         self._alive = False
 
@@ -176,10 +192,10 @@ class Agent:
         self._gun.shoot(self.location[0], self.location[1], self._angle)
 
     def reload_gun(self):
-        # fix for private variable calls
-        self._gun.update_clip(1)
-        self.set_is_reloading(True)
-        self._frames_since_reload = 0
+      # fix for private variable calls
+      self._gun.update_clip(1)
+      self.set_is_reloading(True)
+      self._frames_since_reload = 0
 
     def plant_spike(self, map_model):
         """
@@ -188,11 +204,9 @@ class Agent:
         Returns:
             None.
         """
-        # 4 seconds to plant
-        if self._spike:  # add that it must be in a plant zone
-            # create new spike object @ current location
-            pass
-
+        self._spike = False
+        self._spike_object = Spike(self.location[0], self.location[1])
+      
     def defuse_spike(self, spike):
         """
         aaa
@@ -202,8 +216,10 @@ class Agent:
         Returns:
             None.
         """
-        # 3.5 seconds to half; 7 seconds to defuse fully
         spike.defuse()
+
+    def set_spike_object(self, new_spike):
+      self._spike_object = new_spike
 
     def pickup_orb(self):
         """
@@ -298,7 +314,7 @@ class AgentView():
         self.agent_sprite = pygame.sprite.Sprite()
         self.image = [os.path.join('image', 'sprites', self._img_path)]
         self.agent_sprite.image = \
-            pygame.transform.scale(pygame.image.load(os.path.join(
+      pygame.transform.scale(pygame.image.load(os.path.join(
                 'images', 'sprites', self._img_path)).convert_alpha(),
                 (50, 50))
         self.agent_sprite.rect = self.agent_sprite.image.get_rect()
@@ -309,7 +325,7 @@ class AgentView():
     def agent(self):
         return self._agent
 
-    def dot_sight(self, surface):
+def dot_sight(self, surface):
 
         # make a view a red dot sight
         dot_width = 6
@@ -342,18 +358,27 @@ class AgentView():
         #global bullet_dictionary
         for bullet in self._agent._gun.bullet_dict.values():
             bullet_sprite = pygame.sprite.Sprite()
-            bullet_sprite.image = pygame.Surface(
-                (self.bullet_width, self.bullet_width))
+            bullet_sprite.image = pygame.Surface((self.bullet_width, self.bullet_width))
             bullet_sprite.image.fill((0, 0, 0))
             bullet_x = math.floor(bullet.pos_x - self.bullet_width/2)
             bullet_y = math.floor(bullet.pos_y + self.bullet_width/2)
-            bullet_sprite.rect = pygame.Rect(
-                bullet_x, bullet_y, self.bullet_width, self.bullet_width)
-            # self._bullet_sprites.add(bullet_sprite)
+            bullet_sprite.rect = pygame.Rect(bullet_x, bullet_y, self.bullet_width, self.bullet_width)
+            #self._bullet_sprites.add(bullet_sprite)
             bullet.set_sprite(bullet_sprite)
             surface.blit(bullet_sprite.image, bullet_sprite.rect)
-
+            
             #pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
+    def draw_spike(self, surface):
+        spike = self._agent.spike_object
+        if spike is not None:
+          spike_width = 20
+          spike_sprite = pygame.sprite.Sprite()
+          spike_sprite.image = pygame.Surface((spike_width, spike_width))
+          spike_sprite.image.fill((100, 100, 100))
+          spike_sprite.rect = pygame.Rect(self._agent.spike_object.location[0], self._agent.spike_object.location[1], spike_width, spike_width)
+
+          surface.blit(spike_sprite.image, spike_sprite.rect)
+        
 
 
 class AgentController:
@@ -364,6 +389,7 @@ class AgentController:
     def __init__(self, agent, view):
         self._agent = agent
         self._view = view
+
 
     @property
     def agent(self):
@@ -394,13 +420,13 @@ class AgentController:
 
         # up, down, left, right
         if input_type == "WASD":
-            control_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d,
-                            pygame.K_c, pygame.K_v]
+            control_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, \
+                pygame.K_c, pygame.K_v]
 
         if input_type == "Arrow":
             control_list = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT,
-                            pygame.K_RIGHT, pygame.K_COMMA,
-                            pygame.K_PERIOD]
+                            pygame.K_RIGHT, pygame.K_COMMA, \
+                                pygame.K_PERIOD]
 
         # searches for arrow keys and WASD
         if keys[control_list[2]]:  # left
@@ -416,7 +442,7 @@ class AgentController:
         if keys[control_list[5]]:  # turn counter clockwise
             theta_change = self.agent._turn_speed
             self.agent.set_angle(self.agent.angle + theta_change)
-
+        
         if keys[control_list[4]]:  # turn counter clockwise
             theta_change = self.agent._turn_speed
             self.agent.set_angle(self.agent.angle - theta_change)
@@ -471,38 +497,41 @@ class AgentController:
             # print("reloaded")
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        self.agent.set_frames_since_last_shot(
-            self.agent._frames_since_last_shot + 1)
+        self.agent.set_frames_since_last_shot(self.agent._frames_since_last_shot +1)
         # consecutive fire
 
-        if (input_type == "WASD" and keys[pygame.K_x]) or (input_type ==
-                                                           "Arrow" and keys[pygame.K_m]):
 
+        if (input_type == "WASD" and keys[pygame.K_x]) or (input_type == \
+             "Arrow" and keys[pygame.K_m]):
+            
             if self.agent._is_shooting and not self.agent._gun.automatic:
                 self.agent._gun.consecutive_bullets = 0
                 return
 
-            if self.agent._frames_since_last_shot < \
-                    self.agent._gun.frames_before_shot:
-                return
 
+            if self.agent._frames_since_last_shot < \
+                self.agent._gun.frames_before_shot:
+                return
+            
             # if the weapon is semi auto, don't shoot it uatomatically
 
-            if self.agent._gun.current_clip > 0:
-                # If no bullets, pass
-                self.agent.use_gun()
 
+            if self.agent._gun.current_clip > 0:
+            # If no bullets, pass
+                self.agent.use_gun()
+  
               # automatic fire activation
             # if self.agent.gun.automatic:
                 if self.agent._is_shooting:
                     self.agent._gun.consecutive_bullets += 1
                 else:
                     self.agent._gun.consecutive_bullets = 1
-
+                
                 # print(self.agent._gun.consecutive_bullets)
                 self.agent.set_is_shooting(True)
-
+            
                 self.agent.set_frames_since_last_shot(0)
+                
 
                 # automatic fire activation
                 if self.agent.gun.automatic:
@@ -511,6 +540,7 @@ class AgentController:
                 self.agent._gun.consecutive_bullets = 0
                 self.agent.set_is_shooting(False)
 
+            
         else:
             self.agent.set_is_shooting(False)
             self.agent._gun.consecutive_bullets = 0
@@ -536,8 +566,8 @@ class AgentController:
 
         # check if automatic firing, check frame till next shot, check ammo
         if self.agent._is_shooting and self.agent._frames_since_last_shot >= \
-                self.agent.gun._frames_before_shot and self.agent.gun.current_clip \
-                > 0:
+            self.agent.gun._frames_before_shot and self.agent.gun.current_clip \
+                 > 0:
 
             self.agent.use_gun()
             self.agent.set_frames_since_last_shot(0)
@@ -549,18 +579,17 @@ class AgentController:
             self.agent.gun.consecutive_bullets = 0
 
     def check_reload(self, keys, input_type):
-
+        
         if input_type == "Arrow" and keys[pygame.K_l]:
-
-            self.agent.reload_gun()
+          
+          self.agent.reload_gun()
 
         if input_type == "WASD" and keys[pygame.K_r]:
-
-            self.agent.reload_gun()
-
+          
+          self.agent.reload_gun()
+        
         if self.agent._is_reloading:
-            self.agent.set_frames_since_reload(
-                self.agent._frames_since_reload + 1)
+          self.agent.set_frames_since_reload(self.agent._frames_since_reload + 1)
 
     # bullet controlls
 
@@ -588,9 +617,9 @@ class AgentController:
             other_agent.update_health(other_agent.health - 10)
             
             if other_agent.health <= 0:
-                other_agent.kill()
+              other_agent.kill()
            # agent.die
-
+  
     def bullet_main(self, bullet, walls, players, other_agent):
         # the main things a bullet does each frame. crazy
         # delete_check_list is a list of walls to check collision with for every bullet
@@ -609,15 +638,56 @@ class AgentController:
         #    collide_possible.update_health(self.damage)
         # break
 
-    def spike_interaction(self, keys, map_model):
-        # Hold down 4 to plant & to defuse
-        if self._agent.spike and keys[pygame.K_4] and map_model.a_site:
-            # Add in thing to track time; 4 seconds for plant
-            self._agent.plant_spike()
-        elif not self._agent.spike and keys[pygame.K_4]:
-            # Add in thing to track time; 7 seconds for defuse
-            # 3.5s for half
-            self._agent.defuse_spike()
+    def spike_plant(self, keys, map_model, input_type, hud_model):
+        frames_to_plant = 125 # 4 seconds @ 30 fps
+        if self._agent.side != "attack":
+          return
+        if map_model.a_site.in_zone(self._agent):
+            if (input_type == "WASD" and keys[pygame.K_4] or \
+             input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
+              if self._agent.spike and self._agent._frames_since_last_spike_interaction == \
+              frames_to_plant:
+                print("Planted")
+                self._agent.plant_spike(map_model)
+                hud_model.timer = 45
+              elif self._agent.spike:
+                self._agent.set_frames_since_last_spike_interaction( \
+                self._agent._frames_since_last_spike_interaction + 1)
+            else: 
+              self._agent.set_frames_since_last_spike_interaction(0)
+    
+    def spike_defuse(self, keys, map_model, input_type, other_agent, hud_model):
+        if self._agent.side != "defense":
+          return
+        frames_to_defuse = 225 # 7 seconds @ 30 fps
+        spike = other_agent.spike_object
+
+        if spike is not None and \
+      map_model.a_site.within_defuse_range(self._agent, spike):
+          if (input_type == "WASD" and keys[pygame.K_4] or \
+             input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
+            if not spike.status and \
+            self._agent._frames_since_last_spike_interaction == \
+            frames_to_defuse and spike.frames_since_plant < \
+            spike.frames_to_explode:
+              print("Defused")
+              self._agent.defuse_spike(other_agent.spike_object)
+              hud_model.timer = 0
+              other_agent.set_spike_object(None)
+            elif not spike.status:
+              self._agent.set_frames_since_last_spike_interaction( \
+                self._agent._frames_since_last_spike_interaction + 1)
+          else: 
+              self._agent.set_frames_since_last_spike_interaction(0)
+          #else:
+          #  if self._agent._frames_since_last_spike_interaction < \
+          #  frames_to_diffuse and :
+          #    print("Defuse")
+          #    self._agent.defuse_spike()
+          #self._agent.set_frames_since_last_spike_interaction( \
+
+        
+
 
     def orb_interaction(self, event):
         # Not implementing rn
@@ -639,15 +709,19 @@ def agent_test():
     # trigger event every second
     pygame.time.set_timer(track_second, 1000)
 
+    # initialize HUD
+    hud_model = display_model()
+    hud_view = display_view(hud_model)
+
     # Player 1 instance
-    character_model_1 = Agent(0, 0)
-    character_view_1 = AgentView(character_model_1, 'blue_sprite.png')
+    character_model_1 = Agent(0, 0, "attack")
+    character_view_1 = AgentView(character_model_1, 'test_sprite.png')
     character_controller_1 = AgentController(
         character_model_1, character_view_1)
 
     # Player 2 instance
-    character_model_2 = Agent(0, 0)
-    character_view_2 = AgentView(character_model_2, 'red_sprite.png')
+    character_model_2 = Agent(0, 0, "defense")
+    character_view_2 = AgentView(character_model_2, 'test_sprite.png')
     character_controller_2 = AgentController(
         character_model_2, character_view_2)
 
@@ -660,9 +734,7 @@ def agent_test():
     map_model.attacker_spawn.set_spawns([character_model_1])
     map_model.defender_spawn.set_spawns([character_model_2])
 
-    # initialize HUD
-    hud_model = display_model()
-    hud_view = display_view(hud_model)
+
 
     # main loop
     run = True
@@ -672,7 +744,7 @@ def agent_test():
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 run = False
-
+                
             if event.type == track_second:
                 # if a second has passed, reduce the timer
                 if hud_model.timer != 0:
@@ -705,21 +777,23 @@ def agent_test():
         if character_model_2.alive:
 
 
-
-
             character_controller_2.move(
                 character_speed, keys, "Arrow", map_model._wall_list)
-
-
-            character_controller_2.check_shoot(keys,"Arrow")
-
             character_view_2.draw_agent(map_view._window)
-
             character_view_2.dot_sight(map_view._window)
+
+        character_controller_1.check_shoot(keys,"WASD")
+        character_controller_1.check_reload(keys,"WASD")
+
+        character_controller_2.check_shoot(keys,"Arrow")
+        character_controller_2.check_reload(keys,"Arrow")
+
+        character_controller_1.spike_plant(keys, map_model, "WASD", hud_model)
+        character_controller_2.spike_defuse(keys, map_model, "Arrow", agents[0], hud_model)
 
         # update stuff
         # draw backdrop
-
+        map_view.draw_map()
 
         # walls will still have collision even if not drawn
         # map_view.draw_walls()
@@ -730,15 +804,20 @@ def agent_test():
             character_model_1, character_model_2, map_view._window)
         hud_view.draw_game_timer(map_view._window)
 
-  
+        # draw spike
+        character_view_1.draw_spike(map_view._window)
+        character_view_2.draw_spike(map_view._window)
 
-        character_controller_2.update_bullets_test(map_model._wall_list,
+        # draw characters
+        character_view_1.draw_agent(map_view._window)
+        character_view_2.draw_agent(map_view._window)
+
+        character_controller_2.update_bullets_test(map_model._wall_list, \
                                                    agent_list, agents[0])
         character_view_2.draw_bullets(map_view._window)
-
         character_controller_1.update_bullets_test(map_model._wall_list, \
                                                    agent_list, agents[1]
-                                                   )
+                                                  )
         character_view_1.draw_bullets(map_view._window)
 
         pygame.display.flip()  # update entire display
