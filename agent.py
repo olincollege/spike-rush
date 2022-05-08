@@ -534,17 +534,17 @@ class AgentController:
 
     # bullet controlls
 
-    def update_bullets_test(self, walls, players, other_agents):
+    def update_bullets_test(self, walls, players, other_agent):
         global bullet_dictionary
         global bullet_delete_dictionary
         for bullet in bullet_dictionary.values():
-            self.bullet_main(bullet, walls, players, other_agents)
+            self.bullet_main(bullet, walls, players, other_agent)
         # actually delete the bullet
         for bullet_name in bullet_delete_dictionary.keys():
             del bullet_dictionary[bullet_name]
         bullet_delete_dictionary.clear()
 
-    def bullet_collision(self, bullet, walls, players, other_agents):
+    def bullet_collision(self, bullet, walls, players, other_agent):
       if bullet.bullet_sprite is not None:
         wall_collision_list = \
             pygame.sprite.spritecollide(bullet.bullet_sprite, walls, False)
@@ -554,18 +554,20 @@ class AgentController:
             bullet.delete_bullet()
         for index, agent in enumerate(agent_collision_list):
             # the way this is implemented will not work in 2+v2+ games
-            other_agents[index].update_health(other_agents[index].health - 10)
-            bullet.delete_bullet()
-            #if agent.health <= 0:
+            bullet.delete_bullet()  
+            other_agent.update_health(other_agent.health - 10)
+            
+            if other_agent.health <= 0:
+              agent.kill()
            # agent.die
   
-    def bullet_main(self, bullet, walls, players, other_agents):
+    def bullet_main(self, bullet, walls, players, other_agent):
         # the main things a bullet does each frame. crazy
         # delete_check_list is a list of walls to check collision with for every bullet
         # delete_check list should be generated elsewhere, probably in the main loop
         # with another function.
         bullet.update_position()
-        self.bullet_collision(bullet, walls, players, other_agents)
+        self.bullet_collision(bullet, walls, players, other_agent)
         # for collision in walls:
         # if bullet.check_basic_collision(collision):
         # check to make sure that deleting a key value pair from a dictionary
@@ -590,6 +592,7 @@ class AgentController:
     def orb_interaction(self, event):
         # Not implementing rn
         pass
+
 
 def agent_test():
     """
@@ -682,9 +685,15 @@ def agent_test():
         character_view_1.draw_agent(map_view._window)
         character_view_2.draw_agent(map_view._window)
 
+        character_controller_2.update_bullets_test(map_model._wall_list, \
+                                                   agent_list, agents[0])
+        character_view_2.draw_bullets(map_view._window)
         character_controller_1.update_bullets_test(map_model._wall_list, \
-                                                   agent_list, agents[1:])
+                                                   agent_list, agents[1]
+                                                  )
         character_view_1.draw_bullets(map_view._window)
+      
+        
 
         pygame.display.flip()  # update entire display
         clock.tick(30)  # reduce framerate to 30
