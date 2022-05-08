@@ -1,5 +1,3 @@
-# SPIKE RUSH: pygame_implementation
-
 ## intro blurb
 
 Spike Rush is a top down shooter where players compete by attacking and defending a spike site. A pygame implementation of the Valorant game mode.
@@ -16,7 +14,7 @@ Our goal for this project was to implement a working version of the Spike Rush g
 
 ### Game Overview
 
-Spike Rush is a top down shooter. Before the game begins, players will be able to choose from a selection of guns to use during the game. Players will spawn in designated attack (red) and defense (blue) zones. The attacking player is given a spike, and must plant and detonate it in the spike zone (yellow). The defending player must protect the zone or defuse the spike if it has been planted. The game ends if either player is eliminated or a spike objective is achieved.
+Spike Rush is a top down shooter. Before the game begins, players will be able to choose from a selection of guns to use during the game. Players will spawn in designated attack (blue) and defense (red) zones. The attacking player is given a spike, and must plant and detonate it in the spike zone (yellow). The defending player must protect the zone or defuse the spike if it has been planted. The game ends if either player is eliminated or a spike objective is achieved.
 
 ### Project Highlights
 
@@ -48,21 +46,28 @@ found [here.]()
 
 ## About Us
 
+
+<img src="website_images/aditi.png" width ="300" height = "300" style="float:right;margin:0px 40px">
+
 ### Aditi Vinod
-*Olin Class of 2025*
+*Olin Class of 2025* <br>
 
-bio
+this will be a bio <br><br><br><br><br><br><br><br><br><br>
 
-### Andrew Phillips
-*Olin Class of 2025*
+<img src="website_images/andrew.jpg" width ="300" height = "300" style="float:left;margin:50px 40px"> <br><br>
 
-bio
+### Andrew Phillips 
+*Olin Class of 2025* <br>
+
+this will be a bio <br><br><br><br><br><br><br><br><br><br><br><br>
+
+<img src="website_images/luke.jpg" width ="300" height = "300" style="float:right;margin:0px 40px">
 
 ### Luke Witten
-*Olin Class of 2025*
+*Olin Class of 2025*  
 
-bio
+this will be a bio <br><br><br><br><br><br><br><br><br><br><br>
 
-### Attrition
+## Attribution
 Initial idea & game name from Valorant  
 ??? other things as they come up
