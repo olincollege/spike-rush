@@ -495,7 +495,6 @@ class AgentController:
         elif self.agent._is_reloading:
             self.agent.set_is_reloading(False)
             # print("reloaded")
-        mouse_x, mouse_y = pygame.mouse.get_pos()
 
         self.agent.set_frames_since_last_shot(
             self.agent._frames_since_last_shot + 1)

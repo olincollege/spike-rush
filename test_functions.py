@@ -3,6 +3,7 @@ Test library functions to find and identify protein-coding genes in DNA.
 """
 import pytest
 import math
+import pygame
 from agent import (
     Agent,
     AgentController
@@ -17,6 +18,9 @@ from guns_bullets import (
     bullet_delete_dictionary
 
 )
+
+
+#gun and bullet test cases
 
 
 update_clip_cases = [
@@ -70,6 +74,10 @@ bullet_move_cases = [
 
 ]
 
+#I can't do this one
+bullet_hit_cases = [
+
+]
 
 @pytest.mark.parametrize("input_value,output_clip",\
     update_clip_cases)
@@ -123,15 +131,12 @@ def test_bullet_creation(player_x,player_y,theta,shots_fired):
     """
     
 
-    starting_bullet_count = 0
 
     the_gun = gun()
     for _ in range(shots_fired):
         the_gun.shoot(player_x,player_y,theta)
     
-    global bullet_dictionary
-    name = f"bullet_{shots_fired}"
-    assert bullet_dictionary[name]
+    assert len(the_gun.bullet_dict) == shots_fired
 
 @pytest.mark.parametrize("incr_x,incr_y",\
     bullet_move_cases)
@@ -156,3 +161,167 @@ def test_move_bullet(incr_x,incr_y):
         incr_y*the_bullet.speed_per_tick]
 
 
+
+@pytest.mark.parametrize("incr_x,incr_y",\
+    bullet_move_cases)
+def test_bullet_hit(incr_x,incr_y):
+    """
+    Check that find_most_frequent outputs correctly ordered dictionaries
+
+    Args:
+        freq_input_dict: A dictionary with strings as keys and positive
+            integers as values.
+        freq_input_int: An integer determining how many value ordered items to
+            output.
+        output_dict: A value ordered dictionary with strings as
+            keys and integers as values.
+    """
+    
+    pass
+
+
+
+
+#agent test cases
+
+set_location_cases = [
+    
+    #x location, y location
+
+    #positive coordinates
+    (100,100),
+    #origin
+    (0,0),
+    #negative coordinates
+    (-1,-59999),
+    #mixed coordinates
+    (1235,-60),
+]
+
+@pytest.mark.parametrize("x_coord,y_coord",\
+    set_location_cases)
+def test_set_location(x_coord,y_coord):
+    """
+    Check that find_most_frequent outputs correctly ordered dictionaries
+
+    Args:
+        freq_input_dict: A dictionary with strings as keys and positive
+            integers as values.
+        freq_input_int: An integer determining how many value ordered items to
+            output.
+        output_dict: A value ordered dictionary with strings as
+            keys and integers as values.
+    """
+    
+    player = Agent(0,0,"attack")
+
+    player.set_x_coord(x_coord)
+    player.set_y_coord(y_coord)
+
+    location = [x_coord,y_coord]
+
+    assert location == player.location
+
+
+
+set_health_cases = [
+
+ (0,),
+ (1,),
+ (5,),
+ (-5,),
+]
+
+@pytest.mark.parametrize("health_update",\
+    set_health_cases)
+def test_set_health(health_update):
+    """
+    Check that find_most_frequent outputs correctly ordered dictionaries
+
+    Args:
+        freq_input_dict: A dictionary with strings as keys and positive
+            integers as values.
+        freq_input_int: An integer determining how many value ordered items to
+            output.
+        output_dict: A value ordered dictionary with strings as
+            keys and integers as values.
+    """
+
+    player = Agent(0,0,"attack")
+    player.update_health(health_update)
+
+    assert health_update == player.health
+
+#tests cases for set_is shooting, set_is reloading, and kill()
+#these inputs do not affect each other at all and thus combinations do
+#not need to be tested
+set_boolean_cases = [
+
+    (True,False,False),
+    (False,True,False),
+    (False,False,True),
+    (True,True,True)
+
+]
+
+@pytest.mark.parametrize("shooting,reloading,killing",\
+    set_boolean_cases)
+def test_set_booleans(shooting,reloading,killing):
+    """
+    Check that find_most_frequent outputs correctly ordered dictionaries
+
+    Args:
+        freq_input_dict: A dictionary with strings as keys and positive
+            integers as values.
+        freq_input_int: An integer determining how many value ordered items to
+            output.
+        output_dict: A value ordered dictionary with strings as
+            keys and integers as values.
+    """
+
+    player = Agent(0,0,"attack")
+    player.set_is_shooting(shooting)
+    player.set_is_reloading(reloading)
+
+    if killing:
+        player.kill()
+
+    bool_list = [player._is_shooting,player._is_reloading,player.alive]
+
+    assert bool_list == [shooting,reloading,not killing]
+
+
+#for frames since last shot,reload
+set_frames_since_cases = [
+    #0 frames
+    (0,0),
+    #small, positive frames
+    (1,5),
+    #large number of frames
+    (200,500),
+
+]
+
+@pytest.mark.parametrize("last_shot,reloading",\
+    set_frames_since_cases)
+def test_set_frames(last_shot,reloading):
+    """
+    Check that find_most_frequent outputs correctly ordered dictionaries
+
+    Args:
+        freq_input_dict: A dictionary with strings as keys and positive
+            integers as values.
+        freq_input_int: An integer determining how many value ordered items to
+            output.
+        output_dict: A value ordered dictionary with strings as
+            keys and integers as values.
+    """
+
+    player = Agent(0,0,"attack")
+    player.set_frames_since_last_shot(last_shot)
+    player.set_frames_since_reload(reloading)
+
+
+    frames_list = [player._frames_since_last_shot,player._frames_since_reload]
+
+    assert frames_list == [last_shot,reloading]
