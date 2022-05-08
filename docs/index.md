@@ -20,7 +20,7 @@ p cool right
 take some dynamic screenshots  
 - map overview  
 
-![split map](/docs/assets/map_overview.png)
+![split map](website_images/map_overview.png)
 
 - sprite close up  
 - HUD close up  
