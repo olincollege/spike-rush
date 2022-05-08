@@ -274,24 +274,26 @@ class AgentView():
     """
     bullet_width = 6
 
-    def __init__(self, agent, sprite):
-        self._agent = agent
-        self._sprite = sprite
+    def __init__(self, agent_model, image_path):
+        self._agent = agent_model
+        self._img_path = image_path
+        #self._agent = agent
+        #self._sprite = sprite
+        #self._bullet_sprites = []
+        #self.bullet_group = None
 
         #self._sprite = self._agent._sprite
 
         # initiate sprite stuff
-        pygame.sprite.Sprite.__init__(self)  # initiate pygame sprite
-        # image for sprite representation
-        self._sprites = [os.path.join('images', 'sprites', self._sprite)]
-        # currently only using one image, scaling size down
-        self._sprite = \
-            pygame.transform.scale(pygame.image.load(os.path.join(
+        self.agent_sprite = pygame.sprite.Sprite()
+        self.image = [os.path.join('image', 'sprites', self._img_path)]
+        self.agent_sprite.image = \
+      pygame.transform.scale(pygame.image.load(os.path.join(
                 'images', 'sprites', 'test_sprite.png')).convert_alpha(),
                 (50, 50))
-        self.rect = self._sprite.get_rect()
-        self.rect.x = self._agent.location[0]
-        self.rect.y = self._agent.location[1]
+        self.agent_sprite.rect = self.agent_sprite.image.get_rect()
+        self.agent_sprite.rect.x = self._agent.location[0]
+        self.agent_sprite.rect.y = self._agent.location[1]
 
     @property
     def agent(self):
@@ -325,21 +327,26 @@ class AgentView():
 
 
     def draw_agent(self, surface):
-        self.rect.x = self.agent.location[0]
-        self.rect.y = self.agent.location[1]
+        self.agent_sprite.rect.x = self.agent.location[0]
+        self.agent_sprite.rect.y = self.agent.location[1]
 
         # draw sprite on to surface
-        surface.blit(self._sprite, (self.rect.x, self.rect.y))
+        surface.blit(self.agent_sprite.image, (self.agent_sprite.rect))
 
     def draw_bullets(self, surface):
-        global bullet_dictionary
-        for bullet in bullet_dictionary.values():
-            bullet_rectangle = pygame.Rect(math.floor(bullet.pos_x - self.bullet_width/2),
-                                           math.floor(
-                                               bullet.pos_y + self.bullet_width/2),
-                                           self.bullet_width, self.bullet_width)
-            pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
-    
+        #global bullet_dictionary
+        for bullet in self._agent._gun.bullet_dict.values():
+            bullet_sprite = pygame.sprite.Sprite()
+            bullet_sprite.image = pygame.Surface((self.bullet_width, self.bullet_width))
+            bullet_sprite.image.fill((0, 0, 0))
+            bullet_x = math.floor(bullet.pos_x - self.bullet_width/2)
+            bullet_y = math.floor(bullet.pos_y + self.bullet_width/2)
+            bullet_sprite.rect = pygame.Rect(bullet_x, bullet_y, self.bullet_width, self.bullet_width)
+            #self._bullet_sprites.add(bullet_sprite)
+            bullet.set_sprite(bullet_sprite)
+            surface.blit(bullet_sprite.image, bullet_sprite.rect)
+            
+            #pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
 
 
 class AgentController:
@@ -350,6 +357,7 @@ class AgentController:
     def __init__(self, agent, view):
         self._agent = agent
         self._view = view
+
 
     @property
     def agent(self):
@@ -392,12 +400,12 @@ class AgentController:
         if keys[control_list[2]]:  # left
             xchange = -speed
             self.agent.set_x_coord(current_pos[0]-speed)
-            self._view.rect.x = self.agent.location[0]
+            self._view.agent_sprite.rect.x = self.agent.location[0]
 
         if keys[control_list[3]]:  # right
             xchange = speed
             self.agent.set_x_coord(current_pos[0]+speed)
-            self._view.rect.x = self.agent.location[0]
+            self._view.agent_sprite.rect.x = self.agent.location[0]
 
         if keys[control_list[5]]:  # turn counter clockwise
             theta_change = self.agent._turn_speed
@@ -409,37 +417,37 @@ class AgentController:
 
         # did we hit something?
         collision_list = \
-            pygame.sprite.spritecollide(self.view, walls, False)
+            pygame.sprite.spritecollide(self.view.agent_sprite, walls, False)
         for wall in collision_list:
             # reset position
             if xchange > 0:
-                self._view.rect.right = wall.rect.left
-                self.agent.location[0] = self._view.rect.left
+                self._view.agent_sprite.rect.right = wall.rect.left
+                self.agent.location[0] = self._view.agent_sprite.rect.left
             elif xchange < 0:
-                self._view.rect.left = wall.rect.right
-                self.agent.location[0] = self._view.rect.left
+                self._view.agent_sprite.rect.left = wall.rect.right
+                self.agent.location[0] = self._view.agent_sprite.rect.left
 
         if keys[control_list[0]]:  # up
             ychange = -speed
             self.agent.set_y_coord(current_pos[1]-speed)
-            self._view.rect.y = self.agent.location[1]
+            self._view.agent_sprite.rect.y = self.agent.location[1]
 
         if keys[control_list[1]]:  # down
             ychange = speed
             self.agent.set_y_coord(current_pos[1]+speed)
-            self._view.rect.y = self.agent.location[1]
+            self._view.agent_sprite.rect.y = self.agent.location[1]
 
         # did we hit something?
         collision_list = \
-            pygame.sprite.spritecollide(self.view, walls, False)
+            pygame.sprite.spritecollide(self.view.agent_sprite, walls, False)
         for wall in collision_list:
             # reset position
             if ychange > 0:
-                self._view.rect.bottom = wall.rect.top
-                self.agent.location[1] = self._view.rect.top
+                self._view.agent_sprite.rect.bottom = wall.rect.top
+                self.agent.location[1] = self._view.agent_sprite.rect.top
             elif ychange < 0:
-                self._view.rect.top = wall.rect.bottom
-                self.agent.location[1] = self._view.rect.top
+                self._view.agent_sprite.rect.top = wall.rect.bottom
+                self.agent.location[1] = self._view.agent_sprite.rect.top
 
     # gun controls
     def check_shoot(self, keys,input_type):
@@ -454,7 +462,7 @@ class AgentController:
             return
         elif self.agent._is_reloading:
             self.agent.set_is_reloading(False)
-            print("reloaded")
+            #print("reloaded")
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         self.agent.set_frames_since_last_shot(self.agent._frames_since_last_shot +1)
@@ -487,7 +495,7 @@ class AgentController:
                 else:
                     self.agent._gun.consecutive_bullets = 1
                 
-                print(self.agent._gun.consecutive_bullets)
+                #print(self.agent._gun.consecutive_bullets)
                 self.agent.set_is_shooting(True)
             
                 self.agent.set_frames_since_last_shot(0)
@@ -553,22 +561,40 @@ class AgentController:
 
     # bullet controlls
 
-    def update_bullets_test(self, walls):
-        global bullet_dictionary
-        global bullet_delete_dictionary
-        for bullet in bullet_dictionary.values():
-            self.bullet_main(bullet, walls)
+    def update_bullets_test(self, walls, players, other_agent):
+        #global bullet_dictionary
+        #global bullet_delete_dictionary
+        for bullet in self._agent._gun.bullet_dict.values():
+            self.bullet_main(bullet, walls, players, other_agent)
         # actually delete the bullet
-        for bullet_name in bullet_delete_dictionary.keys():
-            del bullet_dictionary[bullet_name]
-        bullet_delete_dictionary.clear()
+        for bullet_name in self._agent._gun.bullet_delete_dict.keys():
+            del self._agent._gun.bullet_dict[bullet_name]
+        self._agent._gun.bullet_delete_dict.clear()
 
-    def bullet_main(self, bullet, walls):
+    def bullet_collision(self, bullet, walls, players, other_agent):
+      if bullet.bullet_sprite is not None:
+        wall_collision_list = \
+            pygame.sprite.spritecollide(bullet.bullet_sprite, walls, False)
+        agent_collision_list = \
+            pygame.sprite.spritecollide(bullet.bullet_sprite, players, False)
+        for wall in wall_collision_list:
+            self._agent._gun.delete_bullet(bullet)
+        for index, agent in enumerate(agent_collision_list):
+            # the way this is implemented will not work in 2+v2+ games
+            self._agent._gun.delete_bullet(bullet)  
+            other_agent.update_health(other_agent.health - 10)
+            
+            if other_agent.health <= 0:
+              agent.kill()
+           # agent.die
+  
+    def bullet_main(self, bullet, walls, players, other_agent):
         # the main things a bullet does each frame. crazy
         # delete_check_list is a list of walls to check collision with for every bullet
         # delete_check list should be generated elsewhere, probably in the main loop
         # with another function.
         bullet.update_position()
+        self.bullet_collision(bullet, walls, players, other_agent)
         # for collision in walls:
         # if bullet.check_basic_collision(collision):
         # check to make sure that deleting a key value pair from a dictionary
@@ -593,7 +619,6 @@ class AgentController:
     def orb_interaction(self, event):
         # Not implementing rn
         pass
-
 
 def agent_test():
     """
@@ -623,9 +648,10 @@ def agent_test():
         character_model_2, character_view_2)
 
     # Player list
-    agent_list = [character_model_1, character_model_2]
-    # agent_sprites = pygame.sprite.Group([character_view_1._sprite, \
-    #                                     character_view_2._sprite])
+    agents = [character_model_1, character_model_2]
+    agent_list = pygame.sprite.Group()
+    agent_list.add(character_view_1.agent_sprite)
+    agent_list.add(character_view_2.agent_sprite)
 
     map_model.attacker_spawn.set_spawns([character_model_1])
     map_model.defender_spawn.set_spawns([character_model_2])
@@ -688,8 +714,15 @@ def agent_test():
         character_view_1.dot_sight(map_view._window)
         character_view_2.dot_sight(map_view._window)
 
-        character_controller_1.update_bullets_test(map_model._wall_list)
+        character_controller_2.update_bullets_test(map_model._wall_list, \
+                                                   agent_list, agents[0])
+        character_view_2.draw_bullets(map_view._window)
+        character_controller_1.update_bullets_test(map_model._wall_list, \
+                                                   agent_list, agents[1]
+                                                  )
         character_view_1.draw_bullets(map_view._window)
+      
+        
 
         pygame.display.flip()  # update entire display
         clock.tick(30)  # reduce framerate to 30
