@@ -23,22 +23,22 @@ Spike Rush is a top down shooter. Before the game begins, players will be able t
 
 this can probably be wrapped into screenshots
 
->what are some cool things about the project?  
+>What are some cool things about the project?  
 
->what did we want to get out of the project? 
+>What did we want to get out of the project? 
 
-cool concepts: wall collision, sprite movement/interactions, shooting
+Cool concepts: wall collision, sprite movement/interactions, shooting
 
 ## Screenshots
 
-- map overview  
+- Map overview  
 
 ![map overview](website_images/map_overview.png)  <br><br>
 *An overview of the game map, based on the Valorant map Split.*
 
-- shooting screenshot
+- Shooting screenshot
 
-- spike close up
+- Spike close up
 
 ## Download
 
