@@ -16,16 +16,6 @@ Our goal for this project was to implement a working version of the Spike Rush g
 
 Spike Rush is a top down shooter. Before the game begins, players will be able to choose from a selection of guns to use during the game. Players will spawn in designated attack (blue) and defense (red) zones. The attacking player is given a spike, and must plant and detonate it in the spike zone (yellow). The defending player must protect the zone or defuse the spike if it has been planted. The game ends if either player is eliminated or a spike objective is achieved.
 
-### Project Highlights
-
-this can probably be wrapped into screenshots
-
->What are some cool things about the project?  
-
->What did we want to get out of the project? 
-
-Cool concepts: wall collision, sprite movement/interactions, shooting
-
 ## Screenshots
 
 ![map overview](website_images/screenshots/map_overview.png)  <br><br>
