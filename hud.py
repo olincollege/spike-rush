@@ -66,14 +66,16 @@ class display_view:
         self.draw_text(str(health_1), (255, 255, 255), surface, (230, 800))
         # pull & draw player 1 ammo update
         # pull ammo here
-        self.draw_text("0", (255, 255, 255), surface, (400, 800))
+        ammo_1 = player_1.gun.current_clip
+        self.draw_text(str(ammo_1), (255, 255, 255), surface, (400, 800))
 
         # pull & draw player 2 health update
         health_2 = player_2.health
         self.draw_text(str(health_2), (255, 255, 255), surface, (1238, 800))
         # pull & draw player 2 ammo update
         # pull ammo here
-        self.draw_text("0", (255, 255, 255), surface, (1412, 800))
+        ammo_2 = player_2.gun.current_clip
+        self.draw_text(str(ammo_2), (255, 255, 255), surface, (1412, 800))
 
     def draw_game_timer(self, surface):
         """
