@@ -12,7 +12,7 @@
 
 ### Big idea
 
-we recreated spike rush in a top-down style in pygame  
+we recreated spike rush in a top-down style in pygame   
 p cool right
 
 ### Screenshots
@@ -20,7 +20,7 @@ p cool right
 take some dynamic screenshots  
 - map overview  
 
-![split map](/images/map/split_color.png)
+![split map](/docs/website_images/map_overview.png)
 
 - sprite close up  
 - HUD close up  
