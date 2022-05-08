@@ -20,11 +20,32 @@ class Agent:
     An agent in the spike rush game.
 
     Attributes:
-        location:
-        current_health:
-        color: 
-        spike: A boolean representing whether the agent is currently carrying
+        _location: a list containing integers representing the x and y position
+            of the Agent 
+        _health: An integer representing the current health of the agent
+        _color: A tuple containing 3 integers. Used for non sprite agents.
+            Generally unused.
+        _spike: A boolean representing whether the agent is currently carrying
             the spike or not.
+        _spike_object: ?!?@#$?@$#?@#$!?$@#! @aditi
+        _side: a string representing whether the player is attacking or
+            defending
+        _frames_since_last_shot: an integer representing the number of frames
+            since the player last shot a weapon
+        _gun: a class representing the type of gun the player is holding.
+            The specific class will be some arbitrary class inherited from the
+            general gun class.
+        _frames_since_reload: an integer representing the number of frames
+            since the player started a reload
+        _is_shooting: a boolean representing whether or not a player is
+            currently shooting
+        _is_reloading: a boolean representing whether or not a player is
+            currently reloading
+        _angle = an integer or float representing the angle the player is
+            looking in radians
+        _turn_speed: a float representing how much to update the player angle
+            each time an angle update is qeued
+        _alive: a boolean representing whether or not the player is alive
 
     """
 
@@ -90,23 +111,47 @@ class Agent:
         """
         Returns true if the agent is currently holding the spike;
         otherwise, false.
+
+        Returns:
+            a boolean representing whether the player is holding the spike
         """
         return self._spike
 
     @property
     def spike_object(self):
+        """
+        @ADITI ASFDKL:SAD F:JLASDF:LJFSAD:LD:LJAGSDJ:LAFSD:OJFSAD
+        """
         return self._spike_object
 
     @property
     def gun(self):
+        """
+        Returns the angle's gun object
+
+        Returns:
+            the specific instance of a player's gun object
+        """
         return self._gun
 
     @property
     def side(self):
+        """
+        Return the side the player is on
+
+        Returns:
+            a string representing what side the player is on
+        """
         return self._side
 
     @property
     def alive(self):
+        """
+        Returns the alive or dead status of the player
+
+        Returns:
+            a boolean representing whether a player is alive or dead
+        """
         return self._alive
 
     def set_location(self, x_position, y_position):
@@ -160,24 +205,69 @@ class Agent:
         self._health = new_health
 
     def set_frames_since_last_shot(self, new_frames):
+        """
+        Updates the frames since an agent has shot a weapon
+
+        Args:
+            new_frames: an integer representing how many frames since the
+                player last shot
+        """
         self._frames_since_last_shot = new_frames
 
     def set_frames_since_reload(self, new_frames):
+        """
+        Updates the frames since an agent initiated a reload
+
+        Args:
+            new_frames: an integer representing how many frames since the
+                player initiated a reload
+        """
         self._frames_since_reload = new_frames
 
+
     def set_is_shooting(self, bool):
+        """
+        Update whether a player is shooting or not
+
+        Args:
+            bool: a boolean representing if a player is shooting
+        
+        """
         self._is_shooting = bool
 
     def set_is_reloading(self, bool):
+        """
+        Update whether a player is reloading or not
+        
+        Args:
+            bool: a boolean representing if a player is reloading
+        """
         self._is_reloading = bool
 
     def set_angle(self, angle):
+        """
+        Update the view angle of the player
+
+        Args:
+            angle: an integer or float representing the new view angle
+        
+        """
         self._angle = angle
 
     def set_frames_since_last_spike_interaction(self, new_frames):
+        """
+        Update the number of frames since the last spike interaction
+
+        Args:
+            new_frames: an integer representing the number of frames since
+                the last spike interaction
+        """
         self._frames_since_last_spike_interaction = new_frames
 
     def kill(self):
+        """
+        Kill the player
+        """
         self._alive = False
 
     @abstractmethod
@@ -188,9 +278,15 @@ class Agent:
         pass
 
     def use_gun(self):
+        """
+        Shoot a gun from the player's location, at the look angle
+        """
         self._gun.shoot(self.location[0], self.location[1], self._angle)
 
     def reload_gun(self):
+        """
+        Reload the player's gun
+        """
         # fix for private variable calls
         self._gun.update_clip(1)
         self.set_is_reloading(True)
@@ -293,9 +389,13 @@ class AgentView():
     Displays an agent on the map.
 
     Attributes:
-        agent: attributes from the agent class.
-        _sprite: A string representing the image to use as the sprite for the
-        agent.
+        _agent: an instance of the agent class.
+        agent_sprite: A string representing the image to use as the sprite for
+            the agent.
+        
+        
+
+
     """
     bullet_width = 6
 
@@ -385,18 +485,43 @@ class AgentView():
 class AgentController:
     """
     Controls an agent on the map.
+
+    Attributes:
+        _agent: an instance of the agent class
+        _view: an instance of the AgentView class
     """
 
     def __init__(self, agent, view):
+        """
+        Initialize an instance of the AgentController class
+
+        Args:
+            agent: an instance of the agent class
+            view: an instance of the AgentView class
+        
+        """
         self._agent = agent
         self._view = view
 
     @property
     def agent(self):
+        """
+        Return the agent
+
+        Returns:
+            _agent: An instance of the agent class
+        """
         return self._agent
 
     @property
     def view(self):
+        """
+        Return the view
+
+        Returns:
+            _view: An instance of the AgentView class
+        
+        """
         return self._view
 
     def move(self, speed, keys, input_type, walls):
@@ -484,7 +609,9 @@ class AgentController:
     # gun controls
     def check_shoot(self, keys, input_type):
         """
-        aaa
+        Check if a player should be shooting a gun and if so, begin shooting.
+
+        
         """
 
         # if reloading, don't fire
