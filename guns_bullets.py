@@ -123,6 +123,8 @@ class bullet():
         global bullet_counter
         self.name = f"bullet_{bullet_counter}"
 
+        self.bullet_sprite = None
+
     
     #update positions
     def update_position(self):
@@ -135,6 +137,9 @@ class bullet():
         global bullet_delete_dictionary
 
         bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
+
+    def set_sprite(self, sprite):
+      self.bullet_sprite = sprite
 
 #defining general gun classes
 
