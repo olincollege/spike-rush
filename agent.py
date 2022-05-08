@@ -759,6 +759,7 @@ def agent_test():
         keys = pygame.key.get_pressed()
         # if no collisions are detected, move characters
         #map_view.draw_map()
+        map_view.draw_map()
 
         #print(character_model_1.alive)
         if character_model_1.alive:
@@ -772,6 +773,9 @@ def agent_test():
 
             character_view_1.draw_agent(map_view._window)
             character_view_1.dot_sight(map_view._window)
+
+            character_controller_1.spike_plant(keys, map_model, "WASD", hud_model)
+
         
         #print(character_model_2.alive)
         if character_model_2.alive:
@@ -779,21 +783,23 @@ def agent_test():
 
             character_controller_2.move(
                 character_speed, keys, "Arrow", map_model._wall_list)
+
+
+            character_controller_2.check_shoot(keys,"WASD")
+            character_controller_2.check_reload(keys,"WASD")
+
             character_view_2.draw_agent(map_view._window)
             character_view_2.dot_sight(map_view._window)
 
-        character_controller_1.check_shoot(keys,"WASD")
-        character_controller_1.check_reload(keys,"WASD")
+            character_controller_2.spike_defuse(keys, map_model, "Arrow", agents[0], hud_model)
 
-        character_controller_2.check_shoot(keys,"Arrow")
-        character_controller_2.check_reload(keys,"Arrow")
 
-        character_controller_1.spike_plant(keys, map_model, "WASD", hud_model)
-        character_controller_2.spike_defuse(keys, map_model, "Arrow", agents[0], hud_model)
+
+
 
         # update stuff
         # draw backdrop
-        map_view.draw_map()
+    
 
         # walls will still have collision even if not drawn
         # map_view.draw_walls()
@@ -808,9 +814,6 @@ def agent_test():
         character_view_1.draw_spike(map_view._window)
         character_view_2.draw_spike(map_view._window)
 
-        # draw characters
-        character_view_1.draw_agent(map_view._window)
-        character_view_2.draw_agent(map_view._window)
 
         character_controller_2.update_bullets_test(map_model._wall_list, \
                                                    agent_list, agents[0])
