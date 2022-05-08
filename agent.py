@@ -768,10 +768,6 @@ def agent_test():
 
             character_controller_1.spike_plant(keys, map_model, "WASD", hud_model)
 
-        
-        #print(character_model_2.alive)
-        if character_model_2.alive:
-
         # print(character_model_2.alive)
         if character_model_2.alive:
 
