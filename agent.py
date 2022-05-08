@@ -51,6 +51,9 @@ class Agent:
 
         self._turn_speed = .15*frame_rate/30
         self._angle = 0
+        
+         #player starts as alive
+        self._alive = True
 
         #self._abilities = []
 
@@ -101,6 +104,11 @@ class Agent:
     @property
     def side(self):
         return self._side
+
+    @property
+    def alive(self):
+        return self._alive
+
 
     def set_location(self, x_position, y_position):
         """
@@ -169,6 +177,9 @@ class Agent:
 
     def set_frames_since_last_spike_interaction(self, new_frames):
         self._frames_since_last_spike_interaction = new_frames
+
+    def kill(self):
+        self._alive = False
 
     @abstractmethod
     def use_ultimate(self):
@@ -304,7 +315,7 @@ class AgentView():
         self.image = [os.path.join('image', 'sprites', self._img_path)]
         self.agent_sprite.image = \
       pygame.transform.scale(pygame.image.load(os.path.join(
-                'images', 'sprites', 'test_sprite.png')).convert_alpha(),
+                'images', 'sprites', self._img_path)).convert_alpha(),
                 (50, 50))
         self.agent_sprite.rect = self.agent_sprite.image.get_rect()
         self.agent_sprite.rect.x = self._agent.location[0]
@@ -313,6 +324,28 @@ class AgentView():
     @property
     def agent(self):
         return self._agent
+
+    def dot_sight(self, surface):
+
+        # make a view a red dot sight
+        dot_width = 6
+
+        angle = self.agent.angle
+
+        x_heading = math.cos(angle)
+        y_heading = math.sin(angle)
+
+        player_x = self.agent.location[0]
+        player_y = self.agent.location[1]
+
+        # x and y coordinates of the red dot sight
+        dot_x = player_x + math.floor(60*x_heading) + 25
+        dot_y = player_y + math.floor(60*y_heading) + 25
+
+        red_dot = pygame.Rect(math.floor(dot_x - dot_width/2),
+                              math.floor(dot_y + dot_width/2), dot_width, dot_width)
+
+        pygame.draw.rect(surface, (255, 0, 0), red_dot)
 
     def draw_agent(self, surface):
         self.agent_sprite.rect.x = self.agent.location[0]
@@ -388,11 +421,11 @@ class AgentController:
         # up, down, left, right
         if input_type == "WASD":
             control_list = [pygame.K_w, pygame.K_s, pygame.K_a, pygame.K_d, \
-                pygame.K_c,pygame.K_v]
+                pygame.K_c, pygame.K_v]
 
         if input_type == "Arrow":
             control_list = [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT,
-                            pygame.K_RIGHT,pygame.K_COMMA, \
+                            pygame.K_RIGHT, pygame.K_COMMA, \
                                 pygame.K_PERIOD]
 
         # searches for arrow keys and WASD
@@ -410,7 +443,7 @@ class AgentController:
             theta_change = self.agent._turn_speed
             self.agent.set_angle(self.agent.angle + theta_change)
         
-        if keys[control_list[4]]: #turn counter clockwise
+        if keys[control_list[4]]:  # turn counter clockwise
             theta_change = self.agent._turn_speed
             self.agent.set_angle(self.agent.angle - theta_change)
 
@@ -449,23 +482,23 @@ class AgentController:
                 self.agent.location[1] = self._view.agent_sprite.rect.top
 
     # gun controls
-    def check_shoot(self, keys,input_type):
+    def check_shoot(self, keys, input_type):
         """
         aaa
         """
 
-        #if reloading, don't fire
+        # if reloading, don't fire
         if self.agent._frames_since_reload < self.agent.gun.frames_for_reload \
                 and self.agent._is_reloading:
             self.agent._gun.consective_bullets = 0
             return
         elif self.agent._is_reloading:
             self.agent.set_is_reloading(False)
-            #print("reloaded")
+            # print("reloaded")
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         self.agent.set_frames_since_last_shot(self.agent._frames_since_last_shot +1)
-        #consecutive fire
+        # consecutive fire
 
 
         if (input_type == "WASD" and keys[pygame.K_x]) or (input_type == \
@@ -480,7 +513,7 @@ class AgentController:
                 self.agent._gun.frames_before_shot:
                 return
             
-            #if the weapon is semi auto, don't shoot it uatomatically
+            # if the weapon is semi auto, don't shoot it uatomatically
 
 
             if self.agent._gun.current_clip > 0:
@@ -488,13 +521,13 @@ class AgentController:
                 self.agent.use_gun()
   
               # automatic fire activation
-            #if self.agent.gun.automatic:
+            # if self.agent.gun.automatic:
                 if self.agent._is_shooting:
                     self.agent._gun.consecutive_bullets += 1
                 else:
                     self.agent._gun.consecutive_bullets = 1
                 
-                #print(self.agent._gun.consecutive_bullets)
+                # print(self.agent._gun.consecutive_bullets)
                 self.agent.set_is_shooting(True)
             
                 self.agent.set_frames_since_last_shot(0)
@@ -525,7 +558,7 @@ class AgentController:
         if self.agent._frames_since_reload < self.agent.gun._frames_for_reload \
                 and self.agent._is_reloading:
             return
-        #no longer reloading, stop reload status
+        # no longer reloading, stop reload status
         elif self.agent._is_reloading:
             self.agent.set_is_reloading(False)
             # print("reloaded")
@@ -545,7 +578,7 @@ class AgentController:
         elif not self.agent._is_shooting:
             self.agent.gun.consecutive_bullets = 0
 
-    def check_reload(self, keys,input_type):
+    def check_reload(self, keys, input_type):
         
         if input_type == "Arrow" and keys[pygame.K_l]:
           
@@ -584,7 +617,7 @@ class AgentController:
             other_agent.update_health(other_agent.health - 10)
             
             if other_agent.health <= 0:
-              agent.kill()
+              other_agent.kill()
            # agent.die
   
     def bullet_main(self, bullet, walls, players, other_agent):
@@ -725,7 +758,7 @@ def agent_test():
         # check which keys are currently pressed
         keys = pygame.key.get_pressed()
         # if no collisions are detected, move characters
-        map_view.draw_map()
+        #map_view.draw_map()
 
         #print(character_model_1.alive)
         if character_model_1.alive:
