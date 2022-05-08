@@ -48,6 +48,9 @@ class Agent:
         self._turn_speed = .15*frame_rate/30
         self._angle = 0
 
+        #player starts as alive
+        self._alive = True
+
         #self._abilities = []
 
     @property
@@ -89,6 +92,10 @@ class Agent:
     @property
     def gun(self):
         return self._gun
+    
+    @property
+    def alive(self):
+        return self._alive
 
     def set_location(self, x_position, y_position):
         """
@@ -154,6 +161,9 @@ class Agent:
 
     def set_angle(self, angle):
         self._angle = angle
+    
+    def kill(self):
+        self._alive = False
 
     @abstractmethod
     def use_ultimate(self):
@@ -585,7 +595,8 @@ class AgentController:
             other_agent.update_health(other_agent.health - 10)
             
             if other_agent.health <= 0:
-              agent.kill()
+                print("killing")
+                other_agent.kill()
            # agent.die
   
     def bullet_main(self, bullet, walls, players, other_agent):
@@ -682,21 +693,40 @@ def agent_test():
         # check which keys are currently pressed
         keys = pygame.key.get_pressed()
         # if no collisions are detected, move characters
-        character_controller_1.move(
-            character_speed, keys, "WASD", map_model._wall_list)
+        map_view.draw_map()
 
-        character_controller_2.move(
-            character_speed, keys, "Arrow", map_model._wall_list)
-      
-        character_controller_1.check_shoot(keys,"WASD")
-        character_controller_1.check_reload(keys,"WASD")
+        print(character_model_1.alive)
+        if character_model_1.alive:
 
-        character_controller_2.check_shoot(keys,"Arrow")
-        character_controller_2.check_reload(keys,"Arrow")
+
+            character_controller_1.move(
+                character_speed, keys, "WASD", map_model._wall_list)
+                    
+            character_controller_1.check_shoot(keys,"WASD")
+            character_controller_1.check_reload(keys,"WASD")
+
+            character_view_1.draw_agent(map_view._window)
+            character_view_1.dot_sight(map_view._window)
+        
+        print(character_model_2.alive)
+        if character_model_2.alive:
+
+
+
+
+            character_controller_2.move(
+                character_speed, keys, "Arrow", map_model._wall_list)
+
+
+            character_controller_2.check_shoot(keys,"Arrow")
+
+            character_view_2.draw_agent(map_view._window)
+
+            character_view_2.dot_sight(map_view._window)
 
         # update stuff
         # draw backdrop
-        map_view.draw_map()
+
 
         # walls will still have collision even if not drawn
         # map_view.draw_walls()
@@ -707,16 +737,12 @@ def agent_test():
             character_model_1, character_model_2, map_view._window)
         hud_view.draw_game_timer(map_view._window)
 
-        # draw characters
-        character_view_1.draw_agent(map_view._window)
-        character_view_2.draw_agent(map_view._window)
-
-        character_view_1.dot_sight(map_view._window)
-        character_view_2.dot_sight(map_view._window)
+  
 
         character_controller_2.update_bullets_test(map_model._wall_list, \
                                                    agent_list, agents[0])
         character_view_2.draw_bullets(map_view._window)
+
         character_controller_1.update_bullets_test(map_model._wall_list, \
                                                    agent_list, agents[1]
                                                   )
