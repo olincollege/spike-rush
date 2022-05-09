@@ -121,8 +121,8 @@ def test_bullet_creation(player_x, player_y, theta, shots_fired):
 
     the_gun = gun()
     for _ in range(shots_fired):
-        the_gun.shoot(player_x,player_y,theta)
-    
+        the_gun.shoot(player_x, player_y, theta)
+
     assert len(the_gun._bullet_dict) == shots_fired
 
 
@@ -140,10 +140,9 @@ def test_move_bullet(incr_x, incr_y):
 
     the_bullet.update_position()
 
-    location = [the_bullet._pos_x,the_bullet._pos_y]
-    assert location == [incr_x*the_bullet._speed_per_tick,\
-        incr_y*the_bullet._speed_per_tick]
-
+    location = [the_bullet._pos_x, the_bullet._pos_y]
+    assert location == [incr_x*the_bullet._speed_per_tick,
+                        incr_y*the_bullet._speed_per_tick]
 
 
 @pytest.mark.parametrize("incr_x,incr_y",

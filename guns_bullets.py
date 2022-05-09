@@ -54,7 +54,7 @@ class gun():
 
 
     """
-    #gun should have name and defined damage value
+    # gun should have name and defined damage value
     _damage = 20
 
     _max_spread = math.ceil(frame_rate * 40/60)
@@ -66,7 +66,7 @@ class gun():
     consecutive_bullets = 0
 
     _clip_size = 20
-    _frames_for_reload = math.ceil(frame_rate*120/60) # 2 seconds
+    _frames_for_reload = math.ceil(frame_rate*120/60)  # 2 seconds
 
     current_clip = 20
 
@@ -122,19 +122,20 @@ class gun():
         #theta in radians
         x_increment = math.cos(theta)
         y_increment = math.sin(theta)
-        
-        #doing spread
-        perp_vector = [-y_increment,x_increment]
-        
-        #account for 0 division
+
+        # doing spread
+        perp_vector = [-y_increment, x_increment]
+
+        # account for 0 division
         if self._shots_for_full_spread != 0:
             this_bullet_max_spread = self._max_spread*self.consecutive_bullets \
-          / self._shots_for_full_spread
+                / self._shots_for_full_spread
         else:
             this_bullet_max_spread = self._max_spread
         spread_factor = self._min_spread
         if self._min_spread < math.ceil(this_bullet_max_spread):
-            spread_factor = randint(self._min_spread,math.ceil(this_bullet_max_spread))
+            spread_factor = randint(
+                self._min_spread, math.ceil(this_bullet_max_spread))
 
         actual_spread_x = perp_vector[0] * \
             spread_factor * (-1)**(randint(0, 1))
@@ -152,7 +153,7 @@ class gun():
         # create a new bullet and add it to the dictionary of bullets
         global bullet_counter
         bullet_counter += 1
-        new_bullet = bullet(bullet_start_x, bullet_start_y, x_increment, \
+        new_bullet = bullet(bullet_start_x, bullet_start_y, x_increment,
                             y_increment, self._damage)
 
         update_dict = {new_bullet.name: new_bullet}
@@ -169,7 +170,9 @@ class gun():
         Args:
             bullet: An instance of the bullet class.
         """
-        self._bullet_delete_dict.update({bullet.name:self._bullet_dict[bullet.name]})
+        self._bullet_delete_dict.update(
+            {bullet.name: self._bullet_dict[bullet.name]})
+
 
 class bullet():
     """
@@ -191,7 +194,7 @@ class bullet():
             initialized as none.
         _speed_per_tick: an integer representing the speed the bullet moves
     """
-    _speed_per_tick = math.ceil(frame_rate *35/60) # was 20
+    _speed_per_tick = math.ceil(frame_rate * 35/60)  # was 20
 
     def __init__(self, pos_x, pos_y, incr_x, incr_y, damage):
         """
@@ -205,12 +208,12 @@ class bullet():
             _damage: An integer representing how much a damage a bullet should
                 do on hit.
         """
-        #things necessary for calculating heading
+        # things necessary for calculating heading
         self._pos_x = pos_x
         self._pos_y = pos_y
         self._incr_x = incr_x
         self._incr_y = incr_y
-        #define bullet damage (based on gun stats)
+        # define bullet damage (based on gun stats)
         self._damage = damage
 
         self._delta_x = self._incr_x * self._speed_per_tick
@@ -284,7 +287,7 @@ class classic(gun):
     _min_spread = 0
     _shots_for_full_spread = 7
     _frames_before_shot = math.ceil(frame_rate*10/60)
-    
+
     consecutive_bullets = 0
     _clip_size = 12
     _current_clip = 12
@@ -336,7 +339,7 @@ class spectre(gun):
     _min_spread = 0
     _shots_for_full_spread = 9
     _frames_before_shot = math.ceil(frame_rate*5/60)
-    
+
     consecutive_bullets = 0
     _clip_size = 30
     current_clip = 30
@@ -388,7 +391,7 @@ class guardian(gun):
     _min_spread = 0
     _shots_for_full_spread = 9
     _frames_before_shot = math.ceil(frame_rate*10/60)
-    
+
     consecutive_bullets = 0
     _clip_size = 12
     current_clip = 12
@@ -440,7 +443,7 @@ class vandal(gun):
     _min_spread = math.ceil(frame_rate*10/60)
     _shots_for_full_spread = 8
     _frames_before_shot = math.ceil(frame_rate*6/60)
-    
+
     consecutive_bullets = 0
     _clip_size = 25
     current_clip = 25
@@ -462,7 +465,7 @@ class operator(gun):
     A model of a gun that emulates the Operator.
 
     (have to put in alt fire before this + other stuff)
-    
+
     Attributes:
         _damage: An integer representing how much damage a bullet shot from
             this gun should do.
@@ -496,7 +499,7 @@ class operator(gun):
     _min_spread = 0
     _shots_for_full_spread = 9
     _frames_before_shot = math.ceil(frame_rate*80/60)
-    
+
     consecutive_bullets = 0
     _clip_size = 5
     current_clip = 5
@@ -509,7 +512,8 @@ class operator(gun):
         self._automatic = False
         self._bullet_dict = {}
         self._bullet_delete_dict = {}
-      
+
     pass
 
-gun_list =[classic(),spectre(),guardian(),vandal()]
+
+gun_list = [classic(), spectre(), guardian(), vandal()]
