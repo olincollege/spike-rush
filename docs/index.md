@@ -42,21 +42,21 @@ found [here.](https://github.com/olincollege/spike-rush/blob/main/README.md)
 ### Aditi Vinod <br>
 *Olin Class of 2025* <br>
 
-Aditi is an E:Computing major at Olin College of Engineering. Her hobbies include playing games - mostly Valorant recently, skiing, and spinning fire.
+Aditi is an E:Computing major at Olin College of Engineering. Her hobbies include playing games - mostly Valorant recently, skiing, and spinning fire. <br><br><br><br><br><br><br><br><br><br>
 
 <img src="website_images/about_us/andrew.jpg" width ="300" height = "300" style="float:left;margin:40px 40px"> <br><br>
 
 ### Andrew Phillips <br>
 *Olin Class of 2025* <br>
 
-Andrew is a first year student at Olin. Outside of engineering, he enjoys playing video games, going to metal concerts, and hanging out with his dogs. <br><br><br><br><br><br><br><br><br><br><br><br><br>
+Andrew is a first year student at Olin. Outside of engineering, he enjoys playing video games, going to metal concerts, and hanging out with his dogs. <br><br><br><br><br><br><br><br><br><br><br>
 
 <img src="website_images/about_us/luke.png" width ="300" height = "300" style="float:right;margin:0px 40px">
 
 ### Luke Witten <br>
 *Olin Class of 2025* <br>
 
-this will be a bio <br><br><br><br><br><br><br><br><br><br><br>
+Luke is a first year at Olin College of Engineering. His hobbies include creative writing, video games, and hanging out with Andrew's dogs. <br><br><br><br><br><br><br><br><br><br>
 
 ## Attribution
 Game & logo inspiration from *Valorant* by Riot Games
