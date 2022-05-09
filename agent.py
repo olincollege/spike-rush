@@ -466,8 +466,8 @@ class AgentView():
         dot_y = player_y + math.floor(60*y_heading) + 25
 
         red_dot = pygame.Rect(math.floor(dot_x - dot_width/2),
-                              math.floor(dot_y + dot_width/2), \
-                                  dot_width, dot_width)
+                              math.floor(dot_y + dot_width/2),
+                              dot_width, dot_width)
 
         pygame.draw.rect(surface, (255, 0, 0), red_dot)
 
@@ -485,8 +485,8 @@ class AgentView():
         self.agent_sprite.rect.y = self.agent.location[1]
 
         # draw sprite on to surface
-        surface.blit(self.agent_sprite.image, \
-            (self.agent_sprite.rect))
+        surface.blit(self.agent_sprite.image,
+                     (self.agent_sprite.rect))
 
     def draw_bullets(self, surface):
         """
@@ -673,14 +673,14 @@ class AgentController:
             self.agent.gun.consective_bullets = 0
             return
         if self.agent.is_reloading:
-            self.agent.setis_reloading(False)
+            self.agent.is_reloading = False
             # print("reloaded")
 
         self.agent.frames_since_last_shot += 1
         # consecutive fire
 
         if (input_type == "WASD" and keys[pygame.K_x]) or \
-            (input_type == "Arrow" and keys[pygame.K_m]):
+                (input_type == "Arrow" and keys[pygame.K_m]):
 
             if self.agent.is_shooting and not self.agent.gun.automatic:
                 return
@@ -896,6 +896,7 @@ class AgentController:
             else:
                 self._agent.frames_since_last_spike_interaction = 0
 
+
 def defuse_spike(spike):
     """
     Defuses a the given Spike object.
@@ -906,6 +907,7 @@ def defuse_spike(spike):
         None.
     """
     spike.defuse()
+
 
 def check_win(attacker, defender, hud_model):
     """
