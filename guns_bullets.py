@@ -442,7 +442,7 @@ class vandal(gun):
 
     def __init__(self):
         """
-        Initialize an instance of the vandal class
+        Creates an instance of the vandal class.
         """
         self.automatic = True
         self.bullet_dict = {}
