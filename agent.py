@@ -611,7 +611,13 @@ class AgentController:
         """
         Check if a player should be shooting a gun and if so, begin shooting.
 
+        Args:
+            keys: a list of keys currently being pressed
+            input_type: a string representing whether a player is using
+                arrow keys or WASD
         
+        Returns:
+            None
         """
 
         # if reloading, don't fire
@@ -679,6 +685,15 @@ class AgentController:
             self.agent.gun.consecutive_bullets = 0
 
     def check_reload(self, keys, input_type):
+        """
+        Check if a player should reload and if so, reload.
+
+        Args:
+            keys: a list of keys currently being pressed
+            input_type: a string representing whether a player is using
+                arrow keys or WASD
+        
+        """
 
         if input_type == "Arrow" and keys[pygame.K_l]:
 
@@ -695,6 +710,16 @@ class AgentController:
     # bullet controlls
 
     def update_bullets_test(self, walls, players, other_agent):
+        """
+        Update the positions of all bullets for a player, check collisions,
+        and delete bullets if necessary.
+        
+        Args:
+            walls: a list of sprite objects to check collision against
+            players: @aditi ASDFLASFDL:ASFD:LSADLG:HJ:FDLGSFL:ADGA:SLDGMFAMLDFSLMDFASD<FMAS?D>MFASDF>?M
+            other_agent: An instance of the Agent class representing an
+                enemy agent
+        """
         #global bullet_dictionary
         #global bullet_delete_dictionary
         for bullet in self._agent._gun.bullet_dict.values():
@@ -705,6 +730,10 @@ class AgentController:
         self._agent._gun.bullet_delete_dict.clear()
 
     def bullet_collision(self, bullet, walls, players, other_agent):
+        """
+        @ADITI ASDFKLAS:DFK:LASDFKL:AS:DLFKASKL:FD:LASFD:KLASFD:LKADFSKL:AFSD:LKSFDA:KLFDSA
+        
+        """
         if bullet.bullet_sprite is not None:
             wall_collision_list = \
                 pygame.sprite.spritecollide(bullet.bullet_sprite, walls, False)
@@ -723,6 +752,10 @@ class AgentController:
            # agent.die
 
     def bullet_main(self, bullet, walls, players, other_agent):
+        """
+        @ADITI OK@L:FSD:LKASFKL:DFA:KLSDKLSA:D<>Z?VCDPTMRLE:GD>SVD>L:SAF>M?ADSMFAS
+        
+        """
         # the main things a bullet does each frame. crazy
         # delete_check_list is a list of walls to check collision with for every bullet
         # delete_check list should be generated elsewhere, probably in the main loop

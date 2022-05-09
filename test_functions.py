@@ -325,3 +325,5 @@ def test_set_frames(last_shot,reloading):
     frames_list = [player._frames_since_last_shot,player._frames_since_reload]
 
     assert frames_list == [last_shot,reloading]
+
+    
