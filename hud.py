@@ -4,6 +4,7 @@ players.
 """
 
 import pygame
+import os
 
 
 class display_model:
@@ -96,3 +97,20 @@ class display_view:
         """
         self.draw_text(str(self.model.timer),
                        (255, 255, 255), surface, (800, 800))
+
+    def draw_other_screen(self, image, surface):
+        """
+        Draws full screens other than the main game map.
+
+        Arguments:
+            image: A string representing the image to be blitted.
+            surface: The surface to blit the screen on to.
+        """
+        screen = \
+            pygame.transform.scale(pygame.image.load
+                                   (os.path.join('images',
+                                                 'other_screens',
+                                                 image)).convert(),
+                                   (1536, 864))
+
+        surface.blit(screen, surface.get_rect())

@@ -14,19 +14,38 @@ def agent_test():
     Runs the game loop.
     """
     pygame.init()  # initialize pygame
+
     map_model = split_model()
     map_view = split_view(map_model)  # initialize map
+
+    # initialize HUD
+    hud_model = display_model()
+    hud_view = display_view(hud_model)
+
     clock = pygame.time.Clock()  # to keep track of time in-game
+
+    # Intro screens here
+    intro_screens = ["title.png", "instructions_1.png", "instructions_2.png",
+                     "instructions_3.png"]
+    for screen in intro_screens:
+        display = True
+        while display:
+            for event in pygame.event.get():  # look for events
+                if event.type == pygame.QUIT:  # quit the game, stop the loop
+                    pygame.quit()
+                elif event.type == pygame.KEYDOWN:
+                    display = False
+            hud_view.draw_other_screen(screen, map_view._window)
+
+            pygame.display.flip()  # update entire display
+            clock.tick(30)  # reduce framerate to 30
+
     character_speed = 10
 
     track_second = pygame.USEREVENT  # using ID 24
 
     # trigger event every second
     pygame.time.set_timer(track_second, 1000)
-
-    # initialize HUD
-    hud_model = display_model()
-    hud_view = display_view(hud_model)
 
     # Player 1 instance
     character_model_1 = Agent(0, 0, "attack")
@@ -68,7 +87,7 @@ def agent_test():
         # sense inputs (get events)
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
-                run = False
+                pygame.quit()
 
             if event.type == track_second:
                 # if a second has passed, reduce the timer
@@ -143,8 +162,22 @@ def agent_test():
         pygame.display.flip()  # update entire display
         clock.tick(30)  # reduce framerate to 30
 
-    # print(map_view._window.get_rect()) #check window dimensions
-    pygame.quit()  # after main loop has finished
+    # Trigger win screen
+    display = True
+    while display:
+        for event in pygame.event.get():  # look for events
+            if event.type == pygame.QUIT:  # quit the game, stop the loop
+                pygame.quit()
+            elif event.type == pygame.KEYDOWN:
+                display = False
+        if character_model_1.win == True:
+            hud_view.draw_other_screen("attack_win.png", map_view._window)
+        elif character_model_2.win == True:
+            hud_view.draw_other_screen("defend_win.png", map_view._window)
+        pygame.display.flip()  # update entire display
+        clock.tick(30)  # reduce framerate to 30
+
+    pygame.quit()
 
 
 agent_test()
