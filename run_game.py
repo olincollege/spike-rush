@@ -150,7 +150,7 @@ def agent_test():
             character_view_2.dot_sight(map_view.window)
 
             character_controller_2.spike_defuse(
-                keys, map_model, "Arrow", agents[0], hud_model)
+                keys, map_model, "Arrow", agents[0])
 
         # update stuff
         # draw backdrop

@@ -854,7 +854,7 @@ class AgentController:
             else:
                 self._agent.frames_since_last_spike_interaction = 0
 
-    def spike_defuse(self, keys, map_model, input_type, other_agent, hud_model):
+    def spike_defuse(self, keys, map_model, input_type, other_agent):
         """
         Checks if the spike can be defused & defuses it.
 
