@@ -49,7 +49,7 @@ class DisplayModel:
         Returns:
             None.
         """
-        self.timer = new_time
+        self._timer = new_time
 
 
 class DisplayView:

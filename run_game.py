@@ -108,7 +108,8 @@ def agent_test():
             if event.type == track_second:
                 # if a second has passed, reduce the timer
                 if hud_model.timer != 0:
-                    hud_model.timer -= 1
+                    hud_model.set_timer(hud_model.timer-1)
+
 
         # update states
         # create entities

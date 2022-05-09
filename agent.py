@@ -682,7 +682,7 @@ class AgentController:
         if (input_type == "WASD" and keys[pygame.K_x]) or \
             (input_type == "Arrow" and keys[pygame.K_m]):
 
-            if self.agent.is_shooting and not self.agent.automatic:
+            if self.agent.is_shooting and not self.agent.gun.automatic:
                 return
 
             if self.agent.frames_since_last_shot < \
@@ -721,7 +721,7 @@ class AgentController:
                 self.agent.frames_since_last_shot > \
                     self.agent.gun.frames_before_shot + 8:
                 self.agent.gun.consecutive_bullets = 0
-            self.agent.set.is_shooting = False
+            self.agent.is_shooting = False
 
             self.agent.gun.consecutive_bullets = 0
 
@@ -848,7 +848,7 @@ class AgentController:
                         frames_to_plant:
                     # print("Planted")
                     self._agent.plant_spike()
-                    hud_model.timer = 45
+                    hud_model.set_timer(45)
                 elif self._agent.spike:
                     self._agent.frames_since_last_spike_interaction += 1
             else:
@@ -888,8 +888,8 @@ class AgentController:
                         frames_to_defuse and spike.frames_since_plant < \
                         spike.frames_to_explode:
                     # print("Defused")
-                    self._agent.defuse_spike(other_agent.spike_object)
-                    hud_model.timer = 0
+                    defuse_spike(other_agent.spike_object)
+                    hud_model.set_timer(0)
                     other_agent.set_spike_object(None)
                 elif not spike.status:
                     self._agent.frames_since_last_spike_interaction += 1
@@ -947,8 +947,8 @@ def check_win(attacker, defender, hud_model):
 
             # if the spike is defused
 
-        if attacker.spike_object.status:
-            defender.set_win()
+            if attacker.spike_object.status:
+                defender.set_win()
 
         # if defender dies while spike out
         if not defender.alive:
