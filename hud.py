@@ -3,11 +3,11 @@ Creates heads-up display (HUD) elements to represent the status of the game and
 players.
 """
 
-import pygame
 import os
+import pygame
 
 
-class display_model:
+class DisplayModel:
     """
     Tracks various attributes to be displayed in game.
 
@@ -15,24 +15,44 @@ class display_model:
         _font: the pygame font to be used in the HUD
         _timer: An integer representing the seconds remaining in the game
     """
-    pass
 
     def __init__(self):
         self._font = pygame.font.SysFont(
             'bahnschrift', 50)  # looks like Valorant HUD font
-        self.timer = 100  # start at 100 seconds
+        self._timer = 100  # start at 100 seconds
 
-    def get_game_updates():
-        pass
+    @property
+    def timer(self):
+        """
+        Returns the current value of the timer.
 
-    def get_spike_status():
-        pass
+        Returns:
+            An integer representing the current value of the timer.
+        """
+        return self._timer
+
+    @property
+    def font(self):
+        """
+        Returns the font used in the HUD.
+
+        Returns: The font used in the HUD.
+        """
+        return self._font
 
     def set_timer(self, new_time):
+        """
+        Sets the timer's value to a new time.
+
+        Args:
+            new_time: An integer representing the new time.
+        Returns:
+            None.
+        """
         self.timer = new_time
 
 
-class display_view:
+class DisplayView:
     """
     Displays HUD elements on to the game.
 
@@ -53,7 +73,7 @@ class display_view:
             surface: The surface to blit the text on to.
             position: A tuple representing the position of the text.
         """
-        text_surface = self.model._font.render(text, 1, color)
+        text_surface = self.model.font.render(text, 1, color)
         surface.blit(text_surface, position)
 
     def draw_player_updates(self, player_1, player_2, surface):
@@ -105,6 +125,8 @@ class display_view:
         Arguments:
             image: A string representing the image to be blitted.
             surface: The surface to blit the screen on to.
+        Returns:
+            None.
         """
         screen = \
             pygame.transform.scale(pygame.image.load
