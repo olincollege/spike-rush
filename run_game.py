@@ -33,6 +33,7 @@ def agent_test():
             for event in pygame.event.get():  # look for events
                 if event.type == pygame.QUIT:  # quit the game, stop the loop
                     pygame.quit()
+                    return
                 elif event.type == pygame.KEYDOWN:
                     display = False
             hud_view.draw_other_screen(screen, map_view._window)
@@ -88,6 +89,7 @@ def agent_test():
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 pygame.quit()
+                return
 
             if event.type == track_second:
                 # if a second has passed, reduce the timer
@@ -159,6 +161,10 @@ def agent_test():
                                                    )
         character_view_1.draw_bullets(map_view._window)
 
+        # bring up controls screen if H key is pressed
+        if keys[pygame.K_h]:
+            hud_view.draw_other_screen("controls.png", map_view._window)
+
         pygame.display.flip()  # update entire display
         clock.tick(FRAME_RATE)  # reduce framerate to 30
 
@@ -168,6 +174,7 @@ def agent_test():
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 pygame.quit()
+                return
             elif event.type == pygame.KEYDOWN:
                 display = False
         if character_model_1.win == True:
