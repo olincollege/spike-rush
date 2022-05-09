@@ -1,22 +1,24 @@
-
+"""
+Runs the spike rush game.
+"""
 import pygame
 from regex import E
-from guns_bullets import *
-from abc import ABC, abstractmethod
-from spike import *
-from spike_map import *
-from agent import *
+from spike_map import SplitModel, SplitView
+from agent import Agent, AgentController, AgentView, check_win
 from hud import DisplayModel, DisplayView
 
+FRAME_RATE = 30
 
 def agent_test():
     """
     Runs the game loop.
+
+    Returns:
+        None.
     """
     pygame.init()  # initialize pygame
-    FRAME_RATE = 30
-    map_model = split_model()
-    map_view = split_view(map_model)  # initialize map
+    map_model = SplitModel()
+    map_view = SplitView(map_model)  # initialize map
 
     # initialize HUD
     hud_model = DisplayModel()
@@ -39,7 +41,7 @@ def agent_test():
             hud_view.draw_other_screen(screen, map_view._window)
 
             pygame.display.flip()  # update entire display
-            clock.tick(30)  # reduce framerate to 30
+            clock.tick(FRAME_RATE)  # reduce framerate to 30
 
     character_speed = 10
 
