@@ -889,7 +889,6 @@ class AgentController:
                         spike.frames_to_explode:
                     # print("Defused")
                     defuse_spike(other_agent.spike_object)
-                    hud_model.set_timer(0)
                 elif not spike.status:
                     self._agent.frames_since_last_spike_interaction += 1
             else:
