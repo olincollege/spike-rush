@@ -825,7 +825,6 @@ class AgentController:
         # Not implementing rn
         pass
 
-
 def agent_test():
     """
     Tests movement code with a test character.
@@ -869,6 +868,9 @@ def agent_test():
     # main loop
     run = True
     while run:
+
+        check_win()
+
 
         # sense inputs (get events)
         for event in pygame.event.get():  # look for events
