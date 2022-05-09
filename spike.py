@@ -1,8 +1,6 @@
 """
-Docstring
+Model for the Spike.
 """
-import pygame
-
 
 class Spike:
     """
@@ -19,16 +17,41 @@ class Spike:
 
     @property
     def location(self):
+        """
+        Returns the location of the Spike.
+
+        Returns:
+            A string of integers representing the Spike's location.
+        """
         return self._location
 
     @property
     def status(self):
+        """
+        Returns the status of the Spike.
+
+        Returns:
+            A boolean representing whether the spike has been planted or not.
+            True if defused; otherwise, False.
+        """
         return self._status
 
     def blowup(self):
-        if self.frames_since_plant == self.frames_to_explode:
-            return True
+        """
+        Returns whether the Spike reaches an explotion.
+
+        Returns:
+            A boolean representing whether the Spike explodes.
+            True if it explodes; otherwise, False.
+        """
+        return self.frames_since_plant == self.frames_to_explode
 
     def defuse(self):
+        """
+        Defuses the spike.
+
+        Returns:
+            None.
+        """
         self._status = True
         self.frames_since_plant = 0
