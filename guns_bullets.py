@@ -1,26 +1,16 @@
+"""
+Document containing the models for Gun & Bullet
+"""
 import math
-from random import randint, randrange
-import pygame
+from random import randint
 #from run_game import frame_rate
 
-frame_rate = 30
-
-# global bc GLBOAL fsduckjscajkajsdajk;
-
-# ... would not recomend unglobaling. wait, not how global vars work, fixing
-
-# fixed, these 3 things should always be referred to as global
-# initialize an empty dictionary that will store all bullets
-bullet_dictionary = {}
-# initialize a counter for bullets
-bullet_counter = 0
-# bullets to delete, fixes deleting during iteration issue
-bullet_delete_dictionary = {}
-
-# GUN
+FRAME_RATE = 30
+bullet_counter = 0  # pylint:disable=C0103
+# bullet counter is not a constant as it is a global variable
 
 
-class gun():
+class Gun():
     """
     A model for a gun.
 
@@ -45,10 +35,10 @@ class gun():
         current_clip: An integer representing the current number of bullets
             held by a gun.
         _automatic: A boolean representing if a gun is automatic.
-        _bullet_dict: A dictionary containing bullet names as keys and 
+        _bullet_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        _bullet_delete_dict: A dictionary containing bullet names as keys and 
+        _bullet_delete_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
 
@@ -57,21 +47,19 @@ class gun():
     # gun should have name and defined damage value
     _damage = 20
 
-    _max_spread = math.ceil(frame_rate * 40/60)
+    _max_spread = math.ceil(FRAME_RATE * 40/60)
     _min_spread = 0
     _shots_for_full_spread = 7
-    _frames_before_shot = math.ceil(frame_rate*15/60)
+    _frames_before_shot = math.ceil(FRAME_RATE*15/60)
 
-    # the consecutive number of bullets automatically fire(for calculating spread)
+    # the consecutive number of bullets
+    # automatically fire(for calculating spread)
     consecutive_bullets = 0
 
     _clip_size = 20
-    _frames_for_reload = math.ceil(frame_rate*120/60)  # 2 seconds
+    _frames_for_reload = math.ceil(FRAME_RATE*120/60)  # 2 seconds
 
     current_clip = 20
-
-    # upon further consideration, it doesn't make much sense to keep track of these things
-    # if we're not updating the gun's position as we go, we should probably implement that tho
 
     def __init__(self):
         """
@@ -98,8 +86,7 @@ class gun():
         if clip_update <= 0:
             self.current_clip += clip_update
             # if clip is negative
-            if self.current_clip < 0:
-                self.current_clip = 0
+            self.current_clip = max(self.current_clip, 0)
         # otherwise reload
         else:
             self.current_clip = self._clip_size
@@ -114,7 +101,7 @@ class gun():
                 x position.
             player_y: An integer representing the location of the player's
                 y position.
-            theta: An integer or float representing the current angle the 
+            theta: An integer or float representing the current angle the
                 player is facing in radians.
         Returns:
             None.
@@ -142,7 +129,8 @@ class gun():
         actual_spread_y = perp_vector[1] * \
             spread_factor * (-1)**(randint(0, 1))
 
-        # if you increase this by a factor of 10, increase the max spread by a factor of 10 too
+        # if you increase this by a factor of 10,
+        # increase the max spread by a factor of 10 too
         # basically will just allow you more spread angles :)
         x_increment += actual_spread_x/1000
         y_increment += actual_spread_y/1000
@@ -151,10 +139,16 @@ class gun():
         bullet_start_y = player_y + math.floor(30*y_increment) + 25
 
         # create a new bullet and add it to the dictionary of bullets
-        global bullet_counter
+        global bullet_counter # pylint:disable=C0103, W0603
+        # This is the only location where this global variable is updated
+        # hence why it isn't awful to have this as a singular modular
+        # global variable. Furthermore, attempting to turn this into a
+        # class variable caused problems where the bullets were deleting
+        # early, likely due to storate errors or overrride timing.
         bullet_counter += 1
-        new_bullet = bullet(bullet_start_x, bullet_start_y, x_increment,
+        new_bullet = Bullet(bullet_start_x, bullet_start_y, x_increment,
                             y_increment, self._damage)
+        #new_bullet.bullet_counter += 1
 
         update_dict = {new_bullet.name: new_bullet}
 
@@ -174,7 +168,10 @@ class gun():
             {bullet.name: self._bullet_dict[bullet.name]})
 
 
-class bullet():
+
+class Bullet(): # pylint: disable=too-many-instance-attributes
+# Almost impossible to work around "too many attributes" claim
+# without making more convoluted code than before.
     """
     A model for a bullet.
 
@@ -194,8 +191,12 @@ class bullet():
             initialized as none.
         _speed_per_tick: an integer representing the speed the bullet moves
     """
-    _speed_per_tick = math.ceil(frame_rate * 35/60)  # was 20
+    _speed_per_tick = math.ceil(FRAME_RATE * 35/60)  # was 20
+    #bullet_counter = 0
 
+    # pylint:disable=too-many-arguments
+    # Almost impossible to work around the "too many arguments" claim
+    # without making more convoluted code than before.
     def __init__(self, pos_x, pos_y, incr_x, incr_y, damage):
         """
         Initialize an instance of the bullet class
@@ -203,8 +204,10 @@ class bullet():
         Args:
             _pos_x: An integer representing the x position of a bullet.
             _pos_y: An integer representing the y position of a bullet.
-            _incr_x: An float representing the x component of a bullet's heading.
-            _incr_y: An float representing the y component of a bullet's heading.
+            _incr_x: An float representing the x component of a bullet's
+                heading.
+            _incr_y: An float representing the y component of a bullet's
+                heading.
             _damage: An integer representing how much a damage a bullet should
                 do on hit.
         """
@@ -219,7 +222,9 @@ class bullet():
         self._delta_x = self._incr_x * self._speed_per_tick
         self._delta_y = self._incr_y * self._speed_per_tick
 
-        global bullet_counter
+        global bullet_counter # pylint:disable=C0103, W0603
+        # Global variable is not updated here & is merely called.
+        # See reasoning for global variable usage in gun.shoot()
         self.name = f"bullet_{bullet_counter}"
 
         self.bullet_sprite = None
@@ -250,7 +255,7 @@ class bullet():
 # defining general gun classes
 
 
-class classic(gun):
+class Classic(Gun):
     """
     A model for a gun that emulates the classic.
 
@@ -275,34 +280,33 @@ class classic(gun):
         current_clip: An integer representing the current number of bullets
             held by a gun.
         _automatic: A boolean representing if a gun is automatic.
-        _bullet_dict: A dictionary containing bullet names as keys and 
+        _bullet_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        _bullet_delete_dict: A dictionary containing bullet names as keys and 
+        _bullet_delete_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
     _damage = 22
-    _max_spread = math.ceil(frame_rate * 50/60)
+    _max_spread = math.ceil(FRAME_RATE * 50/60)
     _min_spread = 0
     _shots_for_full_spread = 7
-    _frames_before_shot = math.ceil(frame_rate*10/60)
+    _frames_before_shot = math.ceil(FRAME_RATE*10/60)
 
     consecutive_bullets = 0
     _clip_size = 12
     _current_clip = 12
-    _frames_for_reload = math.ceil(frame_rate*105/60)
+    _frames_for_reload = math.ceil(FRAME_RATE*105/60)
 
     def __init__(self):
         """
         Creates an instance of a classic.
         """
+        Gun.__init__(self)
         self._automatic = False
-        self._bullet_dict = {}
-        self._bullet_delete_dict = {}
 
 
-class spectre(gun):
+class Spectre(Gun):
     """
     A model for a gun that emulates the spectre.
 
@@ -327,34 +331,33 @@ class spectre(gun):
         current_clip: An integer representing the current number of bullets
             held by a gun.
         _automatic: A boolean representing if a gun is automatic.
-        _bullet_dict: A dictionary containing bullet names as keys and 
+        _bullet_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        _bullet_delete_dict: A dictionary containing bullet names as keys and 
+        _bullet_delete_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
     _damage = 22
-    _max_spread = math.ceil(frame_rate*70/60)
+    _max_spread = math.ceil(FRAME_RATE*70/60)
     _min_spread = 0
     _shots_for_full_spread = 9
-    _frames_before_shot = math.ceil(frame_rate*5/60)
+    _frames_before_shot = math.ceil(FRAME_RATE*5/60)
 
     consecutive_bullets = 0
     _clip_size = 30
     current_clip = 30
-    _frames_for_reload = math.ceil(frame_rate*135/60)
+    _frames_for_reload = math.ceil(FRAME_RATE*135/60)
 
     def __init__(self):
         """
         Creates an instance of the spectre class.
         """
-        self._automatic = True
-        self._bullet_dict = {}
-        self._bullet_delete_dict = {}
+        Gun.__init__(self)
 
 
-class guardian(gun):
+
+class Guardian(Gun):
     """
     A model of a gun that emulates the guardian.
 
@@ -379,34 +382,33 @@ class guardian(gun):
         current_clip: An integer representing the current number of bullets
             held by a gun.
         _automatic: A boolean representing if a gun is automatic.
-        _bullet_dict: A dictionary containing bullet names as keys and 
+        _bullet_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        _bullet_delete_dict: A dictionary containing bullet names as keys and 
+        _bullet_delete_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
     _damage = 65
-    _max_spread = math.ceil(frame_rate*40/60)
+    _max_spread = math.ceil(FRAME_RATE*40/60)
     _min_spread = 0
     _shots_for_full_spread = 9
-    _frames_before_shot = math.ceil(frame_rate*10/60)
+    _frames_before_shot = math.ceil(FRAME_RATE*10/60)
 
     consecutive_bullets = 0
     _clip_size = 12
     current_clip = 12
-    _frames_for_reload = math.ceil(frame_rate*135/60)
+    _frames_for_reload = math.ceil(FRAME_RATE*135/60)
 
     def __init__(self):
         """
         Creates an instance of the guardian class.
         """
+        Gun.__init__(self)
         self._automatic = False
-        self._bullet_dict = {}
-        self._bullet_delete_dict = {}
 
 
-class vandal(gun):
+class Vandal(Gun):
     """
     A model of a gun that emulates the vandal.
 
@@ -431,36 +433,34 @@ class vandal(gun):
         current_clip: An integer representing the current number of bullets
             held by a gun.
         _automatic: A boolean representing if a gun is automatic.
-        _bullet_dict: A dictionary containing bullet names as keys and 
+        _bullet_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        _bullet_delete_dict: A dictionary containing bullet names as keys and 
+        _bullet_delete_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
     _damage = 40
-    _max_spread = math.ceil(frame_rate*120/60)
-    _min_spread = math.ceil(frame_rate*10/60)
+    _max_spread = math.ceil(FRAME_RATE*120/60)
+    _min_spread = math.ceil(FRAME_RATE*10/60)
     _shots_for_full_spread = 8
-    _frames_before_shot = math.ceil(frame_rate*6/60)
+    _frames_before_shot = math.ceil(FRAME_RATE*6/60)
 
     consecutive_bullets = 0
     _clip_size = 25
     current_clip = 25
-    _frames_for_reload = math.ceil(frame_rate*150/60)
+    _frames_for_reload = math.ceil(FRAME_RATE*150/60)
 
     def __init__(self):
         """
         Creates an instance of the vandal class.
         """
-        self._automatic = True
-        self._bullet_dict = {}
-        self._bullet_delete_dict = {}
+        Gun.__init__(self)
 
 # this one is special. ill get to it later
 
 
-class operator(gun):
+class Operator(Gun):
     """
     A model of a gun that emulates the Operator.
 
@@ -487,33 +487,30 @@ class operator(gun):
         current_clip: An integer representing the current number of bullets
             held by a gun.
         _automatic: A boolean representing if a gun is automatic.
-        _bullet_dict: A dictionary containing bullet names as keys and 
+        _bullet_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        _bullet_delete_dict: A dictionary containing bullet names as keys and 
+        _bullet_delete_dict: A dictionary containing bullet names as keys and
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
     _damage = 150
-    _max_spread = math.ceil(frame_rate*40/60)
+    _max_spread = math.ceil(FRAME_RATE*40/60)
     _min_spread = 0
     _shots_for_full_spread = 9
-    _frames_before_shot = math.ceil(frame_rate*80/60)
+    _frames_before_shot = math.ceil(FRAME_RATE*80/60)
 
     consecutive_bullets = 0
     _clip_size = 5
     current_clip = 5
-    _frames_for_reload = math.ceil(frame_rate*222/60)
+    _frames_for_reload = math.ceil(FRAME_RATE*222/60)
 
     def __init__(self):
         """
         Creates an instance of the operator class.
         """
+        Gun.__init__(self)
         self._automatic = False
-        self._bullet_dict = {}
-        self._bullet_delete_dict = {}
-
-    pass
 
 
-gun_list = [classic(), spectre(), guardian(), vandal()]
+gun_list = [Classic(), Spectre(), Guardian(), Vandal()]
