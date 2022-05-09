@@ -872,8 +872,8 @@ class AgentController:
         if self._agent.side != "attack":
             return
         if map_model.a_site.in_zone(self._agent):
-            if (input_type == "WASD" and keys[pygame.K_4] or
-                    input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
+            if (input_type == "WASD" and keys[pygame.K_4] or \
+             input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
                 if self._agent.spike and self._agent._frames_since_last_spike_interaction == \
                         frames_to_plant:
                     #print("Planted")
@@ -971,6 +971,5 @@ def check_win(attacker,defender):
         #if defender dies while spike out
         if not defender.alive:
             attacker.set_win()
-        
         
     
