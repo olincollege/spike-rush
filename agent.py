@@ -674,11 +674,20 @@ class AgentController:
         Checks if a player should be shooting a gun and if so, begin shooting.
 
         Args:
+<<<<<<< HEAD
             keys: A list containing which keys are currently pressed.
             input_type: A string representing which set of controls will be
             used.
         Returns:
             None.
+=======
+            keys: a list of keys currently being pressed
+            input_type: a string representing whether a player is using
+                arrow keys or WASD
+        
+        Returns:
+            None
+>>>>>>> 5cbf85d7a5a49108efdc2cc558d7bbf12dfb82f5
         """
 
         # if reloading, don't fire
@@ -915,7 +924,7 @@ class AgentController:
 
 def agent_test():
     """
-    Runs the game loop.
+    Tests movement code with a test character.
     """
     pygame.init()  # initialize pygame
     map_model = split_model()
