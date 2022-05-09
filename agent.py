@@ -890,7 +890,6 @@ class AgentController:
                     # print("Defused")
                     defuse_spike(other_agent.spike_object)
                     hud_model.set_timer(0)
-                    other_agent.spike_object.set_status(True)
                 elif not spike.status:
                     self._agent.frames_since_last_spike_interaction += 1
             else:
@@ -907,6 +906,7 @@ def defuse_spike(spike):
         None.
     """
     spike.defuse()
+    spike.set_status(True)
 
 
 def check_win(attacker, defender, hud_model):
