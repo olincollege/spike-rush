@@ -15,19 +15,42 @@ def agent_test():
     Runs the game loop.
     """
     pygame.init()  # initialize pygame
+
     map_model = split_model()
     map_view = split_view(map_model)  # initialize map
+
+    # initialize HUD
+    hud_model = display_model()
+    hud_view = display_view(hud_model)
+
     clock = pygame.time.Clock()  # to keep track of time in-game
+
+    # Intro screens here
+    intro_screens = ["instructions_1.png", "instructions_2.png"]
+    for screen in intro_screens:
+        display = True
+        while display:
+            for event in pygame.event.get():  # look for events
+                if event.type == pygame.QUIT:  # quit the game, stop the loop
+                    pygame.quit()
+                elif event.type == pygame.KEYDOWN:
+                    display = False
+            hud_view.draw_other_screen(screen, map_view._window)
+
+            pygame.display.flip()  # update entire display
+            clock.tick(30)  # reduce framerate to 30
+
+            # title screen
+            # How to play
+            # Attacking player
+            # Defending player
+
     character_speed = 10
 
     track_second = pygame.USEREVENT  # using ID 24
 
     # trigger event every second
     pygame.time.set_timer(track_second, 1000)
-
-    # initialize HUD
-    hud_model = display_model()
-    hud_view = display_view(hud_model)
 
     # Player 1 instance
     character_model_1 = Agent(0, 0, "attack")
@@ -144,7 +167,8 @@ def agent_test():
         pygame.display.flip()  # update entire display
         clock.tick(30)  # reduce framerate to 30
 
-    # print(map_view._window.get_rect()) #check window dimensions
+    # Trigger win screen
+
     pygame.quit()  # after main loop has finished
 
 
