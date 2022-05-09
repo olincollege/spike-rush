@@ -46,7 +46,7 @@ class Agent:
         _turn_speed: A float representing how much to update the player angle
             each time an angle update is qeued.
         _alive: A boolean representing whether or not the player is alive.
-
+        _win: a boolean representing if a player has won
     """
 
     def __init__(self, x_init, y_init, side):
@@ -75,6 +75,7 @@ class Agent:
 
         # player starts as alive
         self._alive = True
+        self._win = False
 
         #self._abilities = []
 
@@ -87,6 +88,18 @@ class Agent:
         """
         return self._health
 
+    @property
+    def win(self):
+        """
+        Return if an agent has won
+
+        Returns:
+            _win: a boolean representing if a player has won.
+        
+        """
+
+        return self._win
+    
     @property
     def location(self):
         """
@@ -172,6 +185,12 @@ class Agent:
         """
         # Not abstract bc all of them move the same
         self._location = [x_position, y_position]
+
+    def set_win(self):
+        """
+        Set a player's win status to True
+        """
+        self._win = True
 
     def set_x_coord(self, x_position):
         """
@@ -911,3 +930,38 @@ class AgentController:
             else:
                 self._agent.set_frames_since_last_spike_interaction(0)
 
+
+def check_win(attacker,defender):
+
+    spike_out = not attacker._spike
+
+    #if the spike hasn't been planted
+    if not spike_out:
+
+        #if the defender dies
+        if not defender.alive:
+            attacker.set_win()
+        if not attacker.alive:
+            defender.set_win()
+        
+        #PUT HERE
+        #if the timer runs out, defender wins
+
+    #if the spike has been planted
+    else:
+
+        #if the spike blows up
+        if attacker.spike_object.blowup():
+            attacker.set_win()
+
+        #if the spike is defused
+
+        if attacker.spike_object.status():
+            defender.set_win()
+        
+        #if defender dies while spike out
+        if not defender.alive:
+            attacker.set_win()
+        
+        
+    

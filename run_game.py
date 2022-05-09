@@ -53,6 +53,20 @@ def agent_test():
     run = True
     while run:
 
+        check_win(character_controller_1.agent,character_controller_2.agent)
+
+
+        if character_controller_1.agent.win:
+
+            #do stuff if the attacker wins
+            break
+        
+        if character_controller_2.agent.win:
+            #do stuff if defender wins
+            break
+
+
+
         # sense inputs (get events)
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
@@ -102,6 +116,10 @@ def agent_test():
             character_view_2.dot_sight(map_view._window)
 
             character_controller_2.spike_defuse(keys, map_model, "Arrow", agents[0], hud_model)
+
+
+
+
 
         # update stuff
         # draw backdrop
