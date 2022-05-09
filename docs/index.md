@@ -1,10 +1,8 @@
 <img src="website_images/game_logo.png" style="float:middle"> <br>
 
-## Spike Rush is a top down shooter where players compete by attacking and defending a spike site. A pygame implementation of the Valorant game mode.
+## Spike Rush is a top down shooter where players compete by attacking and defending a spike site. A pygame implementation of the Valorant game mode. <br><br>
 
-## Video
-
-[![Spike Rush: Pygame Implementation](https://imgur.com/a/ygP5Crt)](http://www.youtube.com/watch?v=cOv2I0dYL20 "Spike Rush: Pygame Implementation")
+<div style="text-align: center;"><iframe width="560" height="315" src="https://www.youtube.com/embed/cOv2I0dYL20" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div> <br><br>
 
 <img src="website_images/headers/overview.png" width ="300" height = "106" style="float:left"> <br><br><br><br><br>
 

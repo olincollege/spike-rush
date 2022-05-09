@@ -8,7 +8,6 @@ Creating the main map for the game.
 # a high number of public methods.
 
 
-
 import os
 import pygame
 from zones import SpawnZone, PlantZone
@@ -105,11 +104,11 @@ class SplitModel():
 
         # Attacker spawn zone
         # Zone(250.08, 28.27, 283.10, 155.12)
-        self._attacker_spawn = SpawnZone(64, 21, 283, 155)
+        self._attacker_spawn = SpawnZone(61, 18, 280, 152)
 
         # Defender spawn zone
         # Zone(1542.59, 229.73, 158.95, 295.83)
-        self._defender_spawn = SpawnZone(1356, 226, 158, 295)
+        self._defender_spawn = SpawnZone(1353, 223, 155, 292)
 
         # Spike plant zone
         # Zone(794.23, 464.98, 499.48, 318.22)
