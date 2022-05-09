@@ -26,7 +26,8 @@ def agent_test():
     clock = pygame.time.Clock()  # to keep track of time in-game
 
     # Intro screens here
-    intro_screens = ["instructions_1.png", "instructions_2.png"]
+    intro_screens = ["title.png", "instructions_1.png", "instructions_2.png",
+                     "instructions_3.png"]
     for screen in intro_screens:
         display = True
         while display:
@@ -39,11 +40,6 @@ def agent_test():
 
             pygame.display.flip()  # update entire display
             clock.tick(30)  # reduce framerate to 30
-
-            # title screen
-            # How to play
-            # Attacking player
-            # Defending player
 
     character_speed = 10
 
