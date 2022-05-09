@@ -205,3 +205,22 @@ class SplitView:
         # draw the walls
         for wall in self.model.wall_list:
             self._window.blit(wall.wall, (wall.rect.x, wall.rect.y))
+
+    def draw_other_screen(self, image):
+        """
+        Draws full screens other than the main game map.
+
+        Arguments:
+            image: A string representing the image to be blitted.
+            surface: The surface to blit the screen on to.
+        Returns:
+            None.
+        """
+        screen = \
+            pygame.transform.scale(pygame.image.load
+                                   (os.path.join('images',
+                                                 'other_screens',
+                                                 image)).convert(),
+                                   (1536, 864))
+
+        self._window.blit(screen, self._window.get_rect())
