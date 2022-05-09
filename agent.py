@@ -890,7 +890,7 @@ class AgentController:
                     # print("Defused")
                     defuse_spike(other_agent.spike_object)
                     hud_model.set_timer(0)
-                    other_agent.set_spike_object(None)
+                    other_agent.spike_object.set_status(True)
                 elif not spike.status:
                     self._agent.frames_since_last_spike_interaction += 1
             else:
@@ -940,16 +940,15 @@ def check_win(attacker, defender, hud_model):
     # if the spike has been planted
     else:
 
+        # if defender dies while spike out
+        if not defender.alive:
+            attacker.set_win()
+
         if attacker.spike_object is not None:
             # if the spike blows up
             if hud_model.timer == 0:
                 attacker.set_win()
 
             # if the spike is defused
-
             if attacker.spike_object.status:
                 defender.set_win()
-
-        # if defender dies while spike out
-        if not defender.alive:
-            attacker.set_win()

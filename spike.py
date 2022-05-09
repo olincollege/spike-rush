@@ -46,6 +46,18 @@ class Spike:
         """
         return self.frames_since_plant == self.frames_to_explode
 
+    def set_status(self, new_status):
+        """
+        Sets a new status of the bomb.
+
+        Args:
+            new_status = A boolean representing the updated status of the
+                spike.
+        Returns:
+            None.
+        """
+        self._status = new_status
+
     def defuse(self):
         """
         Defuses the spike.
