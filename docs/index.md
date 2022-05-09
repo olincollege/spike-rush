@@ -40,7 +40,7 @@ found [here.](https://github.com/olincollege/spike-rush/blob/main/README.md)
 ### Aditi Vinod <br>
 *Olin Class of 2025* <br>
 
-this will be a bio <br><br><br><br><br><br><br><br><br><br>
+Aditi is an E:Computing major at Olin College of Engineering. Her hobbies include playing games - mostly Valorant recently, skiing, and spinning fire.
 
 <img src="website_images/about_us/andrew.jpg" width ="300" height = "300" style="float:left;margin:40px 40px"> <br><br>
 
