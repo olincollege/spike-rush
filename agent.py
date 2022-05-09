@@ -2,10 +2,8 @@
 Docstring >:)
 """
 
-from numpy import angle
 import pygame
 import os
-from regex import E
 from guns_bullets import *
 from abc import ABC, abstractmethod
 from spike import *
@@ -932,6 +930,17 @@ class AgentController:
 
 
 def check_win(attacker,defender):
+    """
+    Checks if either of the players has won and updates their
+    attributes accordingly
+
+    Args:
+        attacker: an instace of the agent class representing the attacking
+            player
+        defender: an instace of the agent class representing the defending
+            player
+    
+    """
 
     spike_out = not attacker._spike
 
