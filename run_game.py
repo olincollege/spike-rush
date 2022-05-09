@@ -1,6 +1,5 @@
 
 import pygame
-import os
 from regex import E
 from guns_bullets import *
 from abc import ABC, abstractmethod

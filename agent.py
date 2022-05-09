@@ -2,15 +2,32 @@
 Model, View, Controller architecture and functions for an Agent in spike rush
 """
 
+#pylint disables and justification
+
+#unfortunately I have to disable these because without wildcard import
+#the code doesn't import correctly
+#pylint: disable=W0614
+#pylint: disable=W0401
+
+#this warning has to be disabled becuase it doesn't make any sense
+#the agent must store its attributes and there isn't a good way to make the
+#agent have less
+#pylint: disable=R0902
+
+#disabled because we were not taught about private methods
+#pylint: disable=R0904
+
+#this pylint error is disabled because it is false. Agent did not redefine
+#any classes
+#pylint: disable=E0102
+from abc import abstractmethod
+import math
 import pygame
 import os
 from guns_bullets import *
-from abc import ABC, abstractmethod
-from spike import *
+from spike import Spike
 from spike_map import *
-import math
 from hud import display_model, display_view
-
 
 class Agent:
     """
@@ -46,36 +63,37 @@ class Agent:
         _alive: A boolean representing whether or not the player is alive.
         _win: a boolean representing if a player has won
     """
+    _health = 100
+    _color = (192, 192, 192)   # Default circle is gray
+    _spike = True  # If spike is true, it has not yet been planted
+    _spike_object = None
+
+    _frames_since_last_shot = 0
+    _frames_since_reload = 0
+
+    _frames_since_last_spike_interaction = 0
+
+    _is_shooting = False
+    _is_reloading = False
+    #self.is_defusing = False
+
+    _turn_speed = .15*frame_rate/30
+    _angle = 0
+
+    # player starts as alive
+    _alive = True
+    _win = False
+
+    #self._abilities = []
 
     def __init__(self, x_init, y_init, side):
         """
         Creates an instance of an agent.
         """
         self._location = [x_init, y_init]
-        self._health = 100
-        self._gun = vandal()
-        self._color = (192, 192, 192)   # Default circle is gray
-        self._spike = True  # If spike is true, it has not yet been planted
-        self._spike_object = None
+
         self._side = side
-
-        self._frames_since_last_shot = 0
-        self._frames_since_reload = 0
-
-        self._frames_since_last_spike_interaction = 0
-
-        self._is_shooting = False
-        self._is_reloading = False
-        #self.is_defusing = False
-
-        self._turn_speed = .15*frame_rate/30
-        self._angle = 0
-
-        # player starts as alive
-        self._alive = True
-        self._win = False
-
-        #self._abilities = []
+        self._gun = vandal()
 
     @property
     def health(self):
@@ -249,27 +267,27 @@ class Agent:
         """
         self._frames_since_reload = new_frames
 
-    def set_is_shooting(self, bool):
+    def set_is_shooting(self, a_bool):
         """
         Update whether a player is shooting or not.
 
         Args:
-            bool: A boolean representing whether a player is shooting.
+            a_bool: A boolean representing whether a player is shooting.
         Returns:
             None.
         """
-        self._is_shooting = bool
+        self._is_shooting = a_bool
 
-    def set_is_reloading(self, bool):
+    def set_is_reloading(self, a_bool):
         """
         Update whether a player is reloading or not.
 
         Args:
-            bool: A boolean representing whether a player is reloading.
+            a_bool: A boolean representing whether a player is reloading.
         Returns:
             None.
         """
-        self._is_reloading = bool
+        self._is_reloading = a_bool
 
     def set_angle(self, angle):
         """
@@ -312,7 +330,7 @@ class Agent:
         Returns:
             None.
         """
-        pass
+
 
     def use_gun(self):
         """
@@ -406,7 +424,7 @@ class Phoenix(Agent):
         """
         # Save Phoenix's location on press
         # After 10s or when killed, returns to location w full health
-        saved_location = self._location
+        #saved_location = self._location
 
         self.update_health(100)
 
@@ -427,12 +445,12 @@ class Reyna(Agent):
         Reyna's ultimate ability puts her into a 30s frenzy which increases her
         firing speed by 15% and increases her reload speed by 25%.
         """
-        pass
+
 
 
 class AgentView():
     """
-    Displays an agent and other visuals controlled by the agent 
+    Displays an agent and other visuals controlled by the agent
     (bullets & the spike) on the map.
 
     Attributes:
@@ -498,7 +516,7 @@ class AgentView():
         dot_y = player_y + math.floor(60*y_heading) + 25
 
         red_dot = pygame.Rect(math.floor(dot_x - dot_width/2),
-                              math.floor(dot_y + dot_width/2), dot_width, dot_width)
+                    math.floor(dot_y + dot_width/2), dot_width, dot_width)
 
         pygame.draw.rect(surface, (255, 0, 0), red_dot)
 
@@ -529,17 +547,17 @@ class AgentView():
             None.
         """
         #global bullet_dictionary
-        for bullet in self._agent._gun._bullet_dict.values():
+        for the_bullet in self._agent._gun._bullet_dict.values():
             bullet_sprite = pygame.sprite.Sprite()
             bullet_sprite.image = pygame.Surface(
                 (self._bullet_width, self._bullet_width))
             bullet_sprite.image.fill((0, 0, 0))
-            bullet_x = math.floor(bullet._pos_x - self._bullet_width/2)
-            bullet_y = math.floor(bullet._pos_y + self._bullet_width/2)
+            bullet_x = math.floor(the_bullet._pos_x - self._bullet_width/2)
+            bullet_y = math.floor(the_bullet._pos_y + self._bullet_width/2)
             bullet_sprite.rect = pygame.Rect(
                 bullet_x, bullet_y, self._bullet_width, self._bullet_width)
             # self._bullet_sprites.add(bullet_sprite)
-            bullet.set_sprite(bullet_sprite)
+            the_bullet.set_sprite(bullet_sprite)
             surface.blit(bullet_sprite.image, bullet_sprite.rect)
 
             #pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
@@ -559,7 +577,8 @@ class AgentView():
             spike_sprite.image = pygame.Surface((spike_width, spike_width))
             spike_sprite.image.fill((100, 100, 100))
             spike_sprite.rect = pygame.Rect(
-                self._agent.spike_object.location[0], self._agent.spike_object.location[1], spike_width, spike_width)
+                self._agent.spike_object.location[0],\
+                self._agent.spike_object.location[1], spike_width, spike_width)
 
             surface.blit(spike_sprite.image, spike_sprite.rect)
 
@@ -652,13 +671,13 @@ class AgentController:
         # did we hit something?
         collision_list = \
             pygame.sprite.spritecollide(self.view.agent_sprite, walls, False)
-        for wall in collision_list:
+        for the_walls in collision_list:
             # reset position
             if xchange > 0:
-                self._view.agent_sprite.rect.right = wall.rect.left
+                self._view.agent_sprite.rect.right = the_walls.rect.left
                 self.agent.location[0] = self._view.agent_sprite.rect.left
             elif xchange < 0:
-                self._view.agent_sprite.rect.left = wall.rect.right
+                self._view.agent_sprite.rect.left = the_walls.rect.right
                 self.agent.location[0] = self._view.agent_sprite.rect.left
 
         if keys[control_list[0]]:  # up
@@ -674,13 +693,13 @@ class AgentController:
         # did we hit something?
         collision_list = \
             pygame.sprite.spritecollide(self.view.agent_sprite, walls, False)
-        for wall in collision_list:
+        for the_wall in collision_list:
             # reset position
             if ychange > 0:
-                self._view.agent_sprite.rect.bottom = wall.rect.top
+                self._view.agent_sprite.rect.bottom = the_wall.rect.top
                 self.agent.location[1] = self._view.agent_sprite.rect.top
             elif ychange < 0:
-                self._view.agent_sprite.rect.top = wall.rect.bottom
+                self._view.agent_sprite.rect.top = the_wall.rect.bottom
                 self.agent.location[1] = self._view.agent_sprite.rect.top
 
     # gun controls
@@ -710,7 +729,7 @@ class AgentController:
         # consecutive fire
 
         if (input_type == "WASD" and keys[pygame.K_x]) or (input_type ==
-                                                           "Arrow" and keys[pygame.K_m]):
+                                        "Arrow" and keys[pygame.K_m]):
 
             if self.agent._is_shooting and not self.agent._gun._automatic:
                 return
@@ -747,7 +766,8 @@ class AgentController:
             if self.agent._gun._automatic:
                 self.agent._gun.consecutive_bullets = 0
 
-            elif not self.agent._gun._automatic and self.agent._frames_since_last_shot > \
+            elif not self.agent._gun._automatic and\
+                 self.agent._frames_since_last_shot > \
                     self.agent._gun._frames_before_shot + 8:
                 self.agent._gun.consecutive_bullets = 0
             self.agent.set_is_shooting(False)
@@ -756,7 +776,7 @@ class AgentController:
 
     def check_reload(self, keys, input_type):
         """
-        Reloads the agent's gun when the key to reload is pressed. 
+        Reloads the agent's gun when the key to reload is pressed.
 
         Args:
             keys: A list containing which keys are currently pressed.
@@ -792,14 +812,14 @@ class AgentController:
 
         Returns: None.
         """
-        for bullet in self._agent._gun._bullet_dict.values():
-            self.bullet_main(bullet, walls, players, other_agent)
+        for the_bullet in self._agent._gun._bullet_dict.values():
+            self.bullet_main(the_bullet, walls, players, other_agent)
         # actually delete the bullet
         for bullet_name in self._agent._gun._bullet_delete_dict.keys():
             del self._agent._gun._bullet_dict[bullet_name]
         self._agent._gun._bullet_delete_dict.clear()
 
-    def bullet_collision(self, bullet, walls, players, other_agent):
+    def bullet_collision(self, the_bullet, walls, players, other_agent):
         """
         Checks whether a bullet of them collides with walls or other players.
 
@@ -815,17 +835,18 @@ class AgentController:
         Returns:
             None.
         """
-        if bullet.bullet_sprite is not None:
+        if the_bullet.bullet_sprite is not None:
             wall_collision_list = \
-                pygame.sprite.spritecollide(bullet.bullet_sprite, walls, False)
+                pygame.sprite.spritecollide(the_bullet.bullet_sprite, \
+                    walls, False)
             agent_collision_list = \
                 pygame.sprite.spritecollide(
-                    bullet.bullet_sprite, players, False)
-            for wall in wall_collision_list:
-                self._agent._gun.delete_bullet(bullet)
+                    the_bullet.bullet_sprite, players, False)
+            for _ in wall_collision_list:
+                self._agent._gun.delete_bullet(the_bullet)
             for index, agent in enumerate(agent_collision_list):
                 # the way this is implemented will not work in 2+v2+ games
-                self._agent._gun.delete_bullet(bullet)
+                self._agent._gun.delete_bullet(the_bullet)
                 other_agent.update_health(other_agent.health - 10)
                 # switch 10 to bullet.damage
 
@@ -872,7 +893,8 @@ class AgentController:
         if map_model.a_site.in_zone(self._agent):
             if (input_type == "WASD" and keys[pygame.K_4] or
                     input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
-                if self._agent.spike and self._agent._frames_since_last_spike_interaction == \
+                if self._agent.spike and\
+                     self._agent._frames_since_last_spike_interaction == \
                         frames_to_plant:
                     # print("Planted")
                     self._agent.plant_spike()
