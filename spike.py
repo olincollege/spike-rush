@@ -25,7 +25,7 @@ class Spike:
     
     def blowup(self):
         if self.frames_since_plant == self.frames_to_explode:
-          pass
+          return True
 
     def defuse(self):
         self._status = True
