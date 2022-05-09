@@ -20,32 +20,33 @@ class Agent:
     An agent in the spike rush game.
 
     Attributes:
-        _location: a list containing integers representing the x and y position
-            of the Agent 
-        _health: An integer representing the current health of the agent
+        _location: A list containing integers representing the x and y position
+            of the Agent.
+        _health: An integer representing the current health of the agent.
         _color: A tuple containing 3 integers. Used for non sprite agents.
             Generally unused.
         _spike: A boolean representing whether the agent is currently carrying
             the spike or not.
-        _spike_object: ?!?@#$?@$#?@#$!?$@#! @aditi
-        _side: a string representing whether the player is attacking or
-            defending
-        _frames_since_last_shot: an integer representing the number of frames
-            since the player last shot a weapon
-        _gun: a class representing the type of gun the player is holding.
+        _spike_object: An instance of a Spike representing the spike planted by
+            the agent.
+        _side: A string representing whether the player is attacking or
+            defending.
+        _frames_since_last_shot: An integer representing the number of frames
+            since the player last shot a weapon.
+        _gun: A class representing the type of gun the player is holding.
             The specific class will be some arbitrary class inherited from the
             general gun class.
-        _frames_since_reload: an integer representing the number of frames
+        _frames_since_reload: An integer representing the number of frames
             since the player started a reload
-        _is_shooting: a boolean representing whether or not a player is
-            currently shooting
-        _is_reloading: a boolean representing whether or not a player is
-            currently reloading
-        _angle = an integer or float representing the angle the player is
-            looking in radians
-        _turn_speed: a float representing how much to update the player angle
-            each time an angle update is qeued
-        _alive: a boolean representing whether or not the player is alive
+        _is_shooting: A boolean representing whether or not a player is
+            currently shooting.
+        _is_reloading: A boolean representing whether or not a player is
+            currently reloading.
+        _angle = An integer or float representing the angle the player is
+            looking in radians.
+        _turn_speed: A float representing how much to update the player angle
+            each time an angle update is qeued.
+        _alive: A boolean representing whether or not the player is alive.
 
     """
 
@@ -99,10 +100,10 @@ class Agent:
     @property
     def angle(self):
         """
-        Returns the agent's shoot angle
+        Returns the agent's shooting angle.
 
         Returns:
-            a float representing the shooting angle of an agent in radians
+            A float representing the shooting angle of an agent in radians.
         """
         return self._angle
 
@@ -113,44 +114,48 @@ class Agent:
         otherwise, false.
 
         Returns:
-            a boolean representing whether the player is holding the spike
+            A boolean representing whether the player is holding the spike.
         """
         return self._spike
 
     @property
     def spike_object(self):
         """
-        @ADITI ASFDKL:SAD F:JLASDF:LJFSAD:LD:LJAGSDJ:LAFSD:OJFSAD
+        Returns the spike object that has been planted by the agent;
+        returns None if the agent has not planted a spike.
+
+        Returns:
+            A Spike representing a Spike that has been planted.
         """
         return self._spike_object
 
     @property
     def gun(self):
         """
-        Returns the angle's gun object
+        Returns the agent's gun object.
 
         Returns:
-            the specific instance of a player's gun object
+            The specific instance of a player's gun object.
         """
         return self._gun
 
     @property
     def side(self):
         """
-        Return the side the player is on
+        Return what side the agent is currently playing.
 
         Returns:
-            a string representing what side the player is on
+            A string representing what side the agent is on.
         """
         return self._side
 
     @property
     def alive(self):
         """
-        Returns the alive or dead status of the player
+        Returns the alive or dead status of the player.
 
         Returns:
-            a boolean representing whether a player is alive or dead
+            A boolean representing whether a player is alive or dead.
         """
         return self._alive
 
@@ -206,95 +211,119 @@ class Agent:
 
     def set_frames_since_last_shot(self, new_frames):
         """
-        Updates the frames since an agent has shot a weapon
+        Updates the frames since an agent has shot a weapon.
 
         Args:
             new_frames: an integer representing how many frames since the
-                player last shot
+                player last shot.
+        Returns:
+            None.
         """
         self._frames_since_last_shot = new_frames
 
     def set_frames_since_reload(self, new_frames):
         """
-        Updates the frames since an agent initiated a reload
+        Updates the frames since an agent initiated a reload.
 
         Args:
             new_frames: an integer representing how many frames since the
-                player initiated a reload
+                player initiated a reload.
+        Returns:
+            None.
         """
         self._frames_since_reload = new_frames
 
 
     def set_is_shooting(self, bool):
         """
-        Update whether a player is shooting or not
+        Update whether a player is shooting or not.
 
         Args:
-            bool: a boolean representing if a player is shooting
-        
+            bool: A boolean representing whether a player is shooting.
+        Returns:
+            None.
         """
         self._is_shooting = bool
 
     def set_is_reloading(self, bool):
         """
-        Update whether a player is reloading or not
+        Update whether a player is reloading or not.
         
         Args:
-            bool: a boolean representing if a player is reloading
+            bool: A boolean representing whether a player is reloading.
+        Returns:
+            None.
         """
         self._is_reloading = bool
 
     def set_angle(self, angle):
         """
-        Update the view angle of the player
+        Update the view angle of the player.
 
         Args:
-            angle: an integer or float representing the new view angle
-        
+            angle: an integer or float representing the new view angle.
+        Returns:
+            None.
         """
         self._angle = angle
 
     def set_frames_since_last_spike_interaction(self, new_frames):
         """
-        Update the number of frames since the last spike interaction
+        Update the number of frames since the last spike interaction.
 
         Args:
-            new_frames: an integer representing the number of frames since
-                the last spike interaction
+            new_frames: An integer representing the number of frames since
+                the last spike interaction.
+        Returns:
+            None.
         """
         self._frames_since_last_spike_interaction = new_frames
 
     def kill(self):
         """
-        Kill the player
+        Kill the player.
+
+        Returns:
+            None.
         """
         self._alive = False
 
     @abstractmethod
     def use_ultimate(self):
         """
-        Not implemented [yet].
+        Uses the agent's ultimate ability; abstract method because it depends
+        on the type of agent.
+
+        Returns:
+            None.
         """
         pass
 
     def use_gun(self):
         """
-        Shoot a gun from the player's location, at the look angle
+        Shoot a gun from the player's location, at the look angle.
+
+        Returns:
+            None.
         """
         self._gun.shoot(self.location[0], self.location[1], self._angle)
 
     def reload_gun(self):
         """
-        Reload the player's gun
+        Reload the player's gun.
+        
+        Returns:
+            None.
         """
         # fix for private variable calls
         self._gun.update_clip(1)
         self.set_is_reloading(True)
         self._frames_since_reload = 0
 
-    def plant_spike(self, map_model):
+    def plant_spike(self):
         """
-        aaa
+        Plants the spike by creating a new Spike obejct at the agent's current
+        location.
 
         Returns:
             None.
@@ -304,24 +333,26 @@ class Agent:
 
     def defuse_spike(self, spike):
         """
-        aaa
+        Defuses a the given Spike object.
 
         Args:
-            spike: The spike object being defused.
+            spike: A spike representing the spike on the map to defuse.
         Returns:
             None.
         """
         spike.defuse()
 
     def set_spike_object(self, new_spike):
-        self._spike_object = new_spike
+        """
+        Sets the agent's Spike to a new Spike object; primarily used to reset
+        the spike to None.
 
-    def pickup_orb(self):
+        Args:
+            new_spike: The new spike for the Agent.
+        Returns:
+            None.
         """
-        Not implementing [yet]
-        """
-        # Only implementing if time
-        pass
+        self._spike_object = new_spike
 
 
 class Brimstone(Agent):
@@ -386,10 +417,11 @@ class Reyna(Agent):
 
 class AgentView():
     """
-    Displays an agent on the map.
+    Displays an agent and other visuals controlled by the agent 
+    (bullets & the spike) on the map.
 
     Attributes:
-        _agent: an instance of the agent class.
+        _agent: An Agent representing the model for the agent.
         agent_sprite: A string representing the image to use as the sprite for
             the agent.
         
@@ -402,14 +434,8 @@ class AgentView():
     def __init__(self, agent_model, image_path):
         self._agent = agent_model
         self._img_path = image_path
-        #self._agent = agent
-        #self._sprite = sprite
-        #self._bullet_sprites = []
-        #self.bullet_group = None
 
-        #self._sprite = self._agent._sprite
-
-        # initiate sprite stuff
+        # Initialize the agent's sprite
         self.agent_sprite = pygame.sprite.Sprite()
         self.image = [os.path.join('image', 'sprites', self._img_path)]
         self.agent_sprite.image = \
@@ -422,10 +448,25 @@ class AgentView():
 
     @property
     def agent(self):
+        """
+        Returns the view's agent.
+
+        Returns:
+            An Agent representing the agent that the view is for.
+        """
         return self._agent
 
     def dot_sight(self, surface):
+        """
+        Displays a red dot next to the agent sprite indicating the
+        direction the agent will currently shoot in.
 
+        Args:
+            surface: A Surface where the game takes place and all visuals are
+                displayed.
+        Returns:
+            None.
+        """
         # make a view a red dot sight
         dot_width = 6
 
@@ -447,6 +488,15 @@ class AgentView():
         pygame.draw.rect(surface, (255, 0, 0), red_dot)
 
     def draw_agent(self, surface):
+        """
+        Displays the agent in the game.
+
+        Args:
+            surface: A Surface where the game takes place and all visuals are
+                displayed.
+        Returns:
+            None.
+        """
         self.agent_sprite.rect.x = self.agent.location[0]
         self.agent_sprite.rect.y = self.agent.location[1]
 
@@ -454,6 +504,15 @@ class AgentView():
         surface.blit(self.agent_sprite.image, (self.agent_sprite.rect))
 
     def draw_bullets(self, surface):
+        """
+        Displays bullets in the game.
+
+        Args:
+            surface: A Surface where the game takes place and all visuals are
+                displayed.
+        Returns:
+            None.
+        """
         #global bullet_dictionary
         for bullet in self._agent._gun.bullet_dict.values():
             bullet_sprite = pygame.sprite.Sprite()
@@ -469,7 +528,15 @@ class AgentView():
             surface.blit(bullet_sprite.image, bullet_sprite.rect)
 
             #pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
-    def draw_spike(self, surface):
+    def draw_spike(self, surface): 
+        """
+        Displays the Spike on the map only after it has been planted.
+
+        surface: A Surface where the game takes place and all visuals are
+                displayed.
+        Returns:
+            None.
+        """
         spike = self._agent.spike_object
         if spike is not None:
             spike_width = 20
@@ -487,18 +554,13 @@ class AgentController:
     Controls an agent on the map.
 
     Attributes:
-        _agent: an instance of the agent class
-        _view: an instance of the AgentView class
+        _agent: An Agent representing the model for the agent.
+        _view: An AgentView representing the view for the agent.
     """
 
     def __init__(self, agent, view):
         """
         Initialize an instance of the AgentController class
-
-        Args:
-            agent: an instance of the agent class
-            view: an instance of the AgentView class
-        
         """
         self._agent = agent
         self._view = view
@@ -506,20 +568,20 @@ class AgentController:
     @property
     def agent(self):
         """
-        Return the agent
+        Return the controller's agent.
 
         Returns:
-            _agent: An instance of the agent class
+            _agent: An instance of the Agent class.
         """
         return self._agent
 
     @property
     def view(self):
         """
-        Return the view
+        Return the controller's view.
 
         Returns:
-            _view: An instance of the AgentView class
+            _view: An instance of the AgentView class.
         
         """
         return self._view
@@ -609,9 +671,14 @@ class AgentController:
     # gun controls
     def check_shoot(self, keys, input_type):
         """
-        Check if a player should be shooting a gun and if so, begin shooting.
+        Checks if a player should be shooting a gun and if so, begin shooting.
 
-        
+        Args:
+            keys: A list containing which keys are currently pressed.
+            input_type: A string representing which set of controls will be
+            used.
+        Returns:
+            None.
         """
 
         # if reloading, don't fire
@@ -671,15 +738,19 @@ class AgentController:
                 self.agent._gun.consecutive_bullets = 0
             self.agent.set_is_shooting(False)
 
-         # if keys[pygame.MOUSEBUTTONUP]:
-           # mouse_presses = pygame.mouse.get_pressed()
-            # f not mouse_presses[0]:
-            #self.agent._is_shooting = False
-
             self.agent.gun.consecutive_bullets = 0
 
     def check_reload(self, keys, input_type):
+        """
+        Reloads the agent's gun when the key to reload is pressed. 
 
+        Args:
+            keys: A list containing which keys are currently pressed.
+            input_type: A string representing which set of controls will be
+            used.
+        Returns:
+            None.
+        """
         if input_type == "Arrow" and keys[pygame.K_l]:
 
             self.agent.reload_gun()
@@ -695,8 +766,18 @@ class AgentController:
     # bullet controlls
 
     def update_bullets_test(self, walls, players, other_agent):
-        #global bullet_dictionary
-        #global bullet_delete_dictionary
+        """
+        Goes through the agent's gun's dictionary of bullets and updates
+        the position for all of them.
+
+        Args:
+            walls: A sprite group of all of the walls on the map.
+            players: A sprite group of agents present in the current game.
+            other_agent: An Agent model that is on the opposite side as the one
+                this controller is for.
+        
+        Returns: None.
+        """
         for bullet in self._agent._gun.bullet_dict.values():
             self.bullet_main(bullet, walls, players, other_agent)
         # actually delete the bullet
@@ -705,6 +786,21 @@ class AgentController:
         self._agent._gun.bullet_delete_dict.clear()
 
     def bullet_collision(self, bullet, walls, players, other_agent):
+        """
+        Checks whether a bullet of them collides with walls or other players.
+
+        If the bullets collide with walls, they are deleted; if they collide
+        with players, the players' health is reduced.
+
+        Args:
+            bullet: A bullet to check the collisions for
+            walls: A sprite group of all of the walls on the map.
+            players: A sprite group of agents present in the current game.
+            other_agent: An Agent model that is on the opposite side as the one
+                this controller is for.
+        Returns:
+            None.
+        """
         if bullet.bullet_sprite is not None:
             wall_collision_list = \
                 pygame.sprite.spritecollide(bullet.bullet_sprite, walls, False)
@@ -717,30 +813,45 @@ class AgentController:
                 # the way this is implemented will not work in 2+v2+ games
                 self._agent._gun.delete_bullet(bullet)
                 other_agent.update_health(other_agent.health - 10)
+                # switch 10 to bullet.damage
 
                 if other_agent.health <= 0:
                     other_agent.kill()
-           # agent.die
 
     def bullet_main(self, bullet, walls, players, other_agent):
-        # the main things a bullet does each frame. crazy
-        # delete_check_list is a list of walls to check collision with for every bullet
-        # delete_check list should be generated elsewhere, probably in the main loop
-        # with another function.
+        """
+        Updates the position of a single bullet and then checks if it
+        collides with any objcts.
+
+        Args:
+            bullet: A bullet to check the collisions for
+            walls: A sprite group of all of the walls on the map.
+            players: A sprite group of agents present in the current game.
+            other_agent: An Agent model that is on the opposite side as the one
+                this controller is for.
+        Returns:
+            None.
+        """
         bullet.update_position()
         self.bullet_collision(bullet, walls, players, other_agent)
-        # for collision in walls:
-        # if bullet.check_basic_collision(collision):
-        # check to make sure that deleting a key value pair from a dictionary
-        # you're iterating through doesn't mess everything up
-        # bullet.delete_bullet()
-        # if theres a player, damage them, again this should be done through
-        # a controller, but we're testing rn so whatever.
-        # if type(collide_possible) is player_test:
-        #    collide_possible.update_health(self.damage)
-        # break
 
     def spike_plant(self, keys, map_model, input_type, hud_model):
+        """
+        Checks if the spike can be planted & then plants it.
+
+        Preconditions to planting include being in the plant zone, holding the
+        plant key for four seconds, and being on the attacking side.
+
+        Args:
+            keys: A list containing which keys are currently pressed.
+            map_model: A Spike Map representing the map which the game is
+                currently being played on.
+            input_type: A string representing which set of controls will be
+            used.
+            hud_model:  A Hud representing the hud of the current game.
+        Returns:
+            None.
+        """
         frames_to_plant = 125  # 4 seconds @ 30 fps
         if self._agent.side != "attack":
             return
@@ -749,7 +860,7 @@ class AgentController:
                     input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
                 if self._agent.spike and self._agent._frames_since_last_spike_interaction == \
                         frames_to_plant:
-                    print("Planted")
+                    #print("Planted")
                     self._agent.plant_spike(map_model)
                     hud_model.timer = 45
                 elif self._agent.spike:
@@ -759,6 +870,25 @@ class AgentController:
                 self._agent.set_frames_since_last_spike_interaction(0)
 
     def spike_defuse(self, keys, map_model, input_type, other_agent, hud_model):
+        """
+        Checks if the spike can be defused & defuses it.
+
+        Preconditions to defusing include a Spike existing on the map,
+        the agent being within a certain range of the Spike, holding the defuse
+        key for seven seconds, and being on the defending side.
+
+        Args:
+            keys: A list containing which keys are currently pressed.
+            map_model: A Spike Map representing the map which the game is
+                currently being played on.
+            input_type: A string representing which set of controls will be
+            used.
+            other_agent: An Agent model that is on the opposite side as the one
+                this controller is for.
+            hud_model: A Hud representing the hud of the current game.
+        Returns:
+            None.
+        """
         if self._agent.side != "defense":
             return
         frames_to_defuse = 225  # 7 seconds @ 30 fps
@@ -781,21 +911,11 @@ class AgentController:
                         self._agent._frames_since_last_spike_interaction + 1)
             else:
                 self._agent.set_frames_since_last_spike_interaction(0)
-            # else:
-            #  if self._agent._frames_since_last_spike_interaction < \
-            #  frames_to_diffuse and :
-            #    print("Defuse")
-            #    self._agent.defuse_spike()
-            # self._agent.set_frames_since_last_spike_interaction( \
-
-    def orb_interaction(self, event):
-        # Not implementing rn
-        pass
 
 
 def agent_test():
     """
-    Tests movement code with a test character.
+    Runs the game loop.
     """
     pygame.init()  # initialize pygame
     map_model = split_model()
