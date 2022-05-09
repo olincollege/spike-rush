@@ -3,7 +3,6 @@ Creates heads-up display (HUD) elements to represent the status of the game and
 players.
 """
 
-import os
 import pygame
 
 
