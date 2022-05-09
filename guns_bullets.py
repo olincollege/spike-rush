@@ -20,33 +20,33 @@ bullet_delete_dictionary = {}
 #GUN
 class gun():
     """
-    A generalized instance of a gun in Valorant
+    A model for a gun.
 
     Attributes:
-        damage: an integer representing how much damage a bullet shot from
-            this gun should do
-        max_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        min_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        shots_for_full_spread: an integer representing the number of bullets
-            that must be shot from this gun before full spread is achieved
-        frames_before_shot: an integer representing the number of frames that
+        damage: An integer representing how much damage a bullet shot from
+            this gun should do.
+        max_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        min_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        shots_for_full_spread: An integer representing the number of bullets
+            that must be shot from this gun before full spread is achieved.
+        frames_before_shot: An integer representing the number of frames that
             the player must wait before shooting from this gun after shooting
             from it before.
-        consecutive_bullets: an integer representing a running counter of
+        consecutive_bullets: An integer representing a running counter of
             bullets shot consecutively
-        clip_size: an integer representing the maximum number of bullets that
-            can be shot from this gun before reloading
-        frames_for_reload: an integer representing the number of frames before
+        clip_size: An integer representing the maximum number of bullets that
+            can be shot from this gun before reloading.
+        frames_for_reload: An integer representing the number of frames before
             an initiated reload is over for this gun.
-        current_clip: an integer representing the current number of bullets
-            held by a gun
-        automatic: a boolean representing if a gun is automatic
-        bullet_dict: a dictionary containing bullet names as keys and 
+        current_clip: An integer representing the current number of bullets
+            held by a gun.
+        automatic: A boolean representing if a gun is automatic.
+        bullet_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        bullet_delete_dict: a dictionary containing bullet names as keys and 
+        bullet_delete_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
         
@@ -85,11 +85,12 @@ class gun():
         Update the number of available bullet for a gun to fire
 
         Args:
-            clip_update: an integer representing the number of bullets to
+            clip_update: An integer representing the number of bullets to
                 subtract from the current clip if negative or if to reload
-                if positive
+                if positive.
+        Returns:
+            None.
         """
-
         #function handles reloading and decreasing clip from shooting
         #a negative integer means a shot has been fired, decrease clip
         if clip_update <= 0:
@@ -97,7 +98,6 @@ class gun():
             #if clip is negative
             if self.current_clip < 0:
                 self.current_clip = 0
-        
         #otherwise reload 
         else:
             self.current_clip = self.clip_size
@@ -109,19 +109,15 @@ class gun():
         movement.
 
         Args:
-            player_x: an integer representing the location of the player's
-                x position
-            player_y: an integer representing the location of the player's
-                y position
-            theta: an integer or float representing the current angle the 
-                player is facing in radians
-        
-        """    
-        #defining bullet heading
-        #norm_value = ((mouse_x -player_x)**2 + (mouse_y -player_y)**2)**.5
-        #x_increment = (mouse_x -player_x)/norm_value
-        #y_increment = (mouse_y -player_y)/norm_value
-        
+            player_x: An integer representing the location of the player's
+                x position.
+            player_y: An integer representing the location of the player's
+                y position.
+            theta: An integer or float representing the current angle the 
+                player is facing in radians.
+        Returns:
+            None.
+        """            
         #theta in radians
         x_increment = math.cos(theta)
         y_increment = math.sin(theta)
@@ -165,30 +161,31 @@ class gun():
     
     def delete_bullet(self, bullet):
         """
-        delete a bullet from the game
+        Delete a bullet from the game.
         
         Args:
-            bullet: an instance of the bullet class
+            bullet: An instance of the bullet class.
         """
         self.bullet_delete_dict.update({bullet.name:self.bullet_dict[bullet.name]})
 
 class bullet():
     """
-    An instance of a bullet in spikerush
+    A model for a bullet.
 
     Attributes:
-        pos_x: an integer representing the x position of a bullet
-        pos_y: an integer representing the y position of a bullet
-        incr_x: an float representing the x component of a bullet's heading
-        incr_y: an float representing the y component of a bullet's heading
-        damage: an integer representing how much a damage a bullet should do
-            on hit
-        delta_x: a float representing how much a bullet should move in the x
-            direction per timestep
-        delta_y: a float representing how much a bullet should move in the y
-            direction per timestep
-        name: a string representing the name of a bullet
-        bullet_sprite: @aditi ASDKLFASFK:LDSAFD:LKFSDAasdf KSDFA:AD:ASE {P!$#)!#%O#!%#!+OREPWQKF{:!$#+PF+}}
+        pos_x: An integer representing the x position of a bullet.
+        pos_y: An integer representing the y position of a bullet.
+        incr_x: An float representing the x component of a bullet's heading.
+        incr_y: An float representing the y component of a bullet's heading.
+        damage: An integer representing how much a damage a bullet should do
+            on hit.
+        delta_x: A float representing how much a bullet should move in the x
+            direction per timestep.
+        delta_y: A float representing how much a bullet should move in the y
+            direction per timestep.
+        name: A string representing the name of a bullet.
+        bullet_sprite: A Sprite representing the bullet's sprite in the view;
+            initialized as none.
     """
     speed_per_tick = math.ceil(frame_rate *35/60) # was 20
 
@@ -197,13 +194,12 @@ class bullet():
         Initialize an instance of the bullet class
         
         Args:
-
-            pos_x: an integer representing the x position of a bullet
-            pos_y: an integer representing the y position of a bullet
-            incr_x: an float representing the x component of a bullet's heading
-            incr_y: an float representing the y component of a bullet's heading
-            damage: an integer representing how much a damage a bullet should
-                do on hit
+            pos_x: An integer representing the x position of a bullet.
+            pos_y: An integer representing the y position of a bullet.
+            incr_x: An float representing the x component of a bullet's heading.
+            incr_y: An float representing the y component of a bullet's heading.
+            damage: An integer representing how much a damage a bullet should
+                do on hit.
         """
         #things necessary for calculating heading
         self.pos_x = pos_x
@@ -225,23 +221,22 @@ class bullet():
     #update positions
     def update_position(self):
         """
-        update the position of a bullet 
+        Update's the bullet's stored position in the model.
+
+        Returns:
+            None.
         """
         self.pos_x += self.delta_x
         self.pos_y += self.delta_y
 
-    #def delete_bullet(self):
-        #delete a bullet from the list of bullets, might stop it from existing... probably
-        #global bullet_dictionary
-        #global bullet_delete_dictionary
-
-        #bullet_delete_dictionary.update({self.name:bullet_dictionary[self.name]})
-
     def set_sprite(self, sprite):
         """
         Set a sprite for a bullet
+
         Args:
-            @ADITI ASDTIPJASDFIPQW JO#! JPO!#_1@#$)#@$!+@$@+!_$#!+@#$)@+!%ETIPDKG{SLCX"<VF}
+            sprite: A sprite representing the sprite of the bullet in the view.
+        Returns:
+            None.
         """
         self.bullet_sprite = sprite
 
@@ -249,33 +244,33 @@ class bullet():
 
 class classic(gun):
     """
-    a gun that emulates the classic
+    A model for a gun that emulates the classic.
 
     Attributes:
-        damage: an integer representing how much damage a bullet shot from
-            this gun should do
-        max_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        min_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        shots_for_full_spread: an integer representing the number of bullets
-            that must be shot from this gun before full spread is achieved
-        frames_before_shot: an integer representing the number of frames that
+        damage: An integer representing how much damage a bullet shot from
+            this gun should do.
+        max_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        min_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        shots_for_full_spread: An integer representing the number of bullets
+            that must be shot from this gun before full spread is achieved.
+        frames_before_shot: An integer representing the number of frames that
             the player must wait before shooting from this gun after shooting
             from it before.
-        consecutive_bullets: an integer representing a running counter of
-            bullets shot consecutively
-        clip_size: an integer representing the maximum number of bullets that
-            can be shot from this gun before reloading
-        frames_for_reload: an integer representing the number of frames before
+        consecutive_bullets: An integer representing a running counter of
+            bullets shot consecutively.
+        clip_size: An integer representing the maximum number of bullets that
+            can be shot from this gun before reloading.
+        frames_for_reload: An integer representing the number of frames before
             an initiated reload is over for this gun.
-        current_clip: an integer representing the current number of bullets
-            held by a gun
-        automatic: a boolean representing if a gun is automatic
-        bullet_dict: a dictionary containing bullet names as keys and 
+        current_clip: An integer representing the current number of bullets
+            held by a gun.
+        automatic: A boolean representing if a gun is automatic.
+        bullet_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        bullet_delete_dict: a dictionary containing bullet names as keys and 
+        bullet_delete_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
@@ -293,7 +288,7 @@ class classic(gun):
 
     def __init__(self):
         """
-        Initialize an instance of the classic class
+        Creates an instance of a classic.
         """
         self.automatic = False
         self.bullet_dict = {}
@@ -301,33 +296,33 @@ class classic(gun):
 
 class spectre(gun):
     """
-    a gun that emulates the classic
+    A model for a gun that emulates the spectre.
 
     Attributes:
-        damage: an integer representing how much damage a bullet shot from
-            this gun should do
-        max_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        min_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        shots_for_full_spread: an integer representing the number of bullets
-            that must be shot from this gun before full spread is achieved
-        frames_before_shot: an integer representing the number of frames that
+        damage: An integer representing how much damage a bullet shot from
+            this gun should do.
+        max_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        min_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        shots_for_full_spread: An integer representing the number of bullets
+            that must be shot from this gun before full spread is achieved.
+        frames_before_shot: An integer representing the number of frames that
             the player must wait before shooting from this gun after shooting
             from it before.
-        consecutive_bullets: an integer representing a running counter of
-            bullets shot consecutively
-        clip_size: an integer representing the maximum number of bullets that
-            can be shot from this gun before reloading
-        frames_for_reload: an integer representing the number of frames before
+        consecutive_bullets: An integer representing a running counter of
+            bullets shot consecutively.
+        clip_size: An integer representing the maximum number of bullets that
+            can be shot from this gun before reloading.
+        frames_for_reload: An integer representing the number of frames before
             an initiated reload is over for this gun.
-        current_clip: an integer representing the current number of bullets
-            held by a gun
-        automatic: a boolean representing if a gun is automatic
-        bullet_dict: a dictionary containing bullet names as keys and 
+        current_clip: An integer representing the current number of bullets
+            held by a gun.
+        automatic: A boolean representing if a gun is automatic.
+        bullet_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        bullet_delete_dict: a dictionary containing bullet names as keys and 
+        bullet_delete_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
@@ -345,7 +340,7 @@ class spectre(gun):
 
     def __init__(self):
         """
-        Initialize an instance of the spectre class
+        Creates an instance of the spectre class.
         """
         self.automatic = True
         self.bullet_dict = {}
@@ -353,33 +348,33 @@ class spectre(gun):
 
 class guardian(gun):
     """
-    a gun that emulates the classic
+    A model of a gun that emulates the guardian.
 
     Attributes:
-        damage: an integer representing how much damage a bullet shot from
-            this gun should do
-        max_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        min_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        shots_for_full_spread: an integer representing the number of bullets
+        damage: An integer representing how much damage a bullet shot from
+            this gun should do.
+        max_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        min_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        shots_for_full_spread: An integer representing the number of bullets
             that must be shot from this gun before full spread is achieved
-        frames_before_shot: an integer representing the number of frames that
+        frames_before_shot: An integer representing the number of frames that
             the player must wait before shooting from this gun after shooting
             from it before.
-        consecutive_bullets: an integer representing a running counter of
-            bullets shot consecutively
-        clip_size: an integer representing the maximum number of bullets that
-            can be shot from this gun before reloading
-        frames_for_reload: an integer representing the number of frames before
+        consecutive_bullets: An integer representing a running counter of
+            bullets shot consecutively.
+        clip_size: An integer representing the maximum number of bullets that
+            can be shot from this gun before reloading.
+        frames_for_reload: An integer representing the number of frames before
             an initiated reload is over for this gun.
-        current_clip: an integer representing the current number of bullets
-            held by a gun
-        automatic: a boolean representing if a gun is automatic
-        bullet_dict: a dictionary containing bullet names as keys and 
+        current_clip: An integer representing the current number of bullets
+            held by a gun.
+        automatic: A boolean representing if a gun is automatic.
+        bullet_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        bullet_delete_dict: a dictionary containing bullet names as keys and 
+        bullet_delete_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
@@ -396,7 +391,7 @@ class guardian(gun):
 
     def __init__(self):
         """
-        Initialize an instance of the guardian class
+        Creates an instance of the guardian class.
         """
         self.automatic = False
         self.bullet_dict = {}
@@ -404,33 +399,33 @@ class guardian(gun):
 
 class vandal(gun):
     """
-    a gun that emulates the classic
+    A model of a gun that emulates the vandal.
 
     Attributes:
-        damage: an integer representing how much damage a bullet shot from
-            this gun should do
-        max_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        min_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        shots_for_full_spread: an integer representing the number of bullets
+        damage: An integer representing how much damage a bullet shot from
+            this gun should do.
+        max_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        min_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        shots_for_full_spread: An integer representing the number of bullets
             that must be shot from this gun before full spread is achieved
-        frames_before_shot: an integer representing the number of frames that
+        frames_before_shot: An integer representing the number of frames that
             the player must wait before shooting from this gun after shooting
             from it before.
-        consecutive_bullets: an integer representing a running counter of
-            bullets shot consecutively
-        clip_size: an integer representing the maximum number of bullets that
-            can be shot from this gun before reloading
-        frames_for_reload: an integer representing the number of frames before
+        consecutive_bullets: An integer representing a running counter of
+            bullets shot consecutively.
+        clip_size: An integer representing the maximum number of bullets that
+            can be shot from this gun before reloading.
+        frames_for_reload: An integer representing the number of frames before
             an initiated reload is over for this gun.
-        current_clip: an integer representing the current number of bullets
-            held by a gun
-        automatic: a boolean representing if a gun is automatic
-        bullet_dict: a dictionary containing bullet names as keys and 
+        current_clip: An integer representing the current number of bullets
+            held by a gun.
+        automatic: A boolean representing if a gun is automatic.
+        bullet_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        bullet_delete_dict: a dictionary containing bullet names as keys and 
+        bullet_delete_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
@@ -456,39 +451,38 @@ class vandal(gun):
 #this one is special. ill get to it later
 class operator(gun):
     """
-    a gun that emulates the operator
+    A model of a gun that emulates the Operator.
     
-    have to put in alt fire before this + other stuff
+    (have to put in alt fire before this + other stuff)
     
-    Attributes:
-        damage: an integer representing how much damage a bullet shot from
-            this gun should do
-        max_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        min_spread: an integer representing the maximum spread of a bullet
-            shot from this gun
-        shots_for_full_spread: an integer representing the number of bullets
+     Attributes:
+        damage: An integer representing how much damage a bullet shot from
+            this gun should do.
+        max_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        min_spread: An integer representing the maximum spread of a bullet
+            shot from this gun.
+        shots_for_full_spread: An integer representing the number of bullets
             that must be shot from this gun before full spread is achieved
-        frames_before_shot: an integer representing the number of frames that
+        frames_before_shot: An integer representing the number of frames that
             the player must wait before shooting from this gun after shooting
             from it before.
-        consecutive_bullets: an integer representing a running counter of
-            bullets shot consecutively
-        clip_size: an integer representing the maximum number of bullets that
-            can be shot from this gun before reloading
-        frames_for_reload: an integer representing the number of frames before
+        consecutive_bullets: An integer representing a running counter of
+            bullets shot consecutively.
+        clip_size: An integer representing the maximum number of bullets that
+            can be shot from this gun before reloading.
+        frames_for_reload: An integer representing the number of frames before
             an initiated reload is over for this gun.
-        current_clip: an integer representing the current number of bullets
-            held by a gun
-        automatic: a boolean representing if a gun is automatic
-        bullet_dict: a dictionary containing bullet names as keys and 
+        current_clip: An integer representing the current number of bullets
+            held by a gun.
+        automatic: A boolean representing if a gun is automatic.
+        bullet_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun.
-        bullet_delete_dict: a dictionary containing bullet names as keys and 
+        bullet_delete_dict: A dictionary containing bullet names as keys and 
             instances of the bullet class as values. Keeps track of all
             active bullets shot by this gun that need to be deleted.
     """
-
     damage = 150
     max_spread = math.ceil(frame_rate*40/60)
     min_spread = 0
@@ -503,7 +497,7 @@ class operator(gun):
 
     def __init__(self):
         """
-        Initialize an instance of the operator class
+        Creates an instance of the operator class.
         """
         self.automatic = False
         self.bullet_dict = {}
