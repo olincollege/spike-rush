@@ -15,6 +15,7 @@ def agent_test():
     Runs the game loop.
     """
     pygame.init()  # initialize pygame
+    frame_rate = 30
     map_model = split_model()
     map_view = split_view(map_model)  # initialize map
     clock = pygame.time.Clock()  # to keep track of time in-game
@@ -142,7 +143,7 @@ def agent_test():
         character_view_1.draw_bullets(map_view._window)
 
         pygame.display.flip()  # update entire display
-        clock.tick(30)  # reduce framerate to 30
+        clock.tick(frame_rate)  # reduce framerate to 30
 
     # print(map_view._window.get_rect()) #check window dimensions
     pygame.quit()  # after main loop has finished

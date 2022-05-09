@@ -53,7 +53,7 @@ class Agent:
         """
         self._location = [x_init, y_init]
         self._health = 100
-        self._gun = vandal()
+        self._gun = Vandal()
         self._color = (192, 192, 192)   # Default circle is gray
         self._spike = True  # If spike is true, it has not yet been planted
         self._spike_object = None
