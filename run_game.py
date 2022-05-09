@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from spike import *
 from spike_map import *
 from agent import *
-from hud import display_model, display_view
+from hud import DisplayModel, DisplayView
 
 
 def agent_test():
@@ -19,8 +19,8 @@ def agent_test():
     map_view = split_view(map_model)  # initialize map
 
     # initialize HUD
-    hud_model = display_model()
-    hud_view = display_view(hud_model)
+    hud_model = DisplayModel()
+    hud_view = DisplayView(hud_model)
 
     clock = pygame.time.Clock()  # to keep track of time in-game
 
