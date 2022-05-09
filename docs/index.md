@@ -24,7 +24,7 @@ Spike Rush is a top down shooter. Before the game begins, players will be able t
 ![shooting](website_images/screenshots/shooting.PNG)<br>
 *The game in action, showcasing the shooting elements of the game.*<br><br>
 
-![sprite_closeup](website_images/screenshots/sprite_closeup.png)<br>
+![sprite closeup](website_images/screenshots/sprite_closeup.png)<br>
 *The attacking and defending player sprites from the game.*
 
 <img src="website_images/headers/download.png" width ="309" height = "106" style="float:left"> <br><br><br><br><br>
