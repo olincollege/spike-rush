@@ -1,15 +1,16 @@
 """
 Creating the main map for the game.
 """
-
-import pygame
 import os
-from zones import *
+import pygame
+from zones import SpawnZone, PlantZone
 
 # create walls class
 
 
-class wall(pygame.sprite.Sprite):
+class Wall(pygame.sprite.Sprite):  # pylint:disable=R0903
+    # Useful class to have for the sprite even if there aren't
+    # a high number of public methods.
     """
     Creates a wall object that character can collide with.
 
@@ -22,17 +23,26 @@ class wall(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)  # initiate pygame sprite
         self._wall = pygame.Surface([width, height])  # create wall surface
         # to test, start with making the walls red
-        self._wall.fill((255, 0, 0))
 
         # set wall spawn coordinates to xpos and ypos
         self.rect = self._wall.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
 
+    @property
+    def wall(self):
+        """
+        Returns the wall.
+
+        Returns:
+            A Sprite representing a wall.
+        """
+        return self._wall
+
 # creating split map
 
 
-class split_model(wall):
+class SplitModel():
     """
     Tracks the attributes of the Split map.
 
@@ -55,37 +65,37 @@ class split_model(wall):
         # add Split map walls (position (x, y), width, height)
 
         # top left
-        self._wall_list.add(wall((63, 21), 1450, 3))
-        self._wall_list.add(wall((64, 21), 3, 358))
+        self._wall_list.add(Wall((63, 21), 1450, 3))
+        self._wall_list.add(Wall((64, 21), 3, 358))
 
         # top
-        self._wall_list.add(wall((346, 21), 123, 162))
-        self._wall_list.add(wall((759, 21), 120, 96))
-        self._wall_list.add(wall((1160, 21), 196, 104))
+        self._wall_list.add(Wall((346, 21), 123, 162))
+        self._wall_list.add(Wall((759, 21), 120, 96))
+        self._wall_list.add(Wall((1160, 21), 196, 104))
 
         # right
-        self._wall_list.add(wall((1515, 21), 3, 765))
+        self._wall_list.add(Wall((1515, 21), 3, 765))
 
         # bottom
-        self._wall_list.add(wall((400, 788), 1130, 3))
-        self._wall_list.add(wall((1110, 709), 77, 85))
-        self._wall_list.add(wall((708, 737), 269, 55))
-        self._wall_list.add(wall((21, 737), 587, 55))
+        self._wall_list.add(Wall((400, 788), 1130, 3))
+        self._wall_list.add(Wall((1110, 709), 77, 85))
+        self._wall_list.add(Wall((708, 737), 269, 55))
+        self._wall_list.add(Wall((21, 737), 587, 55))
 
         # left
-        self._wall_list.add(wall((21, 470), 3, 267))
-        self._wall_list.add(wall((21, 379), 260, 91))
+        self._wall_list.add(Wall((21, 470), 3, 267))
+        self._wall_list.add(Wall((21, 379), 260, 91))
 
         # inner walls
-        self._wall_list.add(wall((151, 566), 68, 74))
-        self._wall_list.add(wall((810, 579), 95, 74))
-        self._wall_list.add(wall((890, 365), 218, 100))
-        self._wall_list.add(wall((1274, 230), 82, 295))
+        self._wall_list.add(Wall((151, 566), 68, 74))
+        self._wall_list.add(Wall((810, 579), 95, 74))
+        self._wall_list.add(Wall((890, 365), 218, 100))
+        self._wall_list.add(Wall((1274, 230), 82, 295))
 
         # the t shaped one
-        self._wall_list.add(wall((442, 365), 256, 76))
-        self._wall_list.add(wall((530, 441), 168, 24))
-        self._wall_list.add(wall((530, 441), 78, 112))
+        self._wall_list.add(Wall((442, 365), 256, 76))
+        self._wall_list.add(Wall((530, 441), 168, 24))
+        self._wall_list.add(Wall((530, 441), 78, 112))
 
         # Attacker spawn zone
         # Zone(250.08, 28.27, 283.10, 155.12)
@@ -100,19 +110,56 @@ class split_model(wall):
         self._a_site = PlantZone(608, 465, 499, 318)
 
     @property
+    def wall_list(self):
+        """
+        Returns a list of walls present on the map.
+
+        Return: A Sprite group representing all of the walls on Split.
+        """
+        return self._wall_list
+
+    @property
     def attacker_spawn(self):
+        """
+        Returns the attacker spawn zone.
+
+        Returns:
+            A SpawnZone representing the attacker spawn location on Split.
+        """
         return self._attacker_spawn
 
     @property
     def defender_spawn(self):
+        """
+        Returns the defender spawn zone.
+
+        Returns:
+            A SpawnZone representing the defender spawn location on Split.
+        """
         return self._defender_spawn
 
     @property
     def a_site(self):
+        """
+        Returns the plant location on Split A site map.
+
+        Returns:
+            A PlantZone representing the plant area on Split.
+        """
         return self._a_site
 
+    @property
+    def map_dimensions(self):
+        """
+        Returns the dimensions of the map.
 
-class split_view:
+        Returns:
+            A Tuple containing the dimensions of the map.
+        """
+        return self._map_dimensions
+
+
+class SplitView:
     """
     Displays the Split map on the pygame window.
 
@@ -126,7 +173,7 @@ class split_view:
         self.model = model  # from split_model
 
         # set 1920x1080 full screen window
-        self._window = pygame.display.set_mode(self.model._map_dimensions)
+        self._window = pygame.display.set_mode(self.model.map_dimensions)
 
         # add window caption
         pygame.display.set_caption("Spike Rush")
@@ -136,7 +183,7 @@ class split_view:
                                    (os.path.join('images',
                                                  'map',
                                                  'split_color.png')).convert(),
-                                   self.model._map_dimensions)
+                                   self.model.map_dimensions)
 
     def draw_map(self):
         """
@@ -156,5 +203,5 @@ class split_view:
             surface: The window for the walls to be drawn on
         """
         # draw the walls
-        for wall in self.model._wall_list:
-            self._window.blit(wall._wall, (wall.rect.x, wall.rect.y))
+        for wall in self.model.wall_list:
+            self._window.blit(wall.wall, (wall.rect.x, wall.rect.y))
