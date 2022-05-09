@@ -7,7 +7,6 @@ import pygame
 import os
 from regex import E
 from guns_bullets import *
-from test_map import *
 from abc import ABC, abstractmethod
 from spike import *
 from spike_map import *
