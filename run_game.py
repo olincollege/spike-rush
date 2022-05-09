@@ -1,174 +1,136 @@
-"""
-Run the game
-"""
-frame_rate = 60
+
 import pygame
-from players_guns_bullets import *
-from test_map import *
-import random
-from enemies import *
+import os
+from regex import E
+from guns_bullets import *
+from abc import ABC, abstractmethod
+from spike import *
+from spike_map import *
+from agent import *
+from hud import display_model, display_view
 
+def agent_test():
+    """
+    Runs the game loop.
+    """
+    pygame.init()  # initialize pygame
+    map_model = split_model()
+    map_view = split_view(map_model)  # initialize map
+    clock = pygame.time.Clock()  # to keep track of time in-game
+    character_speed = 10
 
-def guns_test():
+    track_second = pygame.USEREVENT  # using ID 24
 
-    
-    pygame.init()
-    # initialize our map
-    game_map = test_map()
+    # trigger event every second
+    pygame.time.set_timer(track_second, 1000)
 
-    the_gun = random.choice(gun_list)
-    red_circ = player_test(100, 50, 12, the_gun)
-    red_circ_controller = player_test_controller(red_circ)
+    # initialize HUD
+    hud_model = display_model()
+    hud_view = display_view(hud_model)
 
-    # initialize clock so it doesn't go infinitely
-    clock = pygame.time.Clock()
+    # Player 1 instance
+    character_model_1 = Agent(0, 0, "attack")
+    character_view_1 = AgentView(character_model_1, 'blue_sprite.png')
+    character_controller_1 = AgentController(
+        character_model_1, character_view_1)
 
-    # make screen white
-    game_map.fill_screen((255, 255, 255))
+    # Player 2 instance
+    character_model_2 = Agent(0, 0, "defense")
+    character_view_2 = AgentView(character_model_2, 'red_sprite.png')
+    character_controller_2 = AgentController(
+        character_model_2, character_view_2)
 
-    # rectangle test
-    example_rectangle = pygame.Rect(600, 200, 60, 60)
+    # Player list
+    agents = [character_model_1, character_model_2]
+    agent_list = pygame.sprite.Group()
+    agent_list.add(character_view_1.agent_sprite)
+    agent_list.add(character_view_2.agent_sprite)
 
-    top_rect = pygame.Rect(0, 0, 1500, 3)
-    bottom_rect = pygame.Rect(0, 497, 1500, 3)
-    left_rect = pygame.Rect(0, 0, 3, 500)
-    right_rect = pygame.Rect(1497, 0, 3, 500)
-    collision_checks = [example_rectangle,
-                        bottom_rect, left_rect, top_rect, right_rect]
+    map_model.attacker_spawn.set_spawns([character_model_1])
+    map_model.defender_spawn.set_spawns([character_model_2])
+
+    # main loop
     run = True
-
-    print("made it to run loop")
-
     while run:
 
-
-        # ensure won't go above 60 FPS
-        clock.tick(frame_rate)
-
-        # quit the game if needed
-        red_circ_controller.check_still_shooting()
-
-        red_circ_controller.player.frames_since_last_shot += 1
-        # blank for now but could be useful
-        # if pygame.event.get() is None:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        # sense inputs (get events)
+        for event in pygame.event.get():  # look for events
+            if event.type == pygame.QUIT:  # quit the game, stop the loop
                 run = False
-            # check for keypress
-            if event.type == pygame.KEYDOWN:
-                # theres an if statement in this method, wont move indiscriminantly
-                red_circ_controller.move(event)
-            if event.type == pygame.KEYUP:
-                red_circ_controller.stop_move(event)
-           
-            red_circ_controller.check_shoot(event)
-            red_circ_controller.check_reload(event)
 
-        # this should probably be in a function
-        if red_circ_controller.player.is_reloading:
-            red_circ_controller.player.frames_since_reload += 1
+            if event.type == track_second:
+                # if a second has passed, reduce the timer
+                if hud_model.timer != 0:
+                    hud_model.timer -= 1
 
-        red_circ_controller.still_moving()
-        # make screen white
-        game_map.fill_screen((255, 255, 255))
-        # draw the red circle
-        red_circ.draw_circ(game_map)
-        # draw rectangle
+        # update states
+        # create entities
+        # detect interactions
+
+        # movement
+        # check which keys are currently pressed
+        keys = pygame.key.get_pressed()
+        # if no collisions are detected, move characters
+        #map_view.draw_map()
+        map_view.draw_map()
+
+        # print(character_model_1.alive)
+        if character_model_1.alive:
+
+            character_controller_1.move(
+                character_speed, keys, "WASD", map_model._wall_list)
+
+            character_controller_1.check_shoot(keys, "WASD")
+            character_controller_1.check_reload(keys, "WASD")
+
+            character_view_1.draw_agent(map_view._window)
+            character_view_1.dot_sight(map_view._window)
+
+            character_controller_1.spike_plant(keys, map_model, "WASD", hud_model)
+
+        # print(character_model_2.alive)
+        if character_model_2.alive:
+
+            character_controller_2.move(
+                character_speed, keys, "Arrow", map_model._wall_list)
 
 
-        for rectangle in collision_checks:
-            pygame.draw.rect(game_map.window, (0, 150, 0), rectangle)
+            character_controller_2.check_shoot(keys,"Arrow")
+            character_controller_2.check_reload(keys,"Arrow")
 
-        update_bullets_for_guns_test(collision_checks)
-        draw_bullets(game_map)
-        # update window
-        game_map.update_visual()
-    pygame.quit()
+            character_view_2.draw_agent(map_view._window)
+            character_view_2.dot_sight(map_view._window)
 
+            character_controller_2.spike_defuse(keys, map_model, "Arrow", agents[0], hud_model)
 
-def enemies_test():
-
+        # update stuff
+        # draw backdrop
     
-    pygame.init()
-    # initialize our map
-    game_map = test_map()
 
-    the_gun = random.choice(gun_list)
-    red_circ = player_test(100, 50, 12, the_gun)
-    red_circ_controller = player_test_controller(red_circ)
+        # walls will still have collision even if not drawn
+        # map_view.draw_walls()
 
-    #make the enemies
-    the_enemy = basic_enemy(red_circ,600,350,red_circ.radius,vandal())
-    enemy_controller = basic_enemy_controller(the_enemy,red_circ)
-    
-    # initialize clock so it doesn't go infinitely
-    clock = pygame.time.Clock()
+        # draw HUD updates
 
-    # make screen white
-    game_map.fill_screen((255, 255, 255))
+        hud_view.draw_player_updates(
+            character_model_1, character_model_2, map_view._window)
+        hud_view.draw_game_timer(map_view._window)
 
-    # rectangle test
-    example_rectangle = pygame.Rect(600, 200, 60, 60)
-
-    top_rect = pygame.Rect(0, 0, 1500, 3)
-    bottom_rect = pygame.Rect(0, 497, 1500, 3)
-    left_rect = pygame.Rect(0, 0, 3, 500)
-    right_rect = pygame.Rect(1497, 0, 3, 500)
-    collision_checks = [example_rectangle,
-                        bottom_rect, left_rect, top_rect, right_rect]
-    run = True
-
-    print("made it to run loop")
-
-    while run:
+        # draw spike
+        character_view_1.draw_spike(map_view._window)
+        character_view_2.draw_spike(map_view._window)
 
 
-        # ensure won't go above 60 FPS
-        clock.tick(frame_rate)
+        character_controller_2.update_bullets_test(map_model._wall_list,
+                                                   agent_list, agents[0])
+        character_view_2.draw_bullets(map_view._window)
+        character_controller_1.update_bullets_test(map_model._wall_list,
+                                                   agent_list, agents[1]
+                                                   )
+        character_view_1.draw_bullets(map_view._window)
 
-        # quit the game if needed
-        red_circ_controller.check_still_shooting()
+        pygame.display.flip()  # update entire display
+        clock.tick(30)  # reduce framerate to 30
 
-        red_circ_controller.player.frames_since_last_shot += 1
-        # blank for now but could be useful
-        # if pygame.event.get() is None:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            # check for keypress
-            if event.type == pygame.KEYDOWN:
-                # theres an if statement in this method, wont move indiscriminantly
-                red_circ_controller.move(event)
-            if event.type == pygame.KEYUP:
-                red_circ_controller.stop_move(event)
-           
-            red_circ_controller.check_shoot(event)
-            red_circ_controller.check_reload(event)
-
-        # this should probably be in a function
-        if red_circ_controller.player.is_reloading:
-            red_circ_controller.player.frames_since_reload += 1
-
-        red_circ_controller.still_moving()
-        # make screen white
-        game_map.fill_screen((255, 255, 255))
-        # draw the red circle
-        red_circ.draw_circ(game_map)
-        # draw rectangle
-
-        for rectangle in collision_checks:
-            pygame.draw.rect(game_map.window, (0, 150, 0), rectangle)
-
-        enemy_controller.enemy_main()
-        the_enemy.draw_circ(game_map)
-
-        update_bullets_for_guns_test(collision_checks)
-        draw_bullets(game_map)
-        # update window
-        game_map.update_visual()
-
-
-
-    pygame.quit()
+    # print(map_view._window.get_rect()) #check window dimensions
+    pygame.quit()  # after main loop has finished
