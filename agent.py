@@ -93,11 +93,11 @@ class Agent:
 
         Returns:
             _win: a boolean representing if a player has won.
-        
+
         """
 
         return self._win
-    
+
     @property
     def location(self):
         """
@@ -249,7 +249,6 @@ class Agent:
         """
         self._frames_since_reload = new_frames
 
-
     def set_is_shooting(self, bool):
         """
         Update whether a player is shooting or not.
@@ -264,7 +263,7 @@ class Agent:
     def set_is_reloading(self, bool):
         """
         Update whether a player is reloading or not.
-        
+
         Args:
             bool: A boolean representing whether a player is reloading.
         Returns:
@@ -327,7 +326,7 @@ class Agent:
     def reload_gun(self):
         """
         Reload the player's gun.
-        
+
         Returns:
             None.
         """
@@ -440,8 +439,8 @@ class AgentView():
         _agent: An Agent representing the model for the agent.
         agent_sprite: A string representing the image to use as the sprite for
             the agent.
-        
-        
+
+
 
 
     """
@@ -544,7 +543,7 @@ class AgentView():
             surface.blit(bullet_sprite.image, bullet_sprite.rect)
 
             #pygame.draw.rect(surface, (0, 0, 0), bullet_rectangle)
-    def draw_spike(self, surface): 
+    def draw_spike(self, surface):
         """
         Displays the Spike on the map only after it has been planted.
 
@@ -598,7 +597,7 @@ class AgentController:
 
         Returns:
             _view: An instance of the AgentView class.
-        
+
         """
         return self._view
 
@@ -744,11 +743,10 @@ class AgentController:
                 self.agent.set_is_shooting(False)
 
         else:
-            
 
             if self.agent._gun.automatic:
                 self.agent._gun.consecutive_bullets = 0
-                
+
             elif not self.agent._gun.automatic and self.agent._frames_since_last_shot > \
                     self.agent._gun.frames_before_shot + 8:
                 self.agent._gun.consecutive_bullets = 0
@@ -791,7 +789,7 @@ class AgentController:
             players: A sprite group of agents present in the current game.
             other_agent: An Agent model that is on the opposite side as the one
                 this controller is for.
-        
+
         Returns: None.
         """
         for bullet in self._agent._gun.bullet_dict.values():
@@ -872,11 +870,11 @@ class AgentController:
         if self._agent.side != "attack":
             return
         if map_model.a_site.in_zone(self._agent):
-            if (input_type == "WASD" and keys[pygame.K_4] or \
-             input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
+            if (input_type == "WASD" and keys[pygame.K_4] or
+                    input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
                 if self._agent.spike and self._agent._frames_since_last_spike_interaction == \
                         frames_to_plant:
-                    #print("Planted")
+                    # print("Planted")
                     self._agent.plant_spike()
                     hud_model.timer = 45
                 elif self._agent.spike:
@@ -918,7 +916,7 @@ class AgentController:
                         self._agent._frames_since_last_spike_interaction == \
                         frames_to_defuse and spike.frames_since_plant < \
                         spike.frames_to_explode:
-                    #print("Defused")
+                    # print("Defused")
                     self._agent.defuse_spike(other_agent.spike_object)
                     hud_model.timer = 0
                     other_agent.set_spike_object(None)
@@ -929,47 +927,51 @@ class AgentController:
                 self._agent.set_frames_since_last_spike_interaction(0)
 
 
-def check_win(attacker,defender):
+def check_win(attacker, defender, hud_model):
     """
     Checks if either of the players has won and updates their
     attributes accordingly
 
     Args:
-        attacker: an instace of the agent class representing the attacking
+        attacker: an instance of the agent class representing the attacking
             player
-        defender: an instace of the agent class representing the defending
+        defender: an instance of the agent class representing the defending
             player
-    
+        hud_model: an instance of the HUD containing the game timer
+
     """
 
     spike_out = not attacker._spike
 
-    #if the spike hasn't been planted
+    # if the spike hasn't been planted
     if not spike_out:
 
-        #if the defender dies
+        # if the defender dies
         if not defender.alive:
             attacker.set_win()
         if not attacker.alive:
             defender.set_win()
-        
-        #PUT HERE
-        #if the timer runs out, defender wins
 
-    #if the spike has been planted
-    else:
-      if attacker.spike_object is not None:
-        #if the spike blows up
-        if attacker.spike_object.blowup():
-            attacker.set_win()
-
-        #if the spike is defused
-
-        if attacker.spike_object.status:
+        # PUT HERE
+        # if the timer runs out, defender wins
+        if hud_model.timer == 0:
             defender.set_win()
-        
-        #if defender dies while spike out
-        if not defender.alive:
-            attacker.set_win()
-        
+
+    # if the spike has been planted
+    else:
+    
+        if attacker.spike_object is not None:
+            #if the spike blows up
+            if attacker.spike_object.blowup():
+                attacker.set_win()
+
+            #if the spike is defused
+
+            if attacker.spike_object.status:
+                defender.set_win()
+            
+            #if defender dies while spike out
+            if not defender.alive:
+                attacker.set_win()
+            
     
