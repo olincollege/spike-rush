@@ -965,7 +965,7 @@ def check_win(attacker,defender):
 
         #if the spike is defused
 
-        if attacker.spike_object.status():
+        if attacker.spike_object.status:
             defender.set_win()
         
         #if defender dies while spike out
