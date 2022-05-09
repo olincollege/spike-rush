@@ -1,16 +1,16 @@
 """
 Test library functions to find and identify protein-coding genes in DNA.
 """
-import pytest
 import math
+import pytest
 import pygame
 from agent import (
     Agent,
     AgentController
 )
 from guns_bullets import (
-    bullet,
-    gun,
+    Bullet,
+    Gun,
 )
 
 
@@ -85,7 +85,7 @@ def test_update_clip(input_value, output_clip):
         output_clip: An integer representing the expected number of bullets
             in a gun's clip after updating it.
     """
-    the_gun = gun()
+    the_gun = Gun()
     the_gun.update_clip(input_value)
     assert the_gun.current_clip == output_clip
 
@@ -101,7 +101,7 @@ def test_ammo_decrement(player_x, player_y, theta):
         player_y: An integer representing the y coordinate of a player
         theta: An integer or float representing the aim angle of the player
     """
-    the_gun = gun()
+    the_gun = Gun()
     the_gun.shoot(player_x, player_y, theta)
     assert the_gun.current_clip == 19
 
@@ -119,11 +119,11 @@ def test_bullet_creation(player_x, player_y, theta, shots_fired):
         shots_fired: An integer representing the number of bullets to shoot
     """
 
-    the_gun = gun()
+    the_gun = Gun()
     for _ in range(shots_fired):
         the_gun.shoot(player_x, player_y, theta)
 
-    assert len(the_gun._bullet_dict) == shots_fired
+    assert len(the_gun.bullet_dict) == shots_fired
 
 
 @pytest.mark.parametrize("incr_x,incr_y",
@@ -136,11 +136,11 @@ def test_move_bullet(incr_x, incr_y):
         incr_x: the heading of the bullet in the x direction, a float
         incr_y: the heading of the bullet in the y direction, a float
     """
-    the_bullet = bullet(0, 0, incr_x, incr_y, 10)
+    the_bullet = Bullet(0, 0, incr_x, incr_y, 10)
 
     the_bullet.update_position()
 
-    location = [the_bullet._pos_x, the_bullet._pos_y]
+    location = [the_bullet.pos_x, the_bullet.pos_y]
     assert location == [incr_x*the_bullet._speed_per_tick,
                         incr_y*the_bullet._speed_per_tick]
 
@@ -157,7 +157,8 @@ def test_bullet_hit(incr_x, incr_y):
         freq_input_int: An integer determining how many value ordered items to
             output.
         output_dict: A value ordered dictionary with strings as
-            keys and integers as values.                                       @ADITI IASDFIJASPDFP%!$)_#!%I@!#)I@!I_#(%!#U(_%_!$#JOEPRW!$PTWEQMKF))
+            keys and integers as values.
+        @ADITI
     """
 
     pass
@@ -258,22 +259,22 @@ def test_set_booleans(shooting, reloading, winning, killing):
     """
 
     player = Agent(0, 0, "attack")
-    player.set_is_shooting(shooting)
-    player.set_is_reloading(reloading)
+    player.is_shooting = shooting
+    player.is_reloading = reloading
     if winning:
         player.set_win()
 
     if killing:
         player.kill()
 
-    bool_list = [player._is_shooting, player._is_reloading, player.win,
+    bool_list = [player.is_shooting, player.is_reloading, player.win,
                  player.alive]
 
     assert bool_list == [shooting, reloading, winning, not killing]
 
 
 # for frames since last shot,reload
-set_frames_since_cases = [
+frames_since_cases = [
     # 0 frames
     (0, 0),
     # small, positive frames
@@ -282,31 +283,3 @@ set_frames_since_cases = [
     (200, 500),
 
 ]
-
-
-@pytest.mark.parametrize("last_shot,reloading",
-                         set_frames_since_cases)
-def test_set_frames(last_shot, reloading):
-    """
-    Check that functions setting the number of frames since some event work
-    as intended.
-
-    Args:
-        last_shot: An integer representing the number of frames since a player
-            shot their last shot
-        reloading: An integer representing the number of frames since a player
-            initiated a reload
-
-
-    """
-
-    player = Agent(0, 0, "attack")
-    player.set_frames_since_last_shot(last_shot)
-    player.set_frames_since_reload(reloading)
-
-    frames_list = [player._frames_since_last_shot, player._frames_since_reload]
-
-    assert frames_list == [last_shot, reloading]
-
-    # Below. put test functions for Spike                                    @ADITI !O#@$_@!($#@!_)$)@#!)$@#!$)@#!$()_!%@#%I$@#!()#@!$(2143)
-    # , hud if applicable, and anything else. unit test docstrings also need work

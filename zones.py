@@ -1,6 +1,12 @@
 """
 Various zones on the map including spawn, plant, and AOE areas.
 """
+# Pylint disables & justifications.
+
+# pylint:disable=R0913
+# Reasonable number of arguments used for this function given the
+# number of dimensions being kept track of. Furthermore, modifying
+# this would result in an objectively more convoluted solution.
 from random import randint
 
 
@@ -16,10 +22,7 @@ class Zone:
         _type: A string containing the name of the type of zone.
     """
 
-    def __init__(self, x_0, y_0, x_dim, y_dim, form): # pylint:disable=R0913
-        # Reasonable number of arguments used for this function given the
-        # number of dimensions being kept track of. Furthermore, modifying
-        # this would result in an objectively more convoluted solution.
+    def __init__(self, x_0, y_0, x_dim, y_dim, form):
         self._left = x_0
         self._top = y_0
         self._width = x_dim

@@ -1,32 +1,42 @@
 """
 Model, View, Controller architecture and functions for an Agent in spike rush
 """
+# Pylint disables & justifications.
 
-# pylint disables and justification
+# This warning has to be disabled becuase it doesn't make any sense
+# the Agent must store its attributes and there isn't a good way to make the
+# Agent have less without making the code more convoluted
+# pylint:disable=R0902
 
-# unfortunately I have to disable these because without wildcard import
-# the code doesn't import correctly
-#pylint: disable=W0614
-#pylint: disable=W0401
+# There currently is no way to resolve for too many arguments without making
+# the code significantly more convoluted & all of the arguments in question
+# are currently being used.
+# pylint:disable=R0913
 
-# this warning has to be disabled becuase it doesn't make any sense
-# the agent must store its attributes and there isn't a good way to make the
-# agent have less
-#pylint: disable=R0902
+# The high number of branches in the move function are due to the high
+# number of potential key inputs and combinations that it handles.
+# pylint:disable=R0912
 
-# disabled because we were not taught about private methods
-#pylint: disable=R0904
+# Disabled because all of the public functions are used and we have not
+# yet properly learned private functions.
+# pylint:disable=R0904
 
-# this pylint error is disabled because it is false. Agent did not redefine
-# any classes
-#pylint: disable=E0102
+# pylint:disable=E1101
+# Disabled because this is how keys are checked via pygame - it's not trying
+# to access a K_[key] attribute from pygame.
+
+# pylint:disable=W0611
+# These have to be disabled because the type of is random meaning that it
+# might think it's an unused class when it is not.
+
 from abc import abstractmethod
 import math
-import pygame
 import os
-from guns_bullets import *
+import pygame
+from guns_bullets import Bullet, Classic, Spectre, Guardian, Vandal, gun_list
 from spike import Spike
-from spike_map import *
+
+FRAME_RATE = 30
 
 
 class Agent:
@@ -45,16 +55,18 @@ class Agent:
             the agent.
         _side: A string representing whether the player is attacking or
             defending.
-        _frames_since_last_shot: An integer representing the number of frames
+        frames_since_last_shot: An integer representing the number of frames
             since the player last shot a weapon.
         _gun: A class representing the type of gun the player is holding.
             The specific class will be some arbitrary class inherited from the
             general gun class.
-        _frames_since_reload: An integer representing the number of frames
-            since the player started a reload
-        _is_shooting: A boolean representing whether or not a player is
+        frames_since_reload: An integer representing the number of frames
+            since the player started a reload.
+        frames_since_last_spike_interaction: An integer representing the number
+            of frames since the player started a spike interaction.
+        is_shooting: A boolean representing whether or not a player is
             currently shooting.
-        _is_reloading: A boolean representing whether or not a player is
+        is_reloading: A boolean representing whether or not a player is
             currently reloading.
         _angle = An integer or float representing the angle the player is
             looking in radians.
@@ -68,13 +80,13 @@ class Agent:
     _spike = True  # If spike is true, it has not yet been planted
     _spike_object = None
 
-    _frames_since_last_shot = 0
-    _frames_since_reload = 0
+    frames_since_last_shot = 0
+    frames_since_reload = 0
 
-    _frames_since_last_spike_interaction = 0
+    frames_since_last_spike_interaction = 0
 
-    _is_shooting = False
-    _is_reloading = False
+    is_shooting = False
+    is_reloading = False
     #self.is_defusing = False
 
     _turn_speed = .15*FRAME_RATE/30
@@ -187,6 +199,16 @@ class Agent:
         """
         return self._alive
 
+    @property
+    def turn_speed(self):
+        """
+        Returns the agent's turn speed.
+
+        Returns:
+            An integer representing the agent's turning speed.
+        """
+        return self._turn_speed
+
     def set_location(self, x_position, y_position):
         """
         Updates the agent's location on the map to a new position.
@@ -243,52 +265,6 @@ class Agent:
         """
         self._health = new_health
 
-    def set_frames_since_last_shot(self, new_frames):
-        """
-        Updates the frames since an agent has shot a weapon.
-
-        Args:
-            new_frames: an integer representing how many frames since the
-                player last shot.
-        Returns:
-            None.
-        """
-        self._frames_since_last_shot = new_frames
-
-    def set_frames_since_reload(self, new_frames):
-        """
-        Updates the frames since an agent initiated a reload.
-
-        Args:
-            new_frames: an integer representing how many frames since the
-                player initiated a reload.
-        Returns:
-            None.
-        """
-        self._frames_since_reload = new_frames
-
-    def set_is_shooting(self, a_bool):
-        """
-        Update whether a player is shooting or not.
-
-        Args:
-            a_bool: A boolean representing whether a player is shooting.
-        Returns:
-            None.
-        """
-        self._is_shooting = a_bool
-
-    def set_is_reloading(self, a_bool):
-        """
-        Update whether a player is reloading or not.
-
-        Args:
-            a_bool: A boolean representing whether a player is reloading.
-        Returns:
-            None.
-        """
-        self._is_reloading = a_bool
-
     def set_angle(self, angle):
         """
         Update the view angle of the player.
@@ -299,18 +275,6 @@ class Agent:
             None.
         """
         self._angle = angle
-
-    def set_frames_since_last_spike_interaction(self, new_frames):
-        """
-        Update the number of frames since the last spike interaction.
-
-        Args:
-            new_frames: An integer representing the number of frames since
-                the last spike interaction.
-        Returns:
-            None.
-        """
-        self._frames_since_last_spike_interaction = new_frames
 
     def kill(self):
         """
@@ -349,8 +313,8 @@ class Agent:
         """
         # fix for private variable calls
         self._gun.update_clip(1)
-        self.set_is_reloading(True)
-        self._frames_since_reload = 0
+        self.is_reloading = True
+        self.frames_since_reload = 0
 
     def plant_spike(self):
         """
@@ -362,17 +326,6 @@ class Agent:
         """
         self._spike = False
         self._spike_object = Spike(self.location[0], self.location[1])
-
-    def defuse_spike(self, spike):
-        """
-        Defuses a the given Spike object.
-
-        Args:
-            spike: A spike representing the spike on the map to defuse.
-        Returns:
-            None.
-        """
-        spike.defuse()
 
     def set_spike_object(self, new_spike):
         """
@@ -392,10 +345,9 @@ class Brimstone(Agent):
     Brimmy w/o da stimmy
     """
 
-    def __init__(self):
+    def __init__(self, x_init, y_init, side):
+        Agent.__init__(self, x_init, y_init, side)
         self._name = "Brimstone"
-        self._color = (185, 147, 104)
-        self._sprite = ""
 
     def use_ultimate(self):
         # Region of the map that does ~39 dps, lasts 15s,
@@ -408,9 +360,9 @@ class Phoenix(Agent):
     Trash in meta rn, but cool ult for spike rush
     """
 
-    def __init__(self):
+    def __init__(self, x_init, y_init, side):
+        Agent.__init__(self, x_init, y_init, side)
         self._name = "Phoenix"
-        self._sprite = ""
 
     def use_ultimate(self):
         """
@@ -433,9 +385,9 @@ class Reyna(Agent):
     Toxic instalocker
     """
 
-    def __init__(self):
+    def __init__(self, x_init, y_init, side):
+        Agent.__init__(self, x_init, y_init, side)
         self._name = "Reyna"
-        self._sprite = ""
 
     def use_ultimate(self):
         """
@@ -514,7 +466,8 @@ class AgentView():
         dot_y = player_y + math.floor(60*y_heading) + 25
 
         red_dot = pygame.Rect(math.floor(dot_x - dot_width/2),
-                              math.floor(dot_y + dot_width/2), dot_width, dot_width)
+                              math.floor(dot_y + dot_width/2), \
+                                  dot_width, dot_width)
 
         pygame.draw.rect(surface, (255, 0, 0), red_dot)
 
@@ -532,7 +485,8 @@ class AgentView():
         self.agent_sprite.rect.y = self.agent.location[1]
 
         # draw sprite on to surface
-        surface.blit(self.agent_sprite.image, (self.agent_sprite.rect))
+        surface.blit(self.agent_sprite.image, \
+            (self.agent_sprite.rect))
 
     def draw_bullets(self, surface):
         """
@@ -545,13 +499,13 @@ class AgentView():
             None.
         """
         #global bullet_dictionary
-        for the_bullet in self._agent._gun._bullet_dict.values():
+        for the_bullet in self._agent.gun.bullet_dict.values():
             bullet_sprite = pygame.sprite.Sprite()
             bullet_sprite.image = pygame.Surface(
                 (self._bullet_width, self._bullet_width))
             bullet_sprite.image.fill((0, 0, 0))
-            bullet_x = math.floor(the_bullet._pos_x - self._bullet_width/2)
-            bullet_y = math.floor(the_bullet._pos_y + self._bullet_width/2)
+            bullet_x = math.floor(the_bullet.pos_x - self._bullet_width/2)
+            bullet_y = math.floor(the_bullet.pos_y + self._bullet_width/2)
             bullet_sprite.rect = pygame.Rect(
                 bullet_x, bullet_y, self._bullet_width, self._bullet_width)
             # self._bullet_sprites.add(bullet_sprite)
@@ -659,11 +613,11 @@ class AgentController:
             self._view.agent_sprite.rect.x = self.agent.location[0]
 
         if keys[control_list[5]]:  # turn counter clockwise
-            theta_change = self.agent._turn_speed
+            theta_change = self.agent.turn_speed
             self.agent.set_angle(self.agent.angle + theta_change)
 
         if keys[control_list[4]]:  # turn counter clockwise
-            theta_change = self.agent._turn_speed
+            theta_change = self.agent.turn_speed
             self.agent.set_angle(self.agent.angle - theta_change)
 
         # did we hit something?
@@ -714,61 +668,60 @@ class AgentController:
         """
 
         # if reloading, don't fire
-        if self.agent._frames_since_reload < self.agent.gun._frames_for_reload \
-                and self.agent._is_reloading:
-            self.agent._gun.consective_bullets = 0
+        if self.agent.frames_since_reload < self.agent.gun.frames_for_reload \
+                and self.agent.is_reloading:
+            self.agent.gun.consective_bullets = 0
             return
-        elif self.agent._is_reloading:
-            self.agent.set_is_reloading(False)
+        if self.agent.is_reloading:
+            self.agent.setis_reloading(False)
             # print("reloaded")
 
-        self.agent.set_frames_since_last_shot(
-            self.agent._frames_since_last_shot + 1)
+        self.agent.frames_since_last_shot += 1
         # consecutive fire
 
-        if (input_type == "WASD" and keys[pygame.K_x]) or (input_type ==
-                                                           "Arrow" and keys[pygame.K_m]):
+        if (input_type == "WASD" and keys[pygame.K_x]) or \
+            (input_type == "Arrow" and keys[pygame.K_m]):
 
-            if self.agent._is_shooting and not self.agent._gun._automatic:
+            if self.agent.is_shooting and not self.agent.automatic:
                 return
 
-            if self.agent._frames_since_last_shot < \
-                    self.agent._gun._frames_before_shot:
+            if self.agent.frames_since_last_shot < \
+                    self.agent.gun.frames_before_shot:
                 return
 
-            # if the weapon is semi auto, don't shoot it uatomatically
+            # if the weapon is semi auto, don't shoot it automatically
 
-            if self.agent._gun.current_clip > 0:
+            if self.agent.gun.current_clip > 0:
                 # If no bullets, pass
                 self.agent.use_gun()
 
               # automatic fire activation
             # if self.agent.gun.automatic:
-                if self.agent._is_shooting:
-                    self.agent._gun.consecutive_bullets += 1
+                if self.agent.is_shooting:
+                    self.agent.gun.consecutive_bullets += 1
                 else:
-                    self.agent._gun.consecutive_bullets = 1
+                    self.agent.gun.consecutive_bullets = 1
 
                 # print(self.agent._gun.consecutive_bullets)
-                self.agent.set_is_shooting(True)
+                self.agent.is_shooting = True
 
-                self.agent.set_frames_since_last_shot(0)
+                self.agent.frames_since_last_shot = 0
 
                 # automatic fire activation
             else:
-                self.agent._gun.consecutive_bullets = 0
-                self.agent.set_is_shooting(False)
+                self.agent.gun.consecutive_bullets = 0
+                self.agent.is_shooting = False
 
         else:
 
-            if self.agent._gun._automatic:
-                self.agent._gun.consecutive_bullets = 0
+            if self.agent.gun.automatic:
+                self.agent.gun.consecutive_bullets = 0
 
-            elif not self.agent._gun._automatic and\
-                self.agent._frames_since_last_shot > \
-                    self.agent._gun._frames_before_shot + 8:
-                self.agent._gun.consecutive_bullets = 0
-            self.agent.set_is_shooting(False)
+            elif not self.agent.gun.automatic and\
+                self.agent.frames_since_last_shot > \
+                    self.agent.gun.frames_before_shot + 8:
+                self.agent.gun.consecutive_bullets = 0
+            self.agent.set.is_shooting = False
 
             self.agent.gun.consecutive_bullets = 0
 
@@ -791,9 +744,8 @@ class AgentController:
 
             self.agent.reload_gun()
 
-        if self.agent._is_reloading:
-            self.agent.set_frames_since_reload(
-                self.agent._frames_since_reload + 1)
+        if self.agent.is_reloading:
+            self.agent.frames_since_reload += 1
 
     # bullet controlls
 
@@ -810,12 +762,12 @@ class AgentController:
 
         Returns: None.
         """
-        for the_bullet in self._agent._gun._bullet_dict.values():
+        for the_bullet in self._agent.gun.bullet_dict.values():
             self.bullet_main(the_bullet, walls, players, other_agent)
         # actually delete the bullet
-        for bullet_name in self._agent._gun._bullet_delete_dict.keys():
-            del self._agent._gun._bullet_dict[bullet_name]
-        self._agent._gun._bullet_delete_dict.clear()
+        for bullet_name in self._agent.gun.bullet_delete_dict.keys():
+            del self._agent.gun.bullet_dict[bullet_name]
+        self._agent.gun.bullet_delete_dict.clear()
 
     def bullet_collision(self, the_bullet, walls, players, other_agent):
         """
@@ -841,10 +793,10 @@ class AgentController:
                 pygame.sprite.spritecollide(
                     the_bullet.bullet_sprite, players, False)
             for _ in wall_collision_list:
-                self._agent._gun.delete_bullet(the_bullet)
-            for index, agent in enumerate(agent_collision_list):
+                self._agent.gun.delete_bullet(the_bullet)
+            for _ in agent_collision_list:
                 # the way this is implemented will not work in 2+v2+ games
-                self._agent._gun.delete_bullet(the_bullet)
+                self._agent.gun.delete_bullet(the_bullet)
                 other_agent.update_health(other_agent.health - 10)
                 # switch 10 to bullet.damage
 
@@ -892,16 +844,15 @@ class AgentController:
             if (input_type == "WASD" and keys[pygame.K_4] or
                     input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
                 if self._agent.spike and\
-                    self._agent._frames_since_last_spike_interaction == \
+                    self._agent.frames_since_last_spike_interaction == \
                         frames_to_plant:
                     # print("Planted")
                     self._agent.plant_spike()
                     hud_model.timer = 45
                 elif self._agent.spike:
-                    self._agent.set_frames_since_last_spike_interaction(
-                        self._agent._frames_since_last_spike_interaction + 1)
+                    self._agent.frames_since_last_spike_interaction += 1
             else:
-                self._agent.set_frames_since_last_spike_interaction(0)
+                self._agent.frames_since_last_spike_interaction = 0
 
     def spike_defuse(self, keys, map_model, input_type, other_agent, hud_model):
         """
@@ -933,7 +884,7 @@ class AgentController:
             if (input_type == "WASD" and keys[pygame.K_4] or
                input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
                 if not spike.status and \
-                        self._agent._frames_since_last_spike_interaction == \
+                        self._agent.frames_since_last_spike_interaction == \
                         frames_to_defuse and spike.frames_since_plant < \
                         spike.frames_to_explode:
                     # print("Defused")
@@ -941,11 +892,20 @@ class AgentController:
                     hud_model.timer = 0
                     other_agent.set_spike_object(None)
                 elif not spike.status:
-                    self._agent.set_frames_since_last_spike_interaction(
-                        self._agent._frames_since_last_spike_interaction + 1)
+                    self._agent.frames_since_last_spike_interaction += 1
             else:
-                self._agent.set_frames_since_last_spike_interaction(0)
+                self._agent.frames_since_last_spike_interaction = 0
 
+def defuse_spike(spike):
+    """
+    Defuses a the given Spike object.
+
+    Args:
+        spike: A spike representing the spike on the map to defuse.
+    Returns:
+        None.
+    """
+    spike.defuse()
 
 def check_win(attacker, defender, hud_model):
     """
@@ -961,7 +921,7 @@ def check_win(attacker, defender, hud_model):
 
     """
 
-    spike_out = not attacker._spike
+    spike_out = not attacker.spike
 
     # if the spike hasn't been planted
     if not spike_out:

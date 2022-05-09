@@ -1,6 +1,14 @@
 """
 Creating the main map for the game.
 """
+# Pylint disables & justifications.
+
+# pylint:disable=R0903
+# Wall is a class to have for the sprite even if there aren't
+# a high number of public methods.
+
+
+
 import os
 import pygame
 from zones import SpawnZone, PlantZone
@@ -8,9 +16,7 @@ from zones import SpawnZone, PlantZone
 # create walls class
 
 
-class Wall(pygame.sprite.Sprite):  # pylint:disable=R0903
-    # Useful class to have for the sprite even if there aren't
-    # a high number of public methods.
+class Wall(pygame.sprite.Sprite):
     """
     Creates a wall object that character can collide with.
 
@@ -165,7 +171,7 @@ class SplitView:
 
     Attributes:
         model = Attributes from the split_model class.
-        _window = The game window the map is drawn to.
+        window = The game window the map is drawn to.
         _backdrop: An image containing the background of Split.
     """
 
@@ -173,7 +179,7 @@ class SplitView:
         self.model = model  # from split_model
 
         # set 1920x1080 full screen window
-        self._window = pygame.display.set_mode(self.model.map_dimensions)
+        self.window = pygame.display.set_mode(self.model.map_dimensions)
 
         # add window caption
         pygame.display.set_caption("Spike Rush")
@@ -193,7 +199,7 @@ class SplitView:
             surface: The window for the map to be drawn on
         """
         # draw the backdrop
-        self._window.blit(self._backdrop, self._window.get_rect())
+        self.window.blit(self._backdrop, self.window.get_rect())
 
     def draw_walls(self):
         """
@@ -204,7 +210,7 @@ class SplitView:
         """
         # draw the walls
         for wall in self.model.wall_list:
-            self._window.blit(wall.wall, (wall.rect.x, wall.rect.y))
+            self.window.blit(wall.wall, (wall.rect.x, wall.rect.y))
 
     def draw_other_screen(self, image):
         """
@@ -223,4 +229,4 @@ class SplitView:
                                                  image)).convert(),
                                    (1536, 864))
 
-        self._window.blit(screen, self._window.get_rect())
+        self.window.blit(screen, self.window.get_rect())

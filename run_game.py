@@ -1,8 +1,20 @@
 """
 Runs the spike rush game.
 """
+# Pylint disables & justifications.
+
+# pylint:disable=E1101
+# Pylint is misunderstanding how pygame works & is blatantly wrong here.
+# Pygame has an init function & represents keys presses with pygame.[Key],
+# These are not attributes.
+
+# pylint:disable = R0912, R0914, R0915
+# The overall game loop requries updating of many variables meaning that
+# it can't resolve for having "too many"
+# Additoinally, it cannot avoid having so many branches and statements for the
+# same reason.
+
 import pygame
-from regex import E
 from spike_map import SplitModel, SplitView
 from agent import Agent, AgentController, AgentView, check_win
 from hud import DisplayModel, DisplayView
@@ -36,7 +48,7 @@ def agent_test():
                 if event.type == pygame.QUIT:  # quit the game, stop the loop
                     pygame.quit()
                     return
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     display = False
             map_view.draw_other_screen(screen)
 
@@ -95,8 +107,8 @@ def agent_test():
 
             if event.type == track_second:
                 # if a second has passed, reduce the timer
-                if hud_model._timer != 0:
-                    hud_model._timer -= 1
+                if hud_model.timer != 0:
+                    hud_model.timer -= 1
 
         # update states
         # create entities
@@ -113,13 +125,13 @@ def agent_test():
         if character_model_1.alive:
 
             character_controller_1.move(
-                character_speed, keys, "WASD", map_model._wall_list)
+                character_speed, keys, "WASD", map_model.wall_list)
 
             character_controller_1.check_shoot(keys, "WASD")
             character_controller_1.check_reload(keys, "WASD")
 
-            character_view_1.draw_agent(map_view._window)
-            character_view_1.dot_sight(map_view._window)
+            character_view_1.draw_agent(map_view.window)
+            character_view_1.dot_sight(map_view.window)
 
             character_controller_1.spike_plant(
                 keys, map_model, "WASD", hud_model)
@@ -128,13 +140,13 @@ def agent_test():
         if character_model_2.alive:
 
             character_controller_2.move(
-                character_speed, keys, "Arrow", map_model._wall_list)
+                character_speed, keys, "Arrow", map_model.wall_list)
 
             character_controller_2.check_shoot(keys, "Arrow")
             character_controller_2.check_reload(keys, "Arrow")
 
-            character_view_2.draw_agent(map_view._window)
-            character_view_2.dot_sight(map_view._window)
+            character_view_2.draw_agent(map_view.window)
+            character_view_2.dot_sight(map_view.window)
 
             character_controller_2.spike_defuse(
                 keys, map_model, "Arrow", agents[0], hud_model)
@@ -148,20 +160,20 @@ def agent_test():
         # draw HUD updates
 
         hud_view.draw_player_updates(
-            character_model_1, character_model_2, map_view._window)
-        hud_view.draw_game_timer(map_view._window)
+            character_model_1, character_model_2, map_view.window)
+        hud_view.draw_game_timer(map_view.window)
 
         # draw spike
-        character_view_1.draw_spike(map_view._window)
-        character_view_2.draw_spike(map_view._window)
+        character_view_1.draw_spike(map_view.window)
+        character_view_2.draw_spike(map_view.window)
 
-        character_controller_2.update_bullets_test(map_model._wall_list,
+        character_controller_2.update_bullets_test(map_model.wall_list,
                                                    agent_list, agents[0])
-        character_view_2.draw_bullets(map_view._window)
-        character_controller_1.update_bullets_test(map_model._wall_list,
+        character_view_2.draw_bullets(map_view.window)
+        character_controller_1.update_bullets_test(map_model.wall_list,
                                                    agent_list, agents[1]
                                                    )
-        character_view_1.draw_bullets(map_view._window)
+        character_view_1.draw_bullets(map_view.window)
 
         # bring up controls screen if H key is pressed
         if keys[pygame.K_h]:
@@ -177,11 +189,11 @@ def agent_test():
             if event.type == pygame.QUIT:  # quit the game, stop the loop
                 pygame.quit()
                 return
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 display = False
-        if character_model_1.win == True:
+        if character_model_1.win:
             map_view.draw_other_screen("attack_win.png")
-        elif character_model_2.win == True:
+        elif character_model_2.win:
             map_view.draw_other_screen("defend_win.png")
         pygame.display.flip()  # update entire display
         clock.tick(FRAME_RATE)  # reduce framerate to 30

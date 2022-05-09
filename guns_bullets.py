@@ -3,11 +3,27 @@ Document containing the models for Gun & Bullet
 """
 import math
 from random import randint
-#from run_game import frame_rate
+
+# Pylint disables & justifications.
+
+# pylint:disable=C0103, W0603
+# Bullet counter is not a constant as it is a global variable.
+# Bullet counter is also only updated in one location (Gun.shoot())
+# making it not awful practices to have it be a singular modular global
+# variable. Furthermore, attempting to turn bullet counter into  a class
+# variable caused problems where the bullets were deleting, likely due
+# to storage errors or override timing.
+
+# pylint:disable=too-many-instance-attributes
+# Almost impossible to work around "too many attributes" claim
+# without making more convoluted code than before.
+
+# pylint:disable=too-many-arguments
+# Almost impossible to work around the "too many arguments" claim
+# without making more convoluted code than before.
 
 FRAME_RATE = 30
-bullet_counter = 0  # pylint:disable=C0103
-# bullet counter is not a constant as it is a global variable
+bullet_counter = 0
 
 
 class Gun():
@@ -66,9 +82,39 @@ class Gun():
         Initialize an instance of the gun class
         """
         self._automatic = True
-        self._bullet_dict = {}
+        self.bullet_dict = {}
         #self.bullet_count = 0
-        self._bullet_delete_dict = {}
+        self.bullet_delete_dict = {}
+
+    @property
+    def frames_for_reload(self):
+        """
+        Returns the number of frames for reload.
+
+        Returns:
+            An integer representing how many frames it takes to reload.
+        """
+        return self._frames_for_reload
+
+    @property
+    def automatic(self):
+        """
+        Returns whether the gun is automatic or not.
+
+        Returns:
+            A boolean representing whether the gun is automatic or not.
+            True if automatic; otherwise, False.
+        """
+
+    @property
+    def frames_before_shot(self):
+        """
+        Returns the number of frames before taking another shot.
+
+        Returns:
+            An integer representing the number of frames between shots.
+        """
+        return self._frames_before_shot
 
     def update_clip(self, clip_update):
         """
@@ -139,12 +185,7 @@ class Gun():
         bullet_start_y = player_y + math.floor(30*y_increment) + 25
 
         # create a new bullet and add it to the dictionary of bullets
-        global bullet_counter # pylint:disable=C0103, W0603
-        # This is the only location where this global variable is updated
-        # hence why it isn't awful to have this as a singular modular
-        # global variable. Furthermore, attempting to turn this into a
-        # class variable caused problems where the bullets were deleting
-        # early, likely due to storate errors or overrride timing.
+        global bullet_counter
         bullet_counter += 1
         new_bullet = Bullet(bullet_start_x, bullet_start_y, x_increment,
                             y_increment, self._damage)
@@ -152,7 +193,7 @@ class Gun():
 
         update_dict = {new_bullet.name: new_bullet}
 
-        self._bullet_dict.update(update_dict)
+        self.bullet_dict.update(update_dict)
 
         # decrease clip size by 1
         self.update_clip(-1)
@@ -164,14 +205,12 @@ class Gun():
         Args:
             bullet: An instance of the bullet class.
         """
-        self._bullet_delete_dict.update(
-            {bullet.name: self._bullet_dict[bullet.name]})
+        self.bullet_delete_dict.update(
+            {bullet.name: self.bullet_dict[bullet.name]})
 
 
 
-class Bullet(): # pylint: disable=too-many-instance-attributes
-# Almost impossible to work around "too many attributes" claim
-# without making more convoluted code than before.
+class Bullet():
     """
     A model for a bullet.
 
@@ -194,9 +233,6 @@ class Bullet(): # pylint: disable=too-many-instance-attributes
     _speed_per_tick = math.ceil(FRAME_RATE * 35/60)  # was 20
     #bullet_counter = 0
 
-    # pylint:disable=too-many-arguments
-    # Almost impossible to work around the "too many arguments" claim
-    # without making more convoluted code than before.
     def __init__(self, pos_x, pos_y, incr_x, incr_y, damage):
         """
         Initialize an instance of the bullet class
@@ -222,14 +258,32 @@ class Bullet(): # pylint: disable=too-many-instance-attributes
         self._delta_x = self._incr_x * self._speed_per_tick
         self._delta_y = self._incr_y * self._speed_per_tick
 
-        global bullet_counter # pylint:disable=C0103, W0603
-        # Global variable is not updated here & is merely called.
-        # See reasoning for global variable usage in gun.shoot()
+        global bullet_counter
         self.name = f"bullet_{bullet_counter}"
 
         self.bullet_sprite = None
 
     # update positions
+
+    @property
+    def pos_x(self):
+        """
+        Returns the bullet's x position.
+
+        Returns:
+            An integer representing the bullet's x position.
+        """
+        return self._pos_x
+
+    @property
+    def pos_y(self):
+        """
+        Returns the bullet's y position.
+
+        Returns:
+            An integer representing the bullet's y position.
+        """
+        return self._pos_y
 
     def update_position(self):
         """
