@@ -36,7 +36,7 @@ def agent_test():
                     return
                 elif event.type == pygame.KEYDOWN:
                     display = False
-            hud_view.draw_other_screen(screen, map_view._window)
+            map_view.draw_other_screen(screen)
 
             pygame.display.flip()  # update entire display
             clock.tick(30)  # reduce framerate to 30
@@ -93,8 +93,8 @@ def agent_test():
 
             if event.type == track_second:
                 # if a second has passed, reduce the timer
-                if hud_model.timer != 0:
-                    hud_model.timer -= 1
+                if hud_model._timer != 0:
+                    hud_model._timer -= 1
 
         # update states
         # create entities
@@ -163,7 +163,7 @@ def agent_test():
 
         # bring up controls screen if H key is pressed
         if keys[pygame.K_h]:
-            hud_view.draw_other_screen("controls.png", map_view._window)
+            map_view.draw_other_screen("controls.png")
 
         pygame.display.flip()  # update entire display
         clock.tick(FRAME_RATE)  # reduce framerate to 30
@@ -178,9 +178,9 @@ def agent_test():
             elif event.type == pygame.KEYDOWN:
                 display = False
         if character_model_1.win == True:
-            hud_view.draw_other_screen("attack_win.png", map_view._window)
+            map_view.draw_other_screen("attack_win.png")
         elif character_model_2.win == True:
-            hud_view.draw_other_screen("defend_win.png", map_view._window)
+            map_view.draw_other_screen("defend_win.png")
         pygame.display.flip()  # update entire display
         clock.tick(FRAME_RATE)  # reduce framerate to 30
 

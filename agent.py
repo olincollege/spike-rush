@@ -2,23 +2,23 @@
 Model, View, Controller architecture and functions for an Agent in spike rush
 """
 
-#pylint disables and justification
+# pylint disables and justification
 
-#unfortunately I have to disable these because without wildcard import
-#the code doesn't import correctly
+# unfortunately I have to disable these because without wildcard import
+# the code doesn't import correctly
 #pylint: disable=W0614
 #pylint: disable=W0401
 
-#this warning has to be disabled becuase it doesn't make any sense
-#the agent must store its attributes and there isn't a good way to make the
-#agent have less
+# this warning has to be disabled becuase it doesn't make any sense
+# the agent must store its attributes and there isn't a good way to make the
+# agent have less
 #pylint: disable=R0902
 
-#disabled because we were not taught about private methods
+# disabled because we were not taught about private methods
 #pylint: disable=R0904
 
-#this pylint error is disabled because it is false. Agent did not redefine
-#any classes
+# this pylint error is disabled because it is false. Agent did not redefine
+# any classes
 #pylint: disable=E0102
 from abc import abstractmethod
 import math
@@ -27,7 +27,7 @@ import os
 from guns_bullets import *
 from spike import Spike
 from spike_map import *
-from hud import display_model, display_view
+
 
 class Agent:
     """
@@ -331,7 +331,6 @@ class Agent:
             None.
         """
 
-
     def use_gun(self):
         """
         Shoot a gun from the player's location, at the look angle.
@@ -447,7 +446,6 @@ class Reyna(Agent):
         """
 
 
-
 class AgentView():
     """
     Displays an agent and other visuals controlled by the agent
@@ -516,7 +514,7 @@ class AgentView():
         dot_y = player_y + math.floor(60*y_heading) + 25
 
         red_dot = pygame.Rect(math.floor(dot_x - dot_width/2),
-                    math.floor(dot_y + dot_width/2), dot_width, dot_width)
+                              math.floor(dot_y + dot_width/2), dot_width, dot_width)
 
         pygame.draw.rect(surface, (255, 0, 0), red_dot)
 
@@ -577,7 +575,7 @@ class AgentView():
             spike_sprite.image = pygame.Surface((spike_width, spike_width))
             spike_sprite.image.fill((100, 100, 100))
             spike_sprite.rect = pygame.Rect(
-                self._agent.spike_object.location[0],\
+                self._agent.spike_object.location[0],
                 self._agent.spike_object.location[1], spike_width, spike_width)
 
             surface.blit(spike_sprite.image, spike_sprite.rect)
@@ -729,7 +727,7 @@ class AgentController:
         # consecutive fire
 
         if (input_type == "WASD" and keys[pygame.K_x]) or (input_type ==
-                                        "Arrow" and keys[pygame.K_m]):
+                                                           "Arrow" and keys[pygame.K_m]):
 
             if self.agent._is_shooting and not self.agent._gun._automatic:
                 return
@@ -767,7 +765,7 @@ class AgentController:
                 self.agent._gun.consecutive_bullets = 0
 
             elif not self.agent._gun._automatic and\
-                 self.agent._frames_since_last_shot > \
+                self.agent._frames_since_last_shot > \
                     self.agent._gun._frames_before_shot + 8:
                 self.agent._gun.consecutive_bullets = 0
             self.agent.set_is_shooting(False)
@@ -837,8 +835,8 @@ class AgentController:
         """
         if the_bullet.bullet_sprite is not None:
             wall_collision_list = \
-                pygame.sprite.spritecollide(the_bullet.bullet_sprite, \
-                    walls, False)
+                pygame.sprite.spritecollide(the_bullet.bullet_sprite,
+                                            walls, False)
             agent_collision_list = \
                 pygame.sprite.spritecollide(
                     the_bullet.bullet_sprite, players, False)
@@ -894,7 +892,7 @@ class AgentController:
             if (input_type == "WASD" and keys[pygame.K_4] or
                     input_type == "Arrow" and keys[pygame.K_SEMICOLON]):
                 if self._agent.spike and\
-                     self._agent._frames_since_last_spike_interaction == \
+                    self._agent._frames_since_last_spike_interaction == \
                         frames_to_plant:
                     # print("Planted")
                     self._agent.plant_spike()
