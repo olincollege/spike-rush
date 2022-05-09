@@ -444,7 +444,7 @@ class AgentView():
 
 
     """
-    bullet_width = 6
+    _bullet_width = 6
 
     def __init__(self, agent_model, image_path):
         self._agent = agent_model
@@ -529,15 +529,15 @@ class AgentView():
             None.
         """
         #global bullet_dictionary
-        for bullet in self._agent._gun.bullet_dict.values():
+        for bullet in self._agent._gun._bullet_dict.values():
             bullet_sprite = pygame.sprite.Sprite()
             bullet_sprite.image = pygame.Surface(
-                (self.bullet_width, self.bullet_width))
+                (self._bullet_width, self._bullet_width))
             bullet_sprite.image.fill((0, 0, 0))
-            bullet_x = math.floor(bullet.pos_x - self.bullet_width/2)
-            bullet_y = math.floor(bullet.pos_y + self.bullet_width/2)
+            bullet_x = math.floor(bullet._pos_x - self._bullet_width/2)
+            bullet_y = math.floor(bullet._pos_y + self._bullet_width/2)
             bullet_sprite.rect = pygame.Rect(
-                bullet_x, bullet_y, self.bullet_width, self.bullet_width)
+                bullet_x, bullet_y, self._bullet_width, self._bullet_width)
             # self._bullet_sprites.add(bullet_sprite)
             bullet.set_sprite(bullet_sprite)
             surface.blit(bullet_sprite.image, bullet_sprite.rect)
@@ -697,7 +697,7 @@ class AgentController:
         """
 
         # if reloading, don't fire
-        if self.agent._frames_since_reload < self.agent.gun.frames_for_reload \
+        if self.agent._frames_since_reload < self.agent.gun._frames_for_reload \
                 and self.agent._is_reloading:
             self.agent._gun.consective_bullets = 0
             return
@@ -712,11 +712,11 @@ class AgentController:
         if (input_type == "WASD" and keys[pygame.K_x]) or (input_type ==
                                                            "Arrow" and keys[pygame.K_m]):
 
-            if self.agent._is_shooting and not self.agent._gun.automatic:
+            if self.agent._is_shooting and not self.agent._gun._automatic:
                 return
 
             if self.agent._frames_since_last_shot < \
-                    self.agent._gun.frames_before_shot:
+                    self.agent._gun._frames_before_shot:
                 return
 
             # if the weapon is semi auto, don't shoot it uatomatically
@@ -744,11 +744,11 @@ class AgentController:
 
         else:
 
-            if self.agent._gun.automatic:
+            if self.agent._gun._automatic:
                 self.agent._gun.consecutive_bullets = 0
 
-            elif not self.agent._gun.automatic and self.agent._frames_since_last_shot > \
-                    self.agent._gun.frames_before_shot + 8:
+            elif not self.agent._gun._automatic and self.agent._frames_since_last_shot > \
+                    self.agent._gun._frames_before_shot + 8:
                 self.agent._gun.consecutive_bullets = 0
             self.agent.set_is_shooting(False)
 
@@ -792,12 +792,12 @@ class AgentController:
 
         Returns: None.
         """
-        for bullet in self._agent._gun.bullet_dict.values():
+        for bullet in self._agent._gun._bullet_dict.values():
             self.bullet_main(bullet, walls, players, other_agent)
         # actually delete the bullet
-        for bullet_name in self._agent._gun.bullet_delete_dict.keys():
-            del self._agent._gun.bullet_dict[bullet_name]
-        self._agent._gun.bullet_delete_dict.clear()
+        for bullet_name in self._agent._gun._bullet_delete_dict.keys():
+            del self._agent._gun._bullet_dict[bullet_name]
+        self._agent._gun._bullet_delete_dict.clear()
 
     def bullet_collision(self, bullet, walls, players, other_agent):
         """
