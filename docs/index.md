@@ -4,7 +4,7 @@
 
 ## Video
 
-[![Video](http://img.youtube.com/vi/cOv2I0dYL20/0.png)](http://www.youtube.com/watch?v=cOv2I0dYL20 "Spike Rush: Pygame Implementation")
+[![Spike Rush: Pygame Implementation](https://imgur.com/a/ygP5Crt)](http://www.youtube.com/watch?v=cOv2I0dYL20 "Spike Rush: Pygame Implementation")
 
 <img src="website_images/headers/overview.png" width ="300" height = "106" style="float:left"> <br><br><br><br><br>
 
