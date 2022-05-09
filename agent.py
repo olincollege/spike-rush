@@ -958,14 +958,14 @@ def check_win(attacker,defender):
 
     #if the spike has been planted
     else:
-
+      if attacker.spike_object is not None:
         #if the spike blows up
         if attacker.spike_object.blowup():
             attacker.set_win()
 
         #if the spike is defused
 
-        if attacker.spike_object.status():
+        if attacker.spike_object.status:
             defender.set_win()
         
         #if defender dies while spike out
