@@ -72,4 +72,4 @@ Rotate Clockwise - . <br />
 Plant/Defuse Spike - ; <br />
 
 ## Website
-The website can be found [here.](https://glowing-carnival-60eeb349.pages.github.io/)
+The website can be found [here.](https://olincollege.github.io/spike-rush/)
