@@ -152,3 +152,5 @@ def agent_test():
 
     # print(map_view._window.get_rect()) #check window dimensions
     pygame.quit()  # after main loop has finished
+
+agent_test()

@@ -11,12 +11,6 @@ from agent import (
 from guns_bullets import (
     bullet,
     gun,
-    vandal,
-    guardian,
-    bullet_counter,
-    bullet_dictionary,
-    bullet_delete_dictionary
-
 )
 
 
@@ -83,15 +77,12 @@ bullet_hit_cases = [
     update_clip_cases)
 def test_update_clip(input_value,output_clip):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Check that updating the clip works properly
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        input value: An integer
+        output_clip: An integer representing the expected number of bullets
+            in a gun's clip after updating it.
     """
     the_gun = gun()
     the_gun.update_clip(input_value)
@@ -101,15 +92,12 @@ def test_update_clip(input_value,output_clip):
     shoot_ammo_cases)
 def test_ammo_decrement(player_x,player_y,theta):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Test that the amount of ammo in a clip decreases when a bullet is shot
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        player_x: An integer representing the x coordinate of a player
+        player_y: An integer representing the y coordinate of a player
+        theta: An integer or float representing the aim angle of the player
     """
     the_gun = gun()
     the_gun.shoot(player_x,player_y,theta)
@@ -119,18 +107,14 @@ def test_ammo_decrement(player_x,player_y,theta):
     bullet_creation_cases)
 def test_bullet_creation(player_x,player_y,theta,shots_fired):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Test that when a gun is fired that the right number of bullets are created
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        player_x: An integer representing the x coordinate of a player
+        player_y: An integer representing the y coordinate of a player
+        theta: An integer or float representing the aim angle of the player
+        shots_fired: An integer representing the number of bullets to shoot
     """
-    
-
 
     the_gun = gun()
     for _ in range(shots_fired):
@@ -142,15 +126,11 @@ def test_bullet_creation(player_x,player_y,theta,shots_fired):
     bullet_move_cases)
 def test_move_bullet(incr_x,incr_y):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Test that bullets move through space as expected
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        incr_x: the heading of the bullet in the x direction, a float
+        incr_y: the heading of the bullet in the y direction, a float
     """
     the_bullet = bullet(0,0,incr_x,incr_y,10)
 
@@ -164,6 +144,7 @@ def test_move_bullet(incr_x,incr_y):
 
 @pytest.mark.parametrize("incr_x,incr_y",\
     bullet_move_cases)
+
 def test_bullet_hit(incr_x,incr_y):
     """
     Check that find_most_frequent outputs correctly ordered dictionaries
@@ -174,7 +155,7 @@ def test_bullet_hit(incr_x,incr_y):
         freq_input_int: An integer determining how many value ordered items to
             output.
         output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+            keys and integers as values.                                       @ADITI IASDFIJASPDFP%!$)_#!%I@!#)I@!I_#(%!#U(_%_!$#JOEPRW!$PTWEQMKF))
     """
     
     pass
@@ -202,15 +183,13 @@ set_location_cases = [
     set_location_cases)
 def test_set_location(x_coord,y_coord):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Check that setting player location works correctly
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        x_coord: an integer representing the x coordinate to set for the
+            player
+        y_coord: an integer representing the y coordinate to set for the
+            player
     """
     
     player = Agent(0,0,"attack")
@@ -236,15 +215,11 @@ set_health_cases = [
     set_health_cases)
 def test_set_health(health_update):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Check that setting the health of the player works as intended
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        health_update: an integer representing the amount of health to give
+            the player
     """
 
     player = Agent(0,0,"attack")
@@ -252,43 +227,47 @@ def test_set_health(health_update):
 
     assert health_update == player.health
 
-#tests cases for set_is shooting, set_is reloading, and kill()
+#tests cases for set_is shooting, set_win, set_is reloading, and kill()
 #these inputs do not affect each other at all and thus combinations do
 #not need to be tested
 set_boolean_cases = [
 
-    (True,False,False),
-    (False,True,False),
-    (False,False,True),
-    (True,True,True)
+    #One true, rest false
+    (True,False, False,False),
+    (False,True,False,False),
+    (False,False,True,False),
+    (False,False,False,True),
+    #All true
+    (True,True,True,True)
 
 ]
 
-@pytest.mark.parametrize("shooting,reloading,killing",\
+@pytest.mark.parametrize("shooting,reloading,winning,killing",\
     set_boolean_cases)
-def test_set_booleans(shooting,reloading,killing):
+def test_set_booleans(shooting,reloading,winning,killing):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Check that set boolean functions work as intended
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        shooting: a boolean representing if the player is shooting
+        reloading: a boolean representing if the player is reloading
+        winning: a boolean representing if the player has won
+        killing: a boolean representing if the player is dead
     """
 
     player = Agent(0,0,"attack")
     player.set_is_shooting(shooting)
     player.set_is_reloading(reloading)
+    if winning:
+        player.set_win()
 
     if killing:
         player.kill()
 
-    bool_list = [player._is_shooting,player._is_reloading,player.alive]
+    bool_list = [player._is_shooting,player._is_reloading, player.win,\
+        player.alive]
 
-    assert bool_list == [shooting,reloading,not killing]
+    assert bool_list == [shooting,reloading,winning,not killing]
 
 
 #for frames since last shot,reload
@@ -306,15 +285,16 @@ set_frames_since_cases = [
     set_frames_since_cases)
 def test_set_frames(last_shot,reloading):
     """
-    Check that find_most_frequent outputs correctly ordered dictionaries
+    Check that functions setting the number of frames since some event work
+    as intended.
 
     Args:
-        freq_input_dict: A dictionary with strings as keys and positive
-            integers as values.
-        freq_input_int: An integer determining how many value ordered items to
-            output.
-        output_dict: A value ordered dictionary with strings as
-            keys and integers as values.
+        last_shot: An integer representing the number of frames since a player
+            shot their last shot
+        reloading: An integer representing the number of frames since a player
+            initiated a reload
+        
+        
     """
 
     player = Agent(0,0,"attack")
@@ -327,3 +307,5 @@ def test_set_frames(last_shot,reloading):
     assert frames_list == [last_shot,reloading]
 
     
+    #Below. put test functions for Spike                                    @ADITI !O#@$_@!($#@!_)$)@#!)$@#!$)@#!$()_!%@#%I$@#!()#@!$(2143)
+    #, hud if applicable, and anything else. unit test docstrings also need work
