@@ -860,7 +860,7 @@ class AgentController:
                 if self._agent.spike and self._agent._frames_since_last_spike_interaction == \
                         frames_to_plant:
                     #print("Planted")
-                    self._agent.plant_spike(map_model)
+                    self._agent.plant_spike()
                     hud_model.timer = 45
                 elif self._agent.spike:
                     self._agent.set_frames_since_last_spike_interaction(
@@ -901,7 +901,7 @@ class AgentController:
                         self._agent._frames_since_last_spike_interaction == \
                         frames_to_defuse and spike.frames_since_plant < \
                         spike.frames_to_explode:
-                    print("Defused")
+                    #print("Defused")
                     self._agent.defuse_spike(other_agent.spike_object)
                     hud_model.timer = 0
                     other_agent.set_spike_object(None)
