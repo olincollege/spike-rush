@@ -1,6 +1,8 @@
 """
 Run the game
 """
+# pylint:skip-file
+# Old file.
 frame_rate = 60
 import pygame
 from players_guns_bullets import *

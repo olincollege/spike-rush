@@ -2,7 +2,8 @@
 For the Enemy AI
 """
 from players_guns_bullets import *
-
+# pylint:skip-file
+# Old file.
 #Let's code WII TANKS BABYYYYYYYYYYY
 
 #maybe this should be a controller

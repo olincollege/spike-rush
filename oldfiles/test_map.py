@@ -1,6 +1,8 @@
 """
 Creating a test map for game elements
 """
+# pylint:skip-file
+# Old file.
 
 from bitarray import test
 import pygame

@@ -1,6 +1,7 @@
 """
 Test library functions to find and identify protein-coding genes in DNA.
 """
+# pylint: skip-file
 import math
 import pytest
 import pygame

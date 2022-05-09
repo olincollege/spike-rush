@@ -2,7 +2,8 @@ import math
 from random import randint, randrange
 import pygame
 from run_game import frame_rate
-
+# pylint:skip-file
+# Old file.
 #don't wworryy about this
 class player_test():
 

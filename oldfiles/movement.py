@@ -1,7 +1,8 @@
 """
 Creates a controller to provide movement for agents
 """
-
+# pylint:skip-file
+# Old file.
 import pygame
 import os
 
