@@ -88,13 +88,17 @@ class split_model(wall):
         self._wall_list.add(wall((530, 441), 78, 112))
 
         # Attacker spawn zone
-        self._attacker_spawn = SpawnZone(64, 21, 283, 155) # Zone(250.08, 28.27, 283.10, 155.12)
+        # Zone(250.08, 28.27, 283.10, 155.12)
+        self._attacker_spawn = SpawnZone(64, 21, 283, 155)
 
         # Defender spawn zone
-        self._defender_spawn = SpawnZone(1356, 226, 158, 295) # Zone(1542.59, 229.73, 158.95, 295.83)
+        # Zone(1542.59, 229.73, 158.95, 295.83)
+        self._defender_spawn = SpawnZone(1356, 226, 158, 295)
 
         # Spike plant zone
-        self._a_site = PlantZone(608, 465, 499, 318) # Zone(794.23, 464.98, 499.48, 318.22)
+        # Zone(794.23, 464.98, 499.48, 318.22)
+        self._a_site = PlantZone(608, 465, 499, 318)
+
     @property
     def attacker_spawn(self):
         return self._attacker_spawn
@@ -106,8 +110,6 @@ class split_model(wall):
     @property
     def a_site(self):
         return self._a_site
-    
-
 
 
 class split_view:
@@ -135,7 +137,6 @@ class split_view:
                                                  'map',
                                                  'split_color.png')).convert(),
                                    self.model._map_dimensions)
-
 
     def draw_map(self):
         """
