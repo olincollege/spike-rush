@@ -94,7 +94,7 @@ class split_model(wall):
         self._defender_spawn = SpawnZone(1356, 226, 158, 295) # Zone(1542.59, 229.73, 158.95, 295.83)
 
         # Spike plant zone
-        self._a_site = PlantZone(794, 465, 499, 318) # Zone(794.23, 464.98, 499.48, 318.22)
+        self._a_site = PlantZone(608, 465, 499, 318) # Zone(794.23, 464.98, 499.48, 318.22)
     @property
     def attacker_spawn(self):
         return self._attacker_spawn
@@ -124,7 +124,7 @@ class split_view:
         self.model = model  # from split_model
 
         # set 1920x1080 full screen window
-        self._window = pygame.display.set_mode(self.model._map_dimensions)
+        self._window = pygame.display.set_mode(self.model._map_dimensions, pygame.FULLSCREEN)
 
         # add window caption
         pygame.display.set_caption("Spike Rush")
