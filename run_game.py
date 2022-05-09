@@ -88,7 +88,7 @@ def agent_test():
         # sense inputs (get events)
         for event in pygame.event.get():  # look for events
             if event.type == pygame.QUIT:  # quit the game, stop the loop
-                run = False
+                pygame.quit()
 
             if event.type == track_second:
                 # if a second has passed, reduce the timer
@@ -164,8 +164,21 @@ def agent_test():
         clock.tick(30)  # reduce framerate to 30
 
     # Trigger win screen
+    display = True
+    while display:
+        for event in pygame.event.get():  # look for events
+            if event.type == pygame.QUIT:  # quit the game, stop the loop
+                pygame.quit()
+            elif event.type == pygame.KEYDOWN:
+                display = False
+        if character_model_1.win == True:
+            hud_view.draw_other_screen("attack_win.png", map_view._window)
+        elif character_model_2.win == True:
+            hud_view.draw_other_screen("defend_win.png", map_view._window)
+        pygame.display.flip()  # update entire display
+        clock.tick(30)  # reduce framerate to 30
 
-    pygame.quit()  # after main loop has finished
+    pygame.quit()
 
 
 agent_test()
