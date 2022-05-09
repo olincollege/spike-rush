@@ -51,7 +51,7 @@ Move Backwards - S<br />
 Move Left - A <br />
 Move Right - D <br />
 
-Shoot - X v
+Shoot - X <br />
 Reload - R <br />
 Rotate Counter Clockwise - C <br /> 
 Rotate Clockwise - V <br />
